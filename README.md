@@ -4,6 +4,8 @@ Playing around with the [perfect cuboid](https://en.wikipedia.org/wiki/Euler_bri
 problem in plain, purely functional Scala 3: is there a box whose edges, face diagonals and
 space diagonal are all whole numbers? Nobody knows.
 
+See [ROADMAP.md](ROADMAP.md) for where this is going.
+
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 
 ```sh
