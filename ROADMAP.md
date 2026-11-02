@@ -19,7 +19,7 @@ tested state.
 - [x] **7. Near-miss catalogue.** Face cuboids, and edge cuboids via squared edges.
 - [x] **8. Performance.** A timing harness, a fast inner loop that is pure from the
   outside, and parallelism across edges.
-- [ ] **9. Long runs, done purely.** Checkpoint, resume and write results with Cats Effect
+- [x] **9. Long runs, done purely.** Checkpoint, resume and write results with Cats Effect
   and fs2.
 - [ ] **10. Native binary and write-up.** Scala Native, and statistics on what the
   searches found.

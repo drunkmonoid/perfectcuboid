@@ -1,13 +1,19 @@
 package perfectcuboid
 
+import cats.effect.{ExitCode, IO, IOApp}
+import fs2.Stream
+import fs2.io.file.Path
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/** The program's entry point, and the only place with side effects (printing).
-  * Everything it calls is pure.
+/** The program's entry point.
+  *
+  * `run` does not do anything itself: it returns an `IO`, a description of the program, and
+  * the `IOApp` runtime carries it out. Ctrl+C cancels it cleanly, closing any open file.
   *
   *   scala-cli run .                          Euler bricks with edges up to 1000
   *   scala-cli run . -- bricks 5000           ... up to another limit
   *   scala-cli run . -- unbounded 100000      Euler bricks by smallest edge, however big the others
+  *   scala-cli run . -- hunt bricks.txt 1e9   long search to a file; Ctrl+C stops, rerun resumes
   *   scala-cli run . -- rules 100000          check the known rules against every brick found
   *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
   *   scala-cli run . -- legs 240              factorise 240 and list every leg it pairs with
@@ -16,12 +22,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
   *   scala-cli run . -- nearmisses            the first cuboid of each almost-perfect kind
   *   scala-cli run . -- bench 100000          time the readable, fast and parallel searches
   */
-@main def explore(args: String*): Unit =
-  args.toList match
-    case "bench" :: rest => Bench.run(Cli.limit(rest))
-    // Going through an iterator lets each line be forgotten once printed, so a long
-    // search never holds all of its output in memory.
-    case _ => Cli.run(args.toList).iterator.foreach(println)
+object Main extends IOApp:
+
+  def run(args: List[String]): IO[ExitCode] =
+    val program = args match
+      case "hunt" :: file :: rest => Hunt.run(Path(file), rest.headOption.flatMap(parseNumber).getOrElse(Edge.Max))
+      case "hunt" :: Nil          => IO.println("hunt: give a results file, e.g. hunt bricks.txt 1e9")
+      case "bench" :: rest        => IO.blocking(Bench.run(Cli.limit(rest)))
+      // Each line is computed and printed in turn, so long outputs are never held in memory,
+      // and Ctrl+C can stop between any two lines.
+      case _ => Stream.fromIterator[IO](Cli.run(args).iterator, 1).foreach(IO.println).compile.drain
+    program.as(ExitCode.Success)
+
+  /** "1000000", "1_000_000" or "1e6". */
+  def parseNumber(s: String): Option[Long] =
+    s.replace("_", "").toLongOption.orElse(s.toDoubleOption.filter(_.isWhole).map(_.toLong))
 
 /** Timing reads the clock, which is a side effect, so it lives out here rather than in Cli. */
 object Bench:

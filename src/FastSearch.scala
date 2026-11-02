@@ -71,6 +71,10 @@ object FastSearch:
       i -= 1
     found
 
+  /** The Euler bricks with smallest edge from `first` to `last`, in order. */
+  def eulerBricksBetween(first: Long, last: Long): List[Cuboid] =
+    (first to last).toList.flatMap(eulerBricksWithSmallestEdge)
+
   /** Same result as `Search.allEulerBricks`. */
   def allEulerBricks: LazyList[Cuboid] =
     LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Edge.Max).flatMap(eulerBricksWithSmallestEdge)
@@ -85,7 +89,7 @@ object FastSearch:
       ExecutionContext
   ): LazyList[Cuboid] =
     def searchBlock(start: Long): List[Cuboid] =
-      (start until math.min(start + blockSize, Edge.Max + 1)).toList.flatMap(eulerBricksWithSmallestEdge)
+      eulerBricksBetween(start, math.min(start + blockSize - 1, Edge.Max))
     LazyList
       .iterate(1L)(_ + blockSize * cores)
       .takeWhile(_ <= Edge.Max)
