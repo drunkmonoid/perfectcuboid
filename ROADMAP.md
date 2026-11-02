@@ -8,7 +8,7 @@ tested state.
   random inputs with ScalaCheck.
 - [x] **2. Euler brick theory.** Check the known parity and divisibility rules (some edge
   divisible by 16, 9, 5, 11 …) on every brick found. Rules as `Cuboid => Boolean` values.
-- [ ] **3. Parametric families.** Saunderson's formula and the Berggren tree of primitive
+- [x] **3. Parametric families.** Saunderson's formula and the Berggren tree of primitive
   triples, as infinite `LazyList`s.
 - [ ] **4. Domain types.** Opaque types for edges and diagonals, extension methods,
   `Either` for errors instead of exceptions.

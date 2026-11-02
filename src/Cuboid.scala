@@ -32,6 +32,9 @@ final case class Cuboid private (a: Long, b: Long, c: Long):
 
 object Cuboid:
 
+  /** The largest edge for which a² + b² + c² is sure to fit in a Long. */
+  val MaxSafeEdge: Long = Arith.isqrt(Long.MaxValue / 3)
+
   def of(x: Long, y: Long, z: Long): Option[Cuboid] =
     List(x, y, z).sorted match
       case List(a, b, c) if a > 0 => Some(Cuboid(a, b, c))

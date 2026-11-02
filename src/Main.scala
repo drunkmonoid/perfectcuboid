@@ -3,9 +3,10 @@ package perfectcuboid
 /** The program's entry point, and the only place with side effects (printing).
   * Everything it calls is pure.
   *
-  *   scala-cli run .                    Euler bricks with edges up to 1000
-  *   scala-cli run . -- bricks 5000     ... up to another limit
-  *   scala-cli run . -- rules 100000    check the known rules against every brick found
+  *   scala-cli run .                          Euler bricks with edges up to 1000
+  *   scala-cli run . -- bricks 5000           ... up to another limit
+  *   scala-cli run . -- rules 100000          check the known rules against every brick found
+  *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
   */
 @main def explore(args: String*): Unit =
   println(Cli.run(args.toList))
@@ -14,9 +15,10 @@ object Cli:
 
   /** Turns the command line arguments into the text to print. Pure, so it can be tested. */
   def run(args: List[String]): String = args match
-    case "rules" :: rest  => rulesReport(limit(rest))
-    case "bricks" :: rest => bricksReport(limit(rest))
-    case rest             => bricksReport(limit(rest))
+    case "rules" :: rest      => rulesReport(limit(rest))
+    case "bricks" :: rest     => bricksReport(limit(rest))
+    case "saunderson" :: rest => saundersonReport(limit(rest))
+    case rest                 => bricksReport(limit(rest))
 
   private def limit(args: List[String]): Long =
     args.headOption.flatMap(_.toLongOption).getOrElse(1000L)
@@ -41,6 +43,12 @@ object Cli:
       if broken.isEmpty then s"All rules hold for all ${bricks.size} Euler bricks with every edge <= $limit."
       else s"${broken.size} violations:"
     ("Rules checked:" +: ruleNames :+ summary :++ broken).mkString("\n")
+
+  def saundersonReport(limit: Long): String =
+    val bricks = Families.saundersonBricksUpTo(limit)
+    (s"Saunderson bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
+      +: bricks.map(describe)
+      :+ verdict(bricks.filter(_.isPerfect).toVector)).mkString("\n")
 
   def describe(cuboid: Cuboid): String =
     val edges = s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}"

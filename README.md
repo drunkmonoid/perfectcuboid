@@ -12,6 +12,7 @@ Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command sin
 scala-cli run .                   # list Euler bricks with edges up to 1000
 scala-cli run . -- bricks 100000  # ... or up to another limit
 scala-cli run . -- rules 100000   # check the known Euler brick rules on them
+scala-cli run . -- saunderson 10000000 # Saunderson's bricks, built from a formula
 scala-cli test .                  # run the tests
 scala-cli repl .                  # REPL with the project loaded
 scala-cli setup-ide .             # set up Metals / VSCode
@@ -23,5 +24,6 @@ scala-cli setup-ide .             # set up Metals / VSCode
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula |
 | `src/Search.scala` | Euler brick search, plus a brute-force version to check it against |
+| `src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
 | `src/Main.scala` | the command line: a pure `Cli.run`, printed by the only impure line |
