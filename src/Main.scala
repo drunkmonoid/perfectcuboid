@@ -1,5 +1,7 @@
 package perfectcuboid
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /** The program's entry point, and the only place with side effects (printing).
   * Everything it calls is pure.
   *
@@ -12,11 +14,33 @@ package perfectcuboid
   *   scala-cli run . -- face 1000             face cuboids with shared edge up to 1000
   *   scala-cli run . -- edge 3000000          edge cuboids with squared irrational edge up to 3000000
   *   scala-cli run . -- nearmisses            the first cuboid of each almost-perfect kind
+  *   scala-cli run . -- bench 100000          time the readable, fast and parallel searches
   */
 @main def explore(args: String*): Unit =
-  // Going through an iterator lets each line be forgotten once printed, so a long
-  // search never holds all of its output in memory.
-  Cli.run(args.toList).iterator.foreach(println)
+  args.toList match
+    case "bench" :: rest => Bench.run(Cli.limit(rest))
+    // Going through an iterator lets each line be forgotten once printed, so a long
+    // search never holds all of its output in memory.
+    case _ => Cli.run(args.toList).iterator.foreach(println)
+
+/** Timing reads the clock, which is a side effect, so it lives out here rather than in Cli. */
+object Bench:
+
+  def time[A](body: => A): (A, Double) =
+    val start = System.nanoTime
+    val result = body
+    (result, (System.nanoTime - start) / 1e9)
+
+  def run(maxSmallestEdge: Long): Unit =
+    def upTo(bricks: LazyList[Cuboid]) = bricks.takeWhile(_.a <= maxSmallestEdge).toVector
+    println(s"Euler bricks with smallest edge <= $maxSmallestEdge:")
+    time(upTo(FastSearch.allEulerBricks)) // warm up the JVM, so the first timing is fair
+    val (readable, t1) = time(upTo(Search.allEulerBricks))
+    println(f"  readable  $t1%7.2fs  ${readable.size} bricks")
+    val (fast, t2) = time(upTo(FastSearch.allEulerBricks))
+    println(f"  fast      $t2%7.2fs  ${t1 / t2}%5.1fx  same result: ${fast == readable}")
+    val (parallel, t3) = time(upTo(FastSearch.allEulerBricksParallel()))
+    println(f"  parallel  $t3%7.2fs  ${t1 / t3}%5.1fx  same result: ${parallel == readable}")
 
 object Cli:
 
@@ -36,7 +60,7 @@ object Cli:
     case "nearmisses" :: _    => nearMissesReport
     case rest                 => bricksReport(limit(rest))
 
-  private def limit(args: List[String]): Long =
+  def limit(args: List[String]): Long =
     args.headOption.flatMap(_.toLongOption).getOrElse(1000L)
 
   def bricksReport(limit: Long): LazyList[String] =
@@ -47,7 +71,7 @@ object Cli:
 
   /** Nothing here keeps the bricks once they are described, so memory use stays flat. */
   def unboundedReport(maxSmallestEdge: Long): LazyList[String] =
-    val bricks = Search.allEulerBricks.takeWhile(_.a <= maxSmallestEdge)
+    val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge)
     s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges up to ${Edge.Max} (* = primitive)"
       #:: bricks.map(brick => if brick.isPerfect then s"${describe(brick)}  PERFECT!" else describe(brick))
       :+ s"Done: every smallest edge up to $maxSmallestEdge searched."

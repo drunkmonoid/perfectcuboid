@@ -17,7 +17,7 @@ tested state.
 - [x] **6. Unbounded search.** One edge at a time, as an infinite `LazyList[Cuboid]` with
   flat memory use.
 - [x] **7. Near-miss catalogue.** Face cuboids, and edge cuboids via squared edges.
-- [ ] **8. Performance.** A timing harness, a fast inner loop that is pure from the
+- [x] **8. Performance.** A timing harness, a fast inner loop that is pure from the
   outside, and parallelism across edges.
 - [ ] **9. Long runs, done purely.** Checkpoint, resume and write results with Cats Effect
   and fs2.

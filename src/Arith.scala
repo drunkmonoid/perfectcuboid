@@ -39,7 +39,14 @@ object Arith:
       val r = isqrt(n)
       Option.when(r * r == n)(r)
 
-  def isPerfectSquare(n: Long): Boolean = exactSqrt(n).isDefined
+  /** Bit r is set when some square leaves remainder r on division by 64. Only 12 of the 64
+    * bits are set, so most numbers can be ruled out as squares without taking a square root.
+    */
+  private val SquareRemaindersMod64: Long =
+    (0L until 64L).foldLeft(0L)((bits, i) => bits | (1L << (i * i % 64)))
+
+  def isPerfectSquare(n: Long): Boolean =
+    n >= 0 && ((SquareRemaindersMod64 >>> (n & 63)) & 1) == 1 && exactSqrt(n).isDefined
 
   @tailrec def gcd(a: Long, b: Long): Long =
     if b == 0 then a.abs else gcd(b, a % b)
