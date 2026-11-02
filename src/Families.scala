@@ -48,14 +48,11 @@ object Families:
     * edges u·|4v² − w²|, v·|4u² − w²| and 4uvw.
     *
     * The edges grow like the cube of the triple, so they are computed with BigInt and
-    * `None` is returned when they no longer fit our Long arithmetic.
+    * `None` is returned when they are too large to be an `Edge`.
     */
   def saunderson(t: Triple): Option[Cuboid] =
     val (u, v, w) = (BigInt(t.a), BigInt(t.b), BigInt(t.c))
-    val edges = List(u * (4 * v * v - w * w).abs, v * (4 * u * u - w * w).abs, 4 * u * v * w)
-    if edges.forall(_ <= Cuboid.MaxSafeEdge) then
-      Cuboid.of(edges(0).toLong, edges(1).toLong, edges(2).toLong)
-    else None
+    Cuboid.fromBigInt(u * (4 * v * v - w * w).abs, v * (4 * u * u - w * w).abs, 4 * u * v * w).toOption
 
   /** Saunderson's bricks with every edge <= max, sorted.
     *

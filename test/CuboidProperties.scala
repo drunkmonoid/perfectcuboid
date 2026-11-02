@@ -20,7 +20,11 @@ class CuboidProperties extends munit.ScalaCheckSuite:
 
   property("scaling a cuboid does not change its kind"):
     forAll(smallCuboid, Gen.chooseNum(2L, 1000L)): (c, k) =>
-      Cuboid.of(k * c.a, k * c.b, k * c.c).get.kind == c.kind
+      c.scaled(k).map(_.kind) == Right(c.kind)
+
+  property("scaling fails, without overflowing, exactly when an edge would pass Edge.Max"):
+    forAll(cuboid, Gen.chooseNum(1L, Long.MaxValue)): (c, k) =>
+      c.scaled(k).isRight == (BigInt(c.c) * k <= Edge.Max)
 
   property("a perfect cuboid is also an Euler brick"):
     forAll(cuboid)(c => !c.isPerfect || c.isEuler)

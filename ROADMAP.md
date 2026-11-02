@@ -10,7 +10,7 @@ tested state.
   divisible by 16, 9, 5, 11 …) on every brick found. Rules as `Cuboid => Boolean` values.
 - [x] **3. Parametric families.** Saunderson's formula and the Berggren tree of primitive
   triples, as infinite `LazyList`s.
-- [ ] **4. Domain types.** Opaque types for edges and diagonals, extension methods,
+- [x] **4. Domain types.** Opaque types for edges and diagonals, extension methods,
   `Either` for errors instead of exceptions.
 - [ ] **5. Number theory toolkit.** Factorisation, divisors, and every leg pairing with a
   given leg, derived from the factor pairs of its square.

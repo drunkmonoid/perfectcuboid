@@ -9,18 +9,19 @@ See [ROADMAP.md](ROADMAP.md) for where this is going.
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 
 ```sh
-scala-cli run .                   # list Euler bricks with edges up to 1000
-scala-cli run . -- bricks 100000  # ... or up to another limit
-scala-cli run . -- rules 100000   # check the known Euler brick rules on them
-scala-cli run . -- saunderson 10000000 # Saunderson's bricks, built from a formula
-scala-cli test .                  # run the tests
-scala-cli repl .                  # REPL with the project loaded
-scala-cli setup-ide .             # set up Metals / VSCode
+scala-cli run .                         # list Euler bricks with edges up to 1000
+scala-cli run . -- bricks 100000        # ... or up to another limit
+scala-cli run . -- rules 100000         # check the known Euler brick rules on them
+scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
+scala-cli test .                        # run the tests
+scala-cli repl .                        # REPL with the project loaded
+scala-cli setup-ide .                   # set up Metals / VSCode
 ```
 
 | File | What it holds |
 | --- | --- |
 | `src/Arith.scala` | exact integer square roots, gcd, overflow-checked squares |
+| `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula |
 | `src/Search.scala` | Euler brick search, plus a brute-force version to check it against |
