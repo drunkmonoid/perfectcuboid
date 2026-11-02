@@ -5,19 +5,27 @@ package perfectcuboid
   *
   *   scala-cli run .                          Euler bricks with edges up to 1000
   *   scala-cli run . -- bricks 5000           ... up to another limit
+  *   scala-cli run . -- unbounded 100000      Euler bricks by smallest edge, however big the others
   *   scala-cli run . -- rules 100000          check the known rules against every brick found
   *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
   *   scala-cli run . -- legs 240              factorise 240 and list every leg it pairs with
   */
 @main def explore(args: String*): Unit =
-  println(Cli.run(args.toList))
+  // Going through an iterator lets each line be forgotten once printed, so a long
+  // search never holds all of its output in memory.
+  Cli.run(args.toList).iterator.foreach(println)
 
 object Cli:
 
-  /** Turns the command line arguments into the text to print. Pure, so it can be tested. */
-  def run(args: List[String]): String = args match
+  /** Turns the command line arguments into the lines to print. Pure, so it can be tested.
+    *
+    * The lines form a LazyList: each one is only computed when it is about to be printed,
+    * so long searches show their results as they go.
+    */
+  def run(args: List[String]): LazyList[String] = args match
     case "rules" :: rest      => rulesReport(limit(rest))
     case "bricks" :: rest     => bricksReport(limit(rest))
+    case "unbounded" :: rest  => unboundedReport(limit(rest))
     case "saunderson" :: rest => saundersonReport(limit(rest))
     case "legs" :: rest       => legsReport(limit(rest))
     case rest                 => bricksReport(limit(rest))
@@ -25,15 +33,20 @@ object Cli:
   private def limit(args: List[String]): Long =
     args.headOption.flatMap(_.toLongOption).getOrElse(1000L)
 
-  def bricksReport(limit: Long): String =
+  def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
-    val lines =
-      s"Euler bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
-        +: bricks.map(describe)
-        :+ verdict(bricks.filter(_.isPerfect))
-    lines.mkString("\n")
+    s"Euler bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
+      #:: bricks.map(describe).to(LazyList)
+      :+ verdict(bricks.filter(_.isPerfect))
 
-  def rulesReport(limit: Long): String =
+  /** Nothing here keeps the bricks once they are described, so memory use stays flat. */
+  def unboundedReport(maxSmallestEdge: Long): LazyList[String] =
+    val bricks = Search.allEulerBricks.takeWhile(_.a <= maxSmallestEdge)
+    s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges up to ${Edge.Max} (* = primitive)"
+      #:: bricks.map(brick => if brick.isPerfect then s"${describe(brick)}  PERFECT!" else describe(brick))
+      :+ s"Done: every smallest edge up to $maxSmallestEdge searched."
+
+  def rulesReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
     val broken =
       for
@@ -44,16 +57,16 @@ object Cli:
     val summary =
       if broken.isEmpty then s"All rules hold for all ${bricks.size} Euler bricks with every edge <= $limit."
       else s"${broken.size} violations:"
-    ("Rules checked:" +: ruleNames :+ summary :++ broken).mkString("\n")
+    ("Rules checked:" +: ruleNames :+ summary :++ broken).to(LazyList)
 
-  def saundersonReport(limit: Long): String =
+  def saundersonReport(limit: Long): LazyList[String] =
     val bricks = Families.saundersonBricksUpTo(limit)
-    (s"Saunderson bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
-      +: bricks.map(describe)
-      :+ verdict(bricks.filter(_.isPerfect).toVector)).mkString("\n")
+    s"Saunderson bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
+      #:: bricks.map(describe).to(LazyList)
+      :+ verdict(bricks.filter(_.isPerfect).toVector)
 
-  def legsReport(a: Long): String =
-    if a < 1 || a > Edge.Max then s"legs: give a number from 1 to ${Edge.Max}"
+  def legsReport(a: Long): LazyList[String] =
+    if a < 1 || a > Edge.Max then LazyList(s"legs: give a number from 1 to ${Edge.Max}")
     else
       val factors = NumberTheory
         .factorize(a)
@@ -62,8 +75,9 @@ object Cli:
       val legs = Pythagorean.legsPairedWith(a)
       // y can be up to a²/2, so y² needs BigInt.
       def hypotenuse(y: Long) = (BigInt(a).pow(2) + BigInt(y).pow(2)).bigInteger.sqrt
-      val triples = legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²")
-      (s"$a = $factors" +: s"${legs.size} legs pair with $a:" +: triples).mkString("\n")
+      s"$a = $factors"
+        #:: s"${legs.size} legs pair with $a:"
+        #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
 
   def describe(cuboid: Cuboid): String =
     val edges = s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}"

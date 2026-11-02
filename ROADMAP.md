@@ -14,7 +14,7 @@ tested state.
   `Either` for errors instead of exceptions.
 - [x] **5. Number theory toolkit.** Factorisation, divisors, and every leg pairing with a
   given leg, derived from the factor pairs of its square.
-- [ ] **6. Unbounded search.** One edge at a time, as an infinite `LazyList[Cuboid]` with
+- [x] **6. Unbounded search.** One edge at a time, as an infinite `LazyList[Cuboid]` with
   flat memory use.
 - [ ] **7. Near-miss catalogue.** Face cuboids, and edge cuboids via squared edges.
 - [ ] **8. Performance.** A timing harness, a fast inner loop that is pure from the

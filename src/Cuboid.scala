@@ -70,7 +70,7 @@ object Cuboid:
     * A `given` is a value the compiler passes in automatically wherever one is needed,
     * so `cuboids.sorted` finds this without being told.
     */
-  given Ordering[Cuboid] = Ordering.by(cuboid => (cuboid.c, cuboid.b, cuboid.a))
+  given Ordering[Cuboid] = Ordering.by(cuboid => (cuboid.c: Long, cuboid.b: Long, cuboid.a: Long))
 
 /** How close a cuboid with whole-number edges comes to being perfect. */
 enum Kind:

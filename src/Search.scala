@@ -22,6 +22,30 @@ object Search:
       yield cuboid
     bricks.sorted
 
+  /** The Euler bricks with smallest edge a, in order of middle edge.
+    *
+    * The other two edges must both be legs that pair with a, and only finitely many legs do,
+    * so this list is finite. Bricks with an edge above `Edge.Max` are left out.
+    */
+  def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] =
+    val legs = Pythagorean.legsPairedWith(a).filter(leg => leg > a && leg <= Edge.Max)
+    for
+      // `tails` gives the list, then the list without its first element, and so on, so
+      // this pairs each leg b with every bigger leg c exactly once.
+      case b :: bigger <- legs.tails.toList
+      c <- bigger
+      if isPerfectSquare(sumOfSquares(b, c))
+      cuboid <- Cuboid.of(a, b, c)
+    yield cuboid
+
+  /** Every Euler brick whose edges fit in an Edge, ordered by smallest edge.
+    *
+    * An infinite list in principle (it stops at Edge.Max), computed only as far as it is read.
+    * A `def`, so nothing holds on to its start and memory stays flat however far it is read.
+    */
+  def allEulerBricks: LazyList[Cuboid] =
+    LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Edge.Max).flatMap(eulerBricksWithSmallestEdge)
+
   def perfectCuboids(limit: Long): Vector[Cuboid] =
     eulerBricks(limit).filter(_.isPerfect)
 

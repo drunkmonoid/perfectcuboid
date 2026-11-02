@@ -32,8 +32,6 @@ object Edge:
     else if n <= 0 then Left(CuboidError.NonPositiveEdge(n))
     else Left(CuboidError.EdgeTooLarge(n))
 
-  given Ordering[Edge] = Ordering.Long
-
 /** The length of a diagonal, always a whole number: one that isn't is `None` instead. */
 opaque type Diagonal <: Long = Long
 
