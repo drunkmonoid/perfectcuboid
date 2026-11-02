@@ -6,7 +6,7 @@ tested state.
 - [x] **1. Property-based testing.** State the facts the code relies on (`isqrt` brackets
   the square root, edge order doesn't matter, scaling keeps the kind) and check them on
   random inputs with ScalaCheck.
-- [ ] **2. Euler brick theory.** Check the known parity and divisibility rules (some edge
+- [x] **2. Euler brick theory.** Check the known parity and divisibility rules (some edge
   divisible by 16, 9, 5, 11 …) on every brick found. Rules as `Cuboid => Boolean` values.
 - [ ] **3. Parametric families.** Saunderson's formula and the Berggren tree of primitive
   triples, as infinite `LazyList`s.
