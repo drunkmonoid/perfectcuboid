@@ -30,7 +30,7 @@ class NumberTheoryTest extends munit.ScalaCheckSuite:
     forAll(Gen.chooseNum(1L, Edge.Max)): a =>
       Pythagorean.legsPairedWith(a).forall: y =>
         val z = BigInt(a).pow(2) + BigInt(y).pow(2)
-        BigInt(z.bigInteger.sqrt).pow(2) == z
+        Arith.isqrtBig(z).pow(2) == z
 
   test("legsPairedWith finds exactly the partners the old method finds"):
     val limit = 3000L

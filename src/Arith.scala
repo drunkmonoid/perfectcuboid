@@ -27,6 +27,16 @@ object Arith:
     @tailrec def up(r: Long): Long = if squareAtMost(r + 1, n) then up(r + 1) else r
     up(down(math.sqrt(n.toDouble).toLong))
 
+  /** Floor of the square root of a BigInt, by Newton's method: start above the root and
+    * repeat x → (x + n/x) / 2, which only goes down, until it stops going down.
+    */
+  def isqrtBig(n: BigInt): BigInt =
+    require(n >= 0, s"isqrt of a negative number: $n")
+    @tailrec def descend(x: BigInt): BigInt =
+      val next = (x + n / x) / 2
+      if next >= x then x else descend(next)
+    if n < 2 then n else descend(BigInt(1) << ((n.bitLength + 1) / 2))
+
   /** Smallest r with r * r >= n. */
   def ceilSqrt(n: Long): Long =
     val r = isqrt(n)

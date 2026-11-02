@@ -1,5 +1,6 @@
 package perfectcuboid
 
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import Arith.*
 import Generators.*
@@ -15,8 +16,14 @@ class ArithProperties extends munit.ScalaCheckSuite:
       val r = BigInt(isqrt(n))
       r * r <= n && (r + 1) * (r + 1) > n
 
-  property("isqrt agrees with BigInt's square root"):
-    forAll(nonNegativeLong)(n => BigInt(isqrt(n)) == BigInt(BigInt(n).bigInteger.sqrt))
+  property("isqrt agrees with isqrtBig, a different algorithm"):
+    forAll(nonNegativeLong)(n => BigInt(isqrt(n)) == isqrtBig(BigInt(n)))
+
+  property("isqrtBig(n) is the floor of the square root, even for huge n"):
+    forAll(Gen.chooseNum(0L, Long.MaxValue), Gen.chooseNum(0, 200)): (x, shift) =>
+      val n = BigInt(x) << shift
+      val r = isqrtBig(n)
+      r * r <= n && (r + 1) * (r + 1) > n
 
   property("exactSqrt recognises every square"):
     forAll(root)(r => exactSqrt(r * r) == Some(r))

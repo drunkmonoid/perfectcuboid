@@ -17,7 +17,11 @@ object FastSearch:
     val out = new Array[Long](factors.map(_._2 + 1).product)
     out(0) = 1
     var size = 1
-    for (p, k) <- factors do
+    // A while loop, not `for (p, k) <- factors do`: a `var` changed inside a closure has to
+    // live in a separate heap object, which costs an allocation on every call.
+    var rest = factors
+    while rest.nonEmpty do
+      val (p, k) = rest.head
       val before = size
       var power = 1L
       var i = 0
@@ -29,6 +33,7 @@ object FastSearch:
           size += 1
           j += 1
         i += 1
+      rest = rest.tail
     out
 
   /** The legs y with a < y <= Edge.Max that pair with a, sorted. Same as filtering

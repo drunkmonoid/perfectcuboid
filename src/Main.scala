@@ -3,6 +3,7 @@ package perfectcuboid
 import cats.effect.{ExitCode, IO, IOApp}
 import fs2.Stream
 import fs2.io.file.Path
+import Stats.Counts
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /** The program's entry point.
@@ -21,6 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   *   scala-cli run . -- edge 3000000          edge cuboids with squared irrational edge up to 3000000
   *   scala-cli run . -- nearmisses            the first cuboid of each almost-perfect kind
   *   scala-cli run . -- bench 100000          time the readable, fast and parallel searches
+  *   scala-cli run . -- stats 7               how the number of Euler bricks grows, up to 10^7
   */
 object Main extends IOApp:
 
@@ -73,6 +75,7 @@ object Cli:
     case "face" :: rest       => faceReport(limit(rest))
     case "edge" :: rest       => edgeReport(limit(rest))
     case "nearmisses" :: _    => nearMissesReport
+    case "stats" :: rest      => statsReport(rest.headOption.flatMap(_.toIntOption).getOrElse(6))
     case rest                 => bricksReport(limit(rest))
 
   def limit(args: List[String]): Long =
@@ -119,7 +122,7 @@ object Cli:
         .mkString(" · ")
       val legs = Pythagorean.legsPairedWith(a)
       // y can be up to a²/2, so y² needs BigInt.
-      def hypotenuse(y: Long) = (BigInt(a).pow(2) + BigInt(y).pow(2)).bigInteger.sqrt
+      def hypotenuse(y: Long) = Arith.isqrtBig(BigInt(a).pow(2) + BigInt(y).pow(2))
       s"$a = $factors"
         #:: s"${legs.size} legs pair with $a:"
         #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
@@ -143,6 +146,24 @@ object Cli:
       s"  Body      ${describeSquared(Search.allEulerBricks.head.squared)}",
       s"  Face      ${describeSquared(NearMisses.allFaceCuboids.head.squared)}",
       s"  Edge      ${describeSquared(NearMisses.allEdgeCuboids.head)}"
+    )
+
+  def statsReport(maxExponent: Int): LazyList[String] =
+    val rows = Stats.growth(maxExponent, FastSearch.allEulerBricksParallel())
+    def growth(counts: Counts => Long) =
+      rows.zip(rows.tail).map((r1, r2) => f"${Stats.exponent(r1.limit, counts(r1), r2.limit, counts(r2))}%.2f")
+    val table = rows.map: r =>
+      f"| 10^${math.log10(r.limit.toDouble).round} | ${r.byLargest}%,d | ${r.byLargestPrimitive}%,d | ${r.bySmallest}%,d | ${r.bySmallestPrimitive}%,d |"
+    val (saunderson, primitive) = Stats.saundersonShare(rows.last.limit min 1_000_000L, FastSearch.allEulerBricksParallel())
+    LazyList(
+      "| N | all edges <= N | primitive | smallest edge <= N | primitive |",
+      "| --- | --- | --- | --- | --- |"
+    ) ++ table ++ LazyList(
+      "",
+      s"Growth exponent k (count ≈ C·N^k) between successive rows:",
+      s"  all edges <= N, primitive:     ${growth(_.byLargestPrimitive).mkString(", ")}",
+      s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
+      s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
 
   /** All 7 lengths, irrational ones written as √n. */
