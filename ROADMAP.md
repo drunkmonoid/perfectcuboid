@@ -12,7 +12,7 @@ tested state.
   triples, as infinite `LazyList`s.
 - [x] **4. Domain types.** Opaque types for edges and diagonals, extension methods,
   `Either` for errors instead of exceptions.
-- [ ] **5. Number theory toolkit.** Factorisation, divisors, and every leg pairing with a
+- [x] **5. Number theory toolkit.** Factorisation, divisors, and every leg pairing with a
   given leg, derived from the factor pairs of its square.
 - [ ] **6. Unbounded search.** One edge at a time, as an infinite `LazyList[Cuboid]` with
   flat memory use.

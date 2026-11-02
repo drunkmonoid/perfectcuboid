@@ -28,6 +28,24 @@ object Pythagorean:
       yield (k * math.min(x, y), k * math.max(x, y))
     pairs.toVector
 
+  /** Every y with a² + y² a perfect square, smallest first. There are always finitely many.
+    *
+    * If a² + y² = z², then a² = (z − y)(z + y). So each answer comes from writing a² = d·e
+    * with d < e, where d and e are both odd or both even; then y = (e − d) / 2. The
+    * divisors of a² come straight from the factorisation of a, with every exponent doubled.
+    */
+  def legsPairedWith(a: Long): List[Long] =
+    val aSquared = square(a)
+    val factorsOfSquare = NumberTheory.factorize(a).map((p, k) => p -> 2 * k)
+    val legs =
+      for
+        d <- NumberTheory.divisors(factorsOfSquare)
+        if d < a
+        e = aSquared / d
+        if (e - d) % 2 == 0
+      yield (e - d) / 2
+    legs.sorted
+
   /** For each leg up to `limit`, the set of other legs it forms a Pythagorean triple with. */
   def partners(limit: Long): Map[Long, Set[Long]] =
     legPairs(limit)

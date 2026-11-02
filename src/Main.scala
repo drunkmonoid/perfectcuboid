@@ -7,6 +7,7 @@ package perfectcuboid
   *   scala-cli run . -- bricks 5000           ... up to another limit
   *   scala-cli run . -- rules 100000          check the known rules against every brick found
   *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
+  *   scala-cli run . -- legs 240              factorise 240 and list every leg it pairs with
   */
 @main def explore(args: String*): Unit =
   println(Cli.run(args.toList))
@@ -18,6 +19,7 @@ object Cli:
     case "rules" :: rest      => rulesReport(limit(rest))
     case "bricks" :: rest     => bricksReport(limit(rest))
     case "saunderson" :: rest => saundersonReport(limit(rest))
+    case "legs" :: rest       => legsReport(limit(rest))
     case rest                 => bricksReport(limit(rest))
 
   private def limit(args: List[String]): Long =
@@ -49,6 +51,19 @@ object Cli:
     (s"Saunderson bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
       +: bricks.map(describe)
       :+ verdict(bricks.filter(_.isPerfect).toVector)).mkString("\n")
+
+  def legsReport(a: Long): String =
+    if a < 1 || a > Edge.Max then s"legs: give a number from 1 to ${Edge.Max}"
+    else
+      val factors = NumberTheory
+        .factorize(a)
+        .map((p, k) => if k == 1 then s"$p" else s"$p^$k")
+        .mkString(" · ")
+      val legs = Pythagorean.legsPairedWith(a)
+      // y can be up to a²/2, so y² needs BigInt.
+      def hypotenuse(y: Long) = (BigInt(a).pow(2) + BigInt(y).pow(2)).bigInteger.sqrt
+      val triples = legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²")
+      (s"$a = $factors" +: s"${legs.size} legs pair with $a:" +: triples).mkString("\n")
 
   def describe(cuboid: Cuboid): String =
     val edges = s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}"
