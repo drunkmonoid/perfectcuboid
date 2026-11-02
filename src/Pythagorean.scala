@@ -28,23 +28,27 @@ object Pythagorean:
       yield (k * math.min(x, y), k * math.max(x, y))
     pairs.toVector
 
-  /** Every y with a² + y² a perfect square, smallest first. There are always finitely many.
+  /** Every x > 0 with x² + n a perfect square, smallest first. There are finitely many.
     *
-    * If a² + y² = z², then a² = (z − y)(z + y). So each answer comes from writing a² = d·e
-    * with d < e, where d and e are both odd or both even; then y = (e − d) / 2. The
-    * divisors of a² come straight from the factorisation of a, with every exponent doubled.
+    * If x² + n = z², then n = (z − x)(z + x). So each answer comes from writing n = d·e with
+    * d < e, where d and e are both odd or both even; then x = (e − d) / 2.
+    */
+  def completions(n: Long): List[Long] = completions(n, NumberTheory.factorize(n))
+
+  private def completions(n: Long, factors: NumberTheory.Factorization): List[Long] =
+    val xs =
+      for
+        d <- NumberTheory.divisors(factors)
+        e = n / d
+        if d < e && (e - d) % 2 == 0
+      yield (e - d) / 2
+    xs.sorted
+
+  /** Every y with a² + y² a perfect square, smallest first: the completions of a².
+    * The divisors of a² come straight from the factorisation of a, with every exponent doubled.
     */
   def legsPairedWith(a: Long): List[Long] =
-    val aSquared = square(a)
-    val factorsOfSquare = NumberTheory.factorize(a).map((p, k) => p -> 2 * k)
-    val legs =
-      for
-        d <- NumberTheory.divisors(factorsOfSquare)
-        if d < a
-        e = aSquared / d
-        if (e - d) % 2 == 0
-      yield (e - d) / 2
-    legs.sorted
+    completions(square(a), NumberTheory.factorize(a).map((p, k) => p -> 2 * k))
 
   /** For each leg up to `limit`, the set of other legs it forms a Pythagorean triple with. */
   def partners(limit: Long): Map[Long, Set[Long]] =

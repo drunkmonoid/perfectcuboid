@@ -15,6 +15,9 @@ scala-cli run . -- unbounded 1000000    # by smallest edge, other edges unbounde
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
+scala-cli run . -- nearmisses           # the first body, face and edge cuboid
+scala-cli run . -- face 1000            # face cuboids: one face diagonal irrational
+scala-cli run . -- edge 3000000         # edge cuboids: one edge irrational
 scala-cli test .                        # run the tests
 scala-cli repl .                        # REPL with the project loaded
 scala-cli setup-ide .                   # set up Metals / VSCode
@@ -29,5 +32,6 @@ scala-cli setup-ide .                   # set up Metals / VSCode
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula, and the legs paired with any given leg |
 | `src/Search.scala` | bounded Euler brick search, its brute-force check, and the unbounded `LazyList` search |
 | `src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
+| `src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
 | `src/Main.scala` | the command line: a pure `Cli.run`, printed by the only impure line |

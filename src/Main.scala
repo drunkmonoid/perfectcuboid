@@ -9,6 +9,9 @@ package perfectcuboid
   *   scala-cli run . -- rules 100000          check the known rules against every brick found
   *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
   *   scala-cli run . -- legs 240              factorise 240 and list every leg it pairs with
+  *   scala-cli run . -- face 1000             face cuboids with shared edge up to 1000
+  *   scala-cli run . -- edge 3000000          edge cuboids with squared irrational edge up to 3000000
+  *   scala-cli run . -- nearmisses            the first cuboid of each almost-perfect kind
   */
 @main def explore(args: String*): Unit =
   // Going through an iterator lets each line be forgotten once printed, so a long
@@ -28,6 +31,9 @@ object Cli:
     case "unbounded" :: rest  => unboundedReport(limit(rest))
     case "saunderson" :: rest => saundersonReport(limit(rest))
     case "legs" :: rest       => legsReport(limit(rest))
+    case "face" :: rest       => faceReport(limit(rest))
+    case "edge" :: rest       => edgeReport(limit(rest))
+    case "nearmisses" :: _    => nearMissesReport
     case rest                 => bricksReport(limit(rest))
 
   private def limit(args: List[String]): Long =
@@ -78,6 +84,34 @@ object Cli:
       s"$a = $factors"
         #:: s"${legs.size} legs pair with $a:"
         #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
+
+  def faceReport(maxSharedEdge: Long): LazyList[String] =
+    val cuboids = LazyList.iterate(1L)(_ + 1).takeWhile(_ <= maxSharedEdge).flatMap(NearMisses.faceCuboidsWithSharedEdge)
+    s"Face cuboids whose whole face diagonals meet at an edge <= $maxSharedEdge"
+      #:: cuboids.map(c => describeSquared(c.squared))
+      :+ "Done."
+
+  def edgeReport(maxSquaredEdge: Long): LazyList[String] =
+    val cuboids = LazyList.iterate(2L)(_ + 1).takeWhile(_ <= maxSquaredEdge).flatMap(NearMisses.edgeCuboidsWithSquaredEdge)
+    s"Edge cuboids whose irrational edge is at most √$maxSquaredEdge"
+      #:: cuboids.map(describeSquared)
+      :+ "Done."
+
+  def nearMissesReport: LazyList[String] =
+    LazyList(
+      "The first cuboid of each kind, in the order each search finds them:",
+      "  Perfect   none known",
+      s"  Body      ${describeSquared(Search.allEulerBricks.head.squared)}",
+      s"  Face      ${describeSquared(NearMisses.allFaceCuboids.head.squared)}",
+      s"  Edge      ${describeSquared(NearMisses.allEdgeCuboids.head)}"
+    )
+
+  /** All 7 lengths, irrational ones written as √n. */
+  def describeSquared(c: SquaredCuboid): String =
+    def length(square: Long) = Arith.exactSqrt(square).fold(s"√$square")(_.toString)
+    val edges = List(c.a2, c.b2, c.c2).map(length).mkString(" × ")
+    val faces = List(c.a2 + c.b2, c.a2 + c.c2, c.b2 + c.c2).map(length).mkString(", ")
+    s"$edges   face diagonals $faces   space diagonal ${length(c.a2 + c.b2 + c.c2)}"
 
   def describe(cuboid: Cuboid): String =
     val edges = s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}"

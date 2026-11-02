@@ -28,12 +28,10 @@ final case class Cuboid private (a: Edge, b: Edge, c: Edge):
   def scaled(k: Long): Either[CuboidError, Cuboid] =
     Cuboid.fromBigInt(BigInt(a) * k, BigInt(b) * k, BigInt(c) * k)
 
-  def kind: Kind =
-    (faceDiagonals.count(_.isDefined), spaceDiagonal.isDefined) match
-      case (3, true)  => Kind.Perfect
-      case (3, false) => Kind.Body
-      case (2, true)  => Kind.Face
-      case _          => Kind.Other
+  /** The same box described by its squared edges, which never overflow for edges up to Edge.Max. */
+  def squared: SquaredCuboid = SquaredCuboid.of(a * a, b * b, c * c).get
+
+  def kind: Kind = squared.kind
 
 object Cuboid:
 
@@ -72,15 +70,21 @@ object Cuboid:
     */
   given Ordering[Cuboid] = Ordering.by(cuboid => (cuboid.c: Long, cuboid.b: Long, cuboid.a: Long))
 
-/** How close a cuboid with whole-number edges comes to being perfect. */
+/** How close a cuboid comes to being perfect, judged on its 7 lengths: 3 edges, 3 face
+  * diagonals and the space diagonal. The "almost perfect" kinds have exactly one irrational length.
+  */
 enum Kind:
-  /** All three face diagonals and the space diagonal are whole numbers. None is known. */
+  /** All 7 lengths are whole numbers. None is known. */
   case Perfect
 
-  /** All face diagonals whole, the space diagonal not: an Euler brick, e.g. 44 × 117 × 240. */
+  /** Only the space diagonal is irrational: an Euler brick, e.g. 44 × 117 × 240. */
   case Body
 
-  /** The space diagonal and two face diagonals whole, one face diagonal not, e.g. 104 × 153 × 672. */
+  /** Only one face diagonal is irrational, e.g. 104 × 153 × 672. */
   case Face
 
+  /** Only one edge is irrational, e.g. 520 × 576 × √618849. */
+  case Edge
+
+  /** Two or more irrational lengths. */
   case Other
