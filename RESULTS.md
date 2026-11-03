@@ -19,7 +19,8 @@ The other edges of a brick can be far longer than the smallest: the longest foun
 b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges were capped at
 1,753,413,056, and the same hunt found 11,309 fewer bricks.
 
-Published searches have gone far beyond this. The point here is a search that is easy to
+Published searches have gone far beyond this: Matson (2015) showed that a perfect cuboid's
+smallest edge would have to be above 5·10¹¹. The point here is a search that is easy to
 read, checked by tests, and safe to stop and resume.
 
 ## How many Euler bricks there are
@@ -65,6 +66,35 @@ Every one of the 925,637 Euler bricks with smallest edge ≤ 10⁷ obeys every r
 - some edge is divisible by 5, and some edge by 11;
 - so the product of the edges is divisible by 95,040 = 2⁶·3³·5·11;
 - in a primitive brick, exactly one edge and exactly two face diagonals are odd.
+
+## Rules proved by computer
+
+```sh
+scala-cli run . -- local      # primes up to 37, about 20 seconds
+scala-cli run . -- local 43   # up to 43, about a minute
+```
+
+Reduce a primitive brick's edges mod a prime power pᵏ. They are not all divisible by p, and
+each face diagonal's square must be a square mod pᵏ, and so must the space diagonal's if the
+cuboid is perfect. Trying every triple of remainders (`Local.scala`) shows what all the
+possible ones have in common, and so what every brick must have, however large:
+
+| prime power | every Euler brick | every perfect cuboid, in addition |
+| --- | --- | --- |
+| 2⁸ | one edge divisible by 16, another by 4 | |
+| 3⁴ | one edge divisible by 9, another by 3 | |
+| 5² | one edge divisible by 5 | |
+| 7² | | one edge divisible by 7 |
+| 11² | one edge divisible by 11 | |
+| 13² | | an edge or the space diagonal divisible by 13 |
+| 17², 29², 37² | | one of the seven lengths divisible by p |
+| 19² | | one edge divisible by 19 |
+| 23², 31², 41², 43² | | nothing |
+
+These are exactly the divisibility rules Kraitchik gave for perfect cuboids in 1945, as
+listed on Wikipedia. The computation also shows that the rules for 16, 9 and 5 hold for every
+Euler brick, not only for perfect ones. Lower powers are not enough: mod 2⁷ shows only "8 and
+4", and mod 17 nothing at all.
 
 ## Near misses
 

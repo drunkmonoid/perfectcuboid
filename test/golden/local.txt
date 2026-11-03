@@ -1,0 +1,25 @@
+What every primitive brick must look like, from trying every remainder mod a prime power:
+  mod 2^8
+    Euler bricks:    one edge divisible by 16, another by 4
+    perfect cuboids: the same
+  mod 3^4
+    Euler bricks:    one edge divisible by 9, another by 3
+    perfect cuboids: the same
+  mod 5^2
+    Euler bricks:    one edge divisible by 5
+    perfect cuboids: the same
+  mod 7^2
+    Euler bricks:    nothing
+    perfect cuboids: one edge divisible by 7
+  mod 11^2
+    Euler bricks:    one edge divisible by 11
+    perfect cuboids: the same
+  mod 13^2
+    Euler bricks:    nothing
+    perfect cuboids: some edge or the space diagonal divisible by 13
+  mod 17^2
+    Euler bricks:    nothing
+    perfect cuboids: some of the seven lengths divisible by 17
+  mod 19^2
+    Euler bricks:    nothing
+    perfect cuboids: one edge divisible by 19

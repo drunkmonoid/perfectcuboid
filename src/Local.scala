@@ -1,0 +1,116 @@
+package perfectcuboid
+
+/** Local obstructions: what an Euler brick or a perfect cuboid must look like modulo a power
+  * of a prime, worked out by trying every case.
+  *
+  * Take a primitive brick and reduce its edges a, b, c mod m = pᵏ. Not all three are divisible
+  * by p (that is what primitive means), and a² + b², a² + c², b² + c² are squares, so they
+  * must be squares mod m as well. There are only m³ triples of remainders, so a computer can
+  * list every one that passes, and see what they have in common. Whatever all of them share,
+  * every primitive brick has too. That is a proof, not an observation: it covers bricks no
+  * search will ever reach.
+  *
+  * What they share is told by valuations: how many times p divides each of the 7 lengths.
+  */
+object Local:
+
+  /** How many times p divides x mod pᵏ, where 0 counts as k: then all we know is "at least k". */
+  def valuation(x: Int, p: Int, k: Int): Int =
+    if x == 0 then k else if x % p == 0 then 1 + valuation(x / p, p, k - 1) else 0
+
+  /** The valuations of the lengths of one brick, each list largest first. A diagonal is
+    * known only through its square s, and p divides it ⌊v(s)/2⌋ times or more.
+    */
+  final case class Pattern(edges: List[Int], faces: List[Int], space: Int)
+
+  /** Every pattern that a primitive Euler brick (or, if `perfect`, a perfect cuboid) can show
+    * modulo pᵏ. Every count is a lower bound, which is all the rules below need.
+    *
+    * Everything here depends on an edge x only through x² mod pᵏ and the valuation of x, so
+    * the remainders are first sorted into classes by those two, and only one triple of
+    * classes is tried for all the triples of remainders in them: about m/2 classes instead of
+    * m remainders, eight times fewer triples.
+    */
+  def patterns(p: Int, k: Int, perfect: Boolean): Set[Pattern] =
+    val m = BigInt(p).pow(k).toInt
+    val isSquare = new Array[Boolean](m)
+    for x <- 0 until m do isSquare((x.toLong * x % m).toInt) = true
+    def diagonal(square: Int) = valuation(square, p, k) / 2
+    // (x² mod m, valuation of x) for every remainder x, without repeats.
+    val classes = (0 until m).map(x => ((x.toLong * x % m).toInt, valuation(x, p, k))).distinct.toVector
+    val found =
+      for
+        i <- classes.indices
+        j <- i until classes.size
+        l <- j until classes.size // the edges in any order give the same pattern, so i <= j <= l is enough
+        (aa, va) = classes(i)
+        (bb, vb) = classes(j)
+        (cc, vc) = classes(l)
+        if va == 0 || vb == 0 || vc == 0
+        faces = List((aa + bb) % m, (aa + cc) % m, (bb + cc) % m)
+        if faces.forall(isSquare)
+        space = ((aa.toLong + bb + cc) % m).toInt
+        if !perfect || isSquare(space)
+      yield Pattern(List(va, vb, vc).sorted.reverse, faces.map(diagonal).sorted.reverse, diagonal(space))
+    found.toSet
+
+  /** Which lengths a rule talks about. */
+  enum Lengths(val name: String, val of: Pattern => List[Int]):
+    case Edges extends Lengths("edge", _.edges)
+    case EdgesOrSpace extends Lengths("edge or the space diagonal", p => p.space :: p.edges)
+    case EdgesOrFaces extends Lengths("edge or face diagonal", p => p.edges ++ p.faces)
+    case Any extends Lengths("of the seven lengths", p => p.space :: p.edges ++ p.faces)
+
+  /** What every pattern shares, as rules.
+    *
+    * First, edges: sort each pattern's edge valuations, largest first, and take the smallest
+    * in each place. If that is (4, 2, 0), every brick has one edge divisible by 2⁴ and another
+    * by 2². Then, if no edge has to be divisible by p, the narrowest set of lengths that always
+    * contains a multiple of p.
+    */
+  def rules(p: Int, k: Int, perfect: Boolean): List[Rule] =
+    val found = patterns(p, k, perfect)
+    if found.isEmpty then List(Rule(s"impossible mod $p^$k", _ => false))
+    else
+      val forced = found.map(_.edges).reduce((x, y) => x.lazyZip(y).map(math.min))
+      val edgeRule = Option.when(forced.head > 0)(edgeDivisibility(p, forced.filter(_ > 0)))
+      val wider =
+        if edgeRule.isDefined then None
+        else
+          Lengths.values
+            .find(lengths => found.forall(pattern => lengths.of(pattern).exists(_ > 0)))
+            .map(lengths => someLengthDivisibleBy(p, lengths))
+      (edgeRule ++ wider).toList
+
+  /** "One edge divisible by p^e₁, another by p^e₂, …", for valuations e₁ >= e₂ >= …. */
+  private def edgeDivisibility(p: Int, valuations: List[Int]): Rule =
+    val divisors = valuations.map(BigInt(p).pow(_).toLong)
+    val name = divisors.zipWithIndex
+      .map((d, i) => if i == 0 then s"one edge divisible by $d" else s"another by $d")
+      .mkString(", ")
+    Rule(
+      name,
+      cuboid =>
+        // Some way of giving the edges to the divisors, a different edge to each, works.
+        List(cuboid.a: Long, cuboid.b, cuboid.c).permutations.exists(edges => edges.zip(divisors).forall(_ % _ == 0))
+    )
+
+  private def someLengthDivisibleBy(p: Int, lengths: Lengths): Rule =
+    Rule(
+      s"some ${lengths.name} divisible by $p",
+      cuboid =>
+        val edges = List(cuboid.a: Long, cuboid.b, cuboid.c)
+        val faces = cuboid.faceDiagonals.flatten.map(d => d: Long)
+        val space = cuboid.spaceDiagonal.map(d => d: Long).toList
+        val candidates = lengths match
+          case Lengths.Edges        => edges
+          case Lengths.EdgesOrSpace => space ++ edges
+          case Lengths.EdgesOrFaces => edges ++ faces
+          case Lengths.Any          => space ++ edges ++ faces
+        candidates.exists(_ % p == 0)
+    )
+
+  /** The prime power tried for each prime: a high power of 2, and the square of the others.
+    * Lower powers miss rules: mod 2⁷ only shows "8 and 4", mod 17 nothing at all.
+    */
+  def modulus(p: Int): (Int, Int) = if p == 2 then 2 -> 8 else if p == 3 then 3 -> 4 else p -> 2

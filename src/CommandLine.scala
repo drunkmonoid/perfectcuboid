@@ -16,6 +16,7 @@ enum Report:
   case NearMisses
   case Stats(maxExponent: Int)
   case Check(a: BigInt, b: BigInt, c: BigInt)
+  case LocalRules(maxPrime: Int)
 
 /** Everything the program can do, with its arguments already checked. Hunts and benchmarks
   * touch files and clocks, so `Main` runs them; reports are only printed.
@@ -80,6 +81,13 @@ object CommandLine:
     ),
     report("check", "The seven lengths of the box A × B × C, of any size, and how near perfect it is.")(
       (edge("A"), edge("B"), edge("C")).mapN(Report.Check(_, _, _))
+    ),
+    report("local", "Rules every Euler brick and perfect cuboid obeys mod primes up to P (default 37), by computer.")(
+      Opts
+        .argument[Int]("P")
+        .withDefault(37)
+        .validate("P must be from 2 to 43")(p => p >= 2 && p <= 43)
+        .map(Report.LocalRules(_))
     ),
     report("nearmisses", "The first body, face and edge cuboid.")(Opts(Report.NearMisses)),
     report("stats", "How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).")(

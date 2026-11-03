@@ -60,7 +60,7 @@ Same rules: one phase, one commit, every test passing.
 
 ### More mathematics
 
-- [ ] **23. Local obstructions.** Work out by computer which residues modulo small numbers
+- [x] **23. Local obstructions.** Work out by computer which residues modulo small numbers
   an Euler brick or a perfect cuboid can have, derive divisibility rules from them, and
   compare with `Theory.scala` and the literature.
 - [ ] **24. Derived bricks.** (ab, ac, bc) is an Euler brick whenever (a, b, c) is. Other

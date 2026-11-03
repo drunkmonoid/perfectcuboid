@@ -44,6 +44,7 @@ object Cli:
     case Report.NearMisses                  => nearMissesReport
     case Report.Stats(maxExponent)          => statsReport(maxExponent)
     case Report.Check(a, b, c)              => checkReport(a, b, c)
+    case Report.LocalRules(maxPrime)        => localReport(maxPrime)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -138,6 +139,26 @@ object Cli:
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
+
+  /** Each prime's rules are only worked out when its line is about to be printed. */
+  def localReport(maxPrime: Int): LazyList[String] =
+    def describe(rules: List[Rule]) = if rules.isEmpty then "nothing" else rules.map(_.name).mkString("; ")
+    "What every primitive brick must look like, from trying every remainder mod a prime power:" #::
+      NumberTheory.smallPrimes.iterator
+        .map(_.toInt)
+        .takeWhile(_ <= maxPrime)
+        .to(LazyList)
+        .flatMap: p =>
+          val (q, k) = Local.modulus(p)
+          val euler = Local.rules(q, k, perfect = false)
+          val perfect = Local.rules(q, k, perfect = true)
+          LazyList(
+            s"  mod $q^$k",
+            s"    Euler bricks:    ${describe(euler)}",
+            s"    perfect cuboids: ${
+                if perfect.map(_.name) == euler.map(_.name) then "the same" else describe(perfect)
+              }"
+          )
 
   def checkReport(a: BigInt, b: BigInt, c: BigInt): LazyList[String] =
     val box = BigCuboid.of(a, b, c).get // the command line only lets positive edges through
