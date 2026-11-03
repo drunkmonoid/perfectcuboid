@@ -39,9 +39,12 @@ object FastSearch:
   /** The legs y with a < y <= Edge.Max that pair with a, sorted. Same as filtering
     * `Pythagorean.legsPairedWith(a)`, but without building any lists.
     */
-  def legsAbove(a: Long): IArray[Long] =
+  def legsAbove(a: Long): IArray[Long] = legsAbove(a, NumberTheory.factorize(a))
+
+  /** The same, given the factorisation of a. */
+  def legsAbove(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
     val n = a * a
-    val ds = divisors(NumberTheory.factorize(a).map((p, k) => p -> 2 * k))
+    val ds = divisors(factors.map((p, k) => p -> 2 * k))
     val legs = new Array[Long](ds.length)
     var size = 0
     var i = 0
@@ -60,8 +63,10 @@ object FastSearch:
     IArray.unsafeFromArray(result)
 
   /** Same result as `Search.eulerBricksWithSmallestEdge`. */
-  def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] =
-    val legs = legsAbove(a)
+  def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] = eulerBricksWithLegs(a, legsAbove(a))
+
+  /** The Euler bricks a × b × c with b and c taken from `legs`, all the legs above a. */
+  private def eulerBricksWithLegs(a: Long, legs: IArray[Long]): List[Cuboid] =
     var found = List.empty[Cuboid]
     // Going backwards and prepending leaves the list in increasing order.
     var i = legs.length - 2
@@ -76,12 +81,23 @@ object FastSearch:
       i -= 1
     found
 
-  /** The Euler bricks with smallest edge from `first` to `last`, in order. */
+  /** The Euler bricks with smallest edge from `first` to `last`, in order. The edges are
+    * factorised all together by the sieve, instead of one at a time.
+    */
   def eulerBricksBetween(first: Long, last: Long): List[Cuboid] =
-    (first to last).toList.flatMap(eulerBricksWithSmallestEdge)
+    val factors = Sieve.factorizeBlock(first, last)
+    (first to last).toList.flatMap(a => eulerBricksWithLegs(a, legsAbove(a, factors((a - first).toInt))))
 
-  /** Same result as `Search.allEulerBricks`. */
+  /** Same result as `Search.allEulerBricks`, a block of edges at a time. */
   def allEulerBricks: LazyList[Cuboid] =
+    val blockSize = 1000L
+    LazyList
+      .iterate(1L)(_ + blockSize)
+      .takeWhile(_ <= Edge.Max)
+      .flatMap(start => eulerBricksBetween(start, math.min(start + blockSize - 1, Edge.Max)))
+
+  /** The same again, but factorising each edge on its own by trial division, for comparison. */
+  def allEulerBricksOneByOne: LazyList[Cuboid] =
     LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Edge.Max).flatMap(eulerBricksWithSmallestEdge)
 
   /** Same result as `Search.allEulerBricks`, using every core.

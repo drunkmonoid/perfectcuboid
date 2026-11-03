@@ -34,7 +34,8 @@ object Bench:
   val baseline: (String, BrickSearch) = "readable" -> (n => Search.allEulerBricks.takeWhile(_.a <= n).toVector)
 
   val others: List[(String, BrickSearch)] = List(
-    "fast" -> (n => FastSearch.allEulerBricks.takeWhile(_.a <= n).toVector),
+    "fast, one edge at a time" -> (n => FastSearch.allEulerBricksOneByOne.takeWhile(_.a <= n).toVector),
+    "fast, sieving blocks" -> (n => FastSearch.allEulerBricks.takeWhile(_.a <= n).toVector),
     "parallel" -> (n => FastSearch.allEulerBricksParallel().takeWhile(_.a <= n).toVector)
   )
 
@@ -57,7 +58,7 @@ object Bench:
 
   def run(maxSmallestEdge: Long, runs: Int, warmUps: Int = 2): Unit =
     def line(name: String, timing: Timing, note: String) =
-      println(f"  $name%-9s ${timing.median}%7.3f s  (${timing.min}%.3f to ${timing.max}%.3f)  $note")
+      println(f"  $name%-26s ${timing.median}%7.3f s  (${timing.min}%.3f to ${timing.max}%.3f)  $note")
     println(s"Euler bricks with smallest edge <= $maxSmallestEdge, $runs timed runs after $warmUps warm-ups")
     println(machine)
     val (expected, base) = measure(warmUps, runs)(baseline._2(maxSmallestEdge))

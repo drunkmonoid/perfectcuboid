@@ -50,6 +50,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula, and the legs paired with any given leg |
 | `src/Search.scala` | bounded Euler brick search, its brute-force check, and the unbounded `LazyList` search |
 | `src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
+| `src/Sieve.scala` | factorising a block of consecutive numbers at once, by a segmented sieve |
 | `src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |
 | `src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |

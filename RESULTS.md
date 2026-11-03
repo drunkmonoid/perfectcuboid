@@ -91,9 +91,14 @@ gives the median run and the range.
 
 | version, smallest edge ≤ 10⁶ | median | range |
 | --- | ---: | ---: |
-| readable (`Search`) | 11.75 s | 11.71 – 11.85 s |
-| fast (`FastSearch`) | 4.25 s | 4.25 – 4.26 s |
-| parallel, 12 threads | 1.15 s | 1.13 – 1.16 s |
+| readable (`Search`) | 13.17 s | 13.12 – 13.18 s |
+| fast, factorising one edge at a time | 4.35 s | 4.34 – 4.35 s |
+| fast, sieving blocks of edges | 4.05 s | 4.05 – 4.06 s |
+| parallel, sieving blocks, 12 threads | 0.71 s | 0.71 – 0.74 s |
+
+Factorising the edges by a sieve instead of trial division saves only 7% on one thread,
+so most of the time goes into listing the legs and testing pairs of them, not into
+factorising. In parallel it saves more: the same search took 1.15 s before the sieve.
 
 ## Scala Native: works for short commands, not for long ones
 

@@ -14,6 +14,13 @@ class FastSearchTest extends munit.ScalaCheckSuite:
     for a <- 1L to 3000L do
       assertEquals(FastSearch.eulerBricksWithSmallestEdge(a), Search.eulerBricksWithSmallestEdge(a), s"a = $a")
 
+  test("sieving blocks and going one edge at a time give the same bricks"):
+    val limit = 5000L
+    val expected = Search.allEulerBricks.takeWhile(_.a <= limit).toList
+    assertEquals(FastSearch.allEulerBricks.takeWhile(_.a <= limit).toList, expected)
+    assertEquals(FastSearch.allEulerBricksOneByOne.takeWhile(_.a <= limit).toList, expected)
+    assertEquals(FastSearch.eulerBricksBetween(1234, 4321), expected.filter(c => c.a >= 1234 && c.a <= 4321))
+
   test("the parallel search gives the same bricks in the same order"):
     val limit = 5000L
     val parallel = FastSearch.allEulerBricksParallel(blockSize = 7, cores = 3).takeWhile(_.a <= limit).toList

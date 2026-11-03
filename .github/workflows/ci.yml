@@ -18,5 +18,7 @@ jobs:
           jvm: temurin:17
       - name: Formatting
         run: scala-cli fmt --check .
+      # Without the build server: with it, scala-cli 1.18 prints warnings that -Werror turns
+      # into errors, but still exits with success.
       - name: Tests
-        run: scala-cli test .
+        run: scala-cli test . --server=false
