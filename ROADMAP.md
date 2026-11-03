@@ -83,7 +83,7 @@ Same rules: one phase, one commit, every test passing.
   long runs too.
 - [x] **31. Chunked streams.** The hunt emits one fs2 `Chunk` per block straight from
   iterators, with no `LazyList` in between.
-- [ ] **32. Progress and ETA.** A progress line on long hunts: edges per second, bricks
+- [x] **32. Progress and ETA.** A progress line on long hunts: edges per second, bricks
   so far, time left.
 - [ ] **33. Verify.** `verify FILE` re-checks every brick in a results file with `BigInt`,
   and that its checkpoints leave no gaps.

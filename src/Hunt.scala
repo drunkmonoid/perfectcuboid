@@ -144,10 +144,15 @@ object Hunt:
       progress <- Ref.of[IO, Progress](Progress(resume.searchedUpTo, resume.found))
       started <- IO.monotonic
       _ <- search(quarry, path, resume.searchedUpTo + 1, upTo, blockSize, cores, progress)
-        .concurrently(report(quarry, progress, resume.searchedUpTo, started))
+        .concurrently(report(quarry, progress, upTo, started))
         .compile
         .drain
-        .guaranteeCase(outcome => progress.get.flatMap(p => IO.println(summary(quarry, outcome, p))))
+        .guaranteeCase: outcome =>
+          for
+            p <- progress.get
+            now <- IO.monotonic
+            _ <- IO.println(summary(quarry, outcome, p, (now - started).toUnit(SECONDS)))
+          yield ()
     yield ()
 
   /** The blocks come in order, so each is written after the one before it. Their summaries,
@@ -180,28 +185,36 @@ object Hunt:
       .void
 
   /** Every few seconds, says how far the search has got. Runs alongside the search. */
+  /** Every few seconds, says how far the search has got, how fast it is going over the last
+    * minute, and how long it may take yet. Runs alongside the search. The recent samples are
+    * carried from one report to the next by `evalScan`.
+    */
   private def report(
       quarry: Quarry[?],
       progress: Ref[IO, Progress],
-      startedAt: Long,
+      upTo: Long,
       started: FiniteDuration
   ): Stream[IO, Unit] =
+    val first = progress.get.map(p => Vector(Eta.Sample(0, p.searchedUpTo)))
     Stream
-      .awakeEvery[IO](5.seconds)
-      .evalMap: _ =>
-        for
-          p <- progress.get
-          now <- IO.monotonic
-          rate = (p.searchedUpTo - startedAt) / (now - started).toUnit(SECONDS)
-          _ <- IO.println(
-            f"  searched up to ${p.searchedUpTo}%,d  (${p.found.found}%,d ${quarry.name}, $rate%,.0f per second)"
-          )
-        yield ()
+      .eval(first)
+      .flatMap: start =>
+        Stream
+          .awakeEvery[IO](5.seconds)
+          .evalScan(start): (samples, _) =>
+            for
+              p <- progress.get
+              now <- IO.monotonic
+              recent = Eta.window(samples, Eta.Sample((now - started).toUnit(SECONDS), p.searchedUpTo))
+              _ <- IO.println(Eta.line(p.searchedUpTo, upTo, p.found.found, quarry.name, Eta.rate(recent)))
+            yield recent
+      .void
 
-  private def summary(quarry: Quarry[?], outcome: Outcome[IO, Throwable, Unit], p: Progress): String =
+  private def summary(quarry: Quarry[?], outcome: Outcome[IO, Throwable, Unit], p: Progress, seconds: Double): String =
     val headline = outcome match
-      case Outcome.Succeeded(_) => f"Done: searched every ${quarry.key} up to ${p.searchedUpTo}%,d."
-      case Outcome.Canceled()   =>
+      case Outcome.Succeeded(_) =>
+        f"Done: searched every ${quarry.key} up to ${p.searchedUpTo}%,d, in ${Eta.duration(seconds)}."
+      case Outcome.Canceled() =>
         f"Stopped after ${quarry.key} ${p.searchedUpTo}%,d. Run the same command again to resume."
       case Outcome.Errored(e) => s"Failed after ${quarry.key} ${p.searchedUpTo}: $e. Run again to resume."
     (headline :: p.found.describe(quarry.name).map("  " + _)).mkString("\n")
