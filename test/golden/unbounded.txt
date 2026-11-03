@@ -1,0 +1,17 @@
+Euler bricks with smallest edge <= 300, other edges up to 1753413056 (* = primitive)
+* 44 × 117 × 240       face diagonals 125, 244, 267
+* 85 × 132 × 720       face diagonals 157, 725, 732
+  88 × 234 × 480       face diagonals 250, 488, 534
+  132 × 351 × 720      face diagonals 375, 732, 801
+* 140 × 480 × 693      face diagonals 500, 707, 843
+* 160 × 231 × 792      face diagonals 281, 808, 825
+  170 × 264 × 1440     face diagonals 314, 1450, 1464
+  176 × 468 × 960      face diagonals 500, 976, 1068
+* 187 × 1020 × 1584    face diagonals 1037, 1595, 1884
+* 195 × 748 × 6336     face diagonals 773, 6339, 6380
+  220 × 585 × 1200     face diagonals 625, 1220, 1335
+* 240 × 252 × 275      face diagonals 348, 365, 373
+  255 × 396 × 2160     face diagonals 471, 2175, 2196
+  264 × 702 × 1440     face diagonals 750, 1464, 1602
+  280 × 960 × 1386     face diagonals 1000, 1414, 1686
+Done: every smallest edge up to 300 searched.

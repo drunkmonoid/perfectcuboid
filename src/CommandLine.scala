@@ -42,10 +42,11 @@ object CommandLine:
 
   /** An optional number from 1 to `max`, standing for `default` when left out. */
   private def number(metavar: String, default: Long, max: Long = Long.MaxValue): Opts[Long] =
+    val range = if max == Long.MaxValue then "at least 1" else s"from 1 to $max"
     Opts
       .argument[Long](metavar)(using wholeNumber)
       .withDefault(default)
-      .validate(s"$metavar must be from 1 to $max")(n => n >= 1 && n <= max)
+      .validate(s"$metavar must be $range")(n => n >= 1 && n <= max)
 
   private def report(name: String, help: String)(opts: Opts[Report]): Opts[Command] =
     Opts.subcommand(name, help)(opts.map(Command.Print(_)))

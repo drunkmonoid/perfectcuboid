@@ -1,0 +1,25 @@
+Euler bricks with every edge <= 2000: 23 (* = primitive)
+* 44 × 117 × 240       face diagonals 125, 244, 267
+* 240 × 252 × 275      face diagonals 348, 365, 373
+  88 × 234 × 480       face diagonals 250, 488, 534
+  480 × 504 × 550      face diagonals 696, 730, 746
+* 140 × 480 × 693      face diagonals 500, 707, 843
+* 85 × 132 × 720       face diagonals 157, 725, 732
+  132 × 351 × 720      face diagonals 375, 732, 801
+* 160 × 231 × 792      face diagonals 281, 808, 825
+  720 × 756 × 825      face diagonals 1044, 1095, 1119
+  176 × 468 × 960      face diagonals 500, 976, 1068
+  960 × 1008 × 1100    face diagonals 1392, 1460, 1492
+* 1008 × 1100 × 1155   face diagonals 1492, 1533, 1595
+  220 × 585 × 1200     face diagonals 625, 1220, 1335
+  1200 × 1260 × 1375   face diagonals 1740, 1825, 1865
+  280 × 960 × 1386     face diagonals 1000, 1414, 1686
+  170 × 264 × 1440     face diagonals 314, 1450, 1464
+  264 × 702 × 1440     face diagonals 750, 1464, 1602
+  320 × 462 × 1584     face diagonals 562, 1616, 1650
+* 187 × 1020 × 1584    face diagonals 1037, 1595, 1884
+  1440 × 1512 × 1650   face diagonals 2088, 2190, 2238
+  308 × 819 × 1680     face diagonals 875, 1708, 1869
+  352 × 936 × 1920     face diagonals 1000, 1952, 2136
+  1680 × 1764 × 1925   face diagonals 2436, 2555, 2611
+No perfect cuboid (as expected).

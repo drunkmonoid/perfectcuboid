@@ -1,0 +1,31 @@
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | nearmisses | stats | hunt | bench]
+
+Search for perfect cuboids, Euler bricks and their near misses.
+
+Options and flags:
+    --help
+        Display this help text.
+
+Subcommands:
+    bricks
+        Euler bricks with every edge up to LIMIT (default 1000).
+    unbounded
+        Euler bricks by smallest edge up to LIMIT (default 1000), other edges unbounded.
+    rules
+        Check the known Euler brick rules on every brick with edges up to LIMIT (default 1000).
+    saunderson
+        Saunderson's Euler bricks with every edge up to LIMIT (default 1000).
+    legs
+        Factorise N (default 1000) and list every leg it pairs with.
+    face
+        Face cuboids whose whole face diagonals meet at an edge up to LIMIT (default 1000).
+    edge
+        Edge cuboids whose irrational edge is at most √LIMIT (default 1000).
+    nearmisses
+        The first body, face and edge cuboid.
+    stats
+        How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).
+    hunt
+        Long search to FILE up to smallest edge UPTO. Ctrl+C stops, rerun resumes.
+    bench
+        Time the readable, fast and parallel searches up to LIMIT (default 100000).

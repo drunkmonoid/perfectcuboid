@@ -1,0 +1,5 @@
+The first cuboid of each kind, in the order each search finds them:
+  Perfect   none known
+  Body      44 × 117 × 240   face diagonals 125, 244, 267   space diagonal √73225
+  Face      104 × 153 × 672   face diagonals 185, 680, √474993   space diagonal 697
+  Edge      √461776 × 1443 × 1800   face diagonals 1595, 1924, 2307   space diagonal 2405

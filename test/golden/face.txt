@@ -1,0 +1,7 @@
+Face cuboids whose whole face diagonals meet at an edge <= 300
+104 × 153 × 672   face diagonals 185, 680, √474993   space diagonal 697
+117 × 520 × 756   face diagonals 533, 765, √841936   space diagonal 925
+208 × 306 × 1344   face diagonals 370, 1360, √1899972   space diagonal 1394
+234 × 1040 × 1512   face diagonals 1066, 1530, √3367744   space diagonal 1850
+252 × 2261 × 2640   face diagonals 2275, 2652, √12081721   space diagonal 3485
+Done.

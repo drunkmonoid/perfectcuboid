@@ -26,6 +26,7 @@ scala-cli run . -- nearmisses           # the first body, face and edge cuboid
 scala-cli run . -- face 1000            # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000         # edge cuboids: one edge irrational
 scala-cli test .                        # run the tests
+UPDATE_GOLDEN=1 scala-cli test .        # accept changed command output into test/golden
 scala-cli fmt .                         # format the code (CI checks it)
 scala-cli repl .                        # REPL with the project loaded
 scala-cli setup-ide .                   # set up Metals / VSCode
@@ -49,7 +50,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |
 | `src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
-| `src/Summary.scala` | a search's results in a few numbers, as a monoid: summaries of blocks add up with `|+|` |
+| `src/Summary.scala` | a search's results in a few numbers, as a monoid, so summaries of separate blocks add up |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

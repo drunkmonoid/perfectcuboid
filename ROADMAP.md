@@ -38,7 +38,7 @@ Same rules: one phase, one commit, every test passing.
   instead of silently falling back to 1000.
 - [x] **14. Monoids for results.** Block summaries (counts, extremes, histograms) as
   Cats `Monoid`s, combined with `|+|`, their laws checked with discipline.
-- [ ] **15. Golden tests.** The output of every command saved under `test/golden`, so a
+- [x] **15. Golden tests.** The output of every command saved under `test/golden`, so a
   refactor cannot change it unnoticed.
 - [ ] **16. A better benchmark.** Warm-up, repeated runs, median and spread, and the heap
   cap printed with every result.

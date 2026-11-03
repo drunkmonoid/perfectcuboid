@@ -1,0 +1,9 @@
+Rules checked:
+  - one edge divisible by 16, another by 4
+  - one edge divisible by 9, another by 3
+  - some edge divisible by 5
+  - some edge divisible by 11
+  - product of the edges divisible by 95040
+  - exactly one edge is odd
+  - exactly one face diagonal is even
+All rules hold for all 23 Euler bricks with every edge <= 2000.

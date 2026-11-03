@@ -1,0 +1,9 @@
+LIMIT must be at least 1
+
+Usage: perfectcuboid bricks [<LIMIT>]
+
+Euler bricks with every edge up to LIMIT (default 1000).
+
+Options and flags:
+    --help
+        Display this help text.

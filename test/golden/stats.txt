@@ -1,0 +1,9 @@
+| N | all edges <= N | primitive | smallest edge <= N | primitive |
+| --- | --- | --- | --- | --- |
+| 10^3 | 10 | 5 | 69 | 14 |
+| 10^4 | 151 | 19 | 849 | 56 |
+
+Growth exponent k (count ≈ C·N^k) between successive rows:
+  all edges <= N, primitive:     0.58
+  smallest edge <= N, primitive: 0.60
+Saunderson's formula gives 3 of the 19 primitive bricks with every edge <= 10000.

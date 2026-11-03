@@ -1,0 +1,3 @@
+Edge cuboids whose irrational edge is at most √500000
+√461776 × 1443 × 1800   face diagonals 1595, 1924, 2307   space diagonal 2405
+Done.
