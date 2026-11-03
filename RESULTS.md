@@ -7,12 +7,17 @@ with the command shown next to it. Timings are on a mid-range laptop (Core i5,
 ## No perfect cuboid, as far as we looked
 
 A perfect cuboid would be an Euler brick whose space diagonal is also whole. The hunt searched
-every Euler brick with **smallest edge up to 30,500,000** (and other edges up to
-`Edge.Max` = 1,753,413,056). It found 2,814,733 Euler bricks and no perfect cuboid.
+every Euler brick with **smallest edge up to 30,500,000**, however long the other edges. It
+found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
 
 ```sh
-scala-cli run . -- hunt hunt-bricks.txt 30500000   # about half a minute
+scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a half minutes
 ```
+
+The other edges of a brick can be far longer than the smallest: the longest found here is
+22402464 × 15472627027 × 653477074380. Their squares go beyond a `Long`, so the search tests
+b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges were capped at
+1,753,413,056, and the same hunt found 11,309 fewer bricks.
 
 Published searches have gone far beyond this. The point here is a search that is easy to
 read, checked by tests, and safe to stop and resume.
@@ -20,7 +25,7 @@ read, checked by tests, and safe to stop and resume.
 ## How many Euler bricks there are
 
 ```sh
-scala-cli run . -- stats 7   # about 15 seconds
+scala-cli run . -J -Xmx2g -- stats 7   # about 50 seconds
 ```
 
 | N | every edge ≤ N | primitive | smallest edge ≤ N | primitive |
@@ -28,8 +33,8 @@ scala-cli run . -- stats 7   # about 15 seconds
 | 10³ | 10 | 5 | 69 | 14 |
 | 10⁴ | 151 | 19 | 849 | 56 |
 | 10⁵ | 1,714 | 65 | 9,004 | 180 |
-| 10⁶ | 17,873 | 242 | 92,010 | 608 |
-| 10⁷ | 180,953 | 704 | 925,071 | 1,629 |
+| 10⁶ | 17,873 | 242 | 92,014 | 608 |
+| 10⁷ | 180,953 | 704 | 925,637 | 1,647 |
 
 Fitting count ≈ C·Nᵏ between successive rows gives these values of k:
 
@@ -52,7 +57,7 @@ not in that family.
 
 ## The known rules hold
 
-Every one of the 925,071 Euler bricks with smallest edge ≤ 10⁷ obeys every rule in
+Every one of the 925,637 Euler bricks with smallest edge ≤ 10⁷ obeys every rule in
 `Theory.scala`:
 
 - one edge is divisible by 16, another by 4;
@@ -91,14 +96,18 @@ gives the median run and the range.
 
 | version, smallest edge ≤ 10⁶ | median | range |
 | --- | ---: | ---: |
-| readable (`Search`) | 13.17 s | 13.12 – 13.18 s |
-| fast, factorising one edge at a time | 4.35 s | 4.34 – 4.35 s |
-| fast, sieving blocks of edges | 4.05 s | 4.05 – 4.06 s |
-| parallel, sieving blocks, 12 threads | 0.71 s | 0.71 – 0.74 s |
+| readable (`Search`) | 17.77 s | 17.67 – 17.88 s |
+| fast, factorising one edge at a time | 6.65 s | 6.64 – 6.76 s |
+| fast, sieving blocks of edges | 6.22 s | 6.21 – 6.25 s |
+| parallel, sieving blocks, 12 threads | 1.64 s | 1.22 – 1.65 s |
 
-Factorising the edges by a sieve instead of trial division saves only 7% on one thread,
-so most of the time goes into listing the legs and testing pairs of them, not into
-factorising. In parallel it saves more: the same search took 1.15 s before the sieve.
+Factorising the edges by a sieve instead of trial division saves only 7%, so most of the
+time goes into listing the legs and testing pairs of them, not into factorising.
+
+Since the cap on the other edges was lifted, every search is about 50% slower: it now tests
+every pair of legs, including the long ones it used to skip. Before that, with the cap, the
+fast search took 4.05 s and the parallel one 0.71 s. A filter by remainders mod 45,045
+keeps the extra cost down: it rules out 95.5% of the pairs with an addition and a table lookup.
 
 ## Scala Native: works for short commands, not for long ones
 

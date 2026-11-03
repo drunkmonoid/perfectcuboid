@@ -55,7 +55,7 @@ Same rules: one phase, one commit, every test passing.
   is a hypotenuse, read off its factorisation and checked against the enumerations.
 - [x] **21. Cuboids of any size.** A `BigInt` cuboid sharing its checks with `Cuboid`
   through a type class.
-- [ ] **22. No cap on the other edges.** 128-bit squares and square roots, so a search by
+- [x] **22. No cap on the other edges.** 128-bit squares and square roots, so a search by
   smallest edge finds every brick, not only those with every edge ≤ `Edge.Max`.
 
 ### More mathematics

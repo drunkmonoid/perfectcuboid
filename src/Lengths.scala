@@ -19,8 +19,10 @@ opaque type Edge <: Long = Long
 
 object Edge:
 
-  /** The largest edge for which a² + b² + c² is sure to fit in a Long. */
-  val Max: Long = Arith.isqrt(Long.MaxValue / 3)
+  /** The largest edge for which the space diagonal √(a² + b² + c²) is sure to fit in a Long:
+    * about 5.3·10¹⁸. The squares themselves don't fit, so the checks use `Wide` numbers.
+    */
+  val Max: Long = Arith.isqrtBig(BigInt(Long.MaxValue).pow(2) / 3).toLong
 
   def from(n: Long): Either[CuboidError, Edge] =
     if n <= 0 then Left(CuboidError.NonPositiveEdge(n))
@@ -39,6 +41,8 @@ object Diagonal:
 
   /** The diagonal whose square is `n`, if that is a whole number. */
   def fromSquare(n: Long): Option[Diagonal] = Arith.exactSqrt(n)
+
+  def fromSquare(n: Wide): Option[Diagonal] = Wide.exactSqrt(n)
 
 /** Extension methods add methods to a type from the outside, here to every Long. */
 extension (n: Long) def toEdge: Either[CuboidError, Edge] = Edge.from(n)

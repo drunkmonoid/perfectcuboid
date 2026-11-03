@@ -141,7 +141,10 @@ object Hunt:
       .takeWhile(_ <= upTo)
       .map(start => (start, math.min(start + blockSize - 1, upTo)))
       .parEvalMap(cores): (first, last) =>
-        IO:
+        // A block can take seconds of pure computation. On Cats Effect's own few threads that
+        // would keep everything else waiting, the progress reports too, so it runs on the
+        // pool meant for long, blocking work.
+        IO.blocking:
           val bricks = FastSearch.eulerBricksBetween(first, last)
           (last, bricks, Summary.of(bricks))
     Stream

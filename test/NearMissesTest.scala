@@ -15,7 +15,7 @@ class NearMissesTest extends munit.ScalaCheckSuite:
     assertEquals(squared(2, 3, 5).kind, Kind.Other)
 
   property("an ordinary cuboid has whole edges once squared"):
-    forAll(cuboid)(c => c.squared.edges == List(Some(c.a: Long), Some(c.b: Long), Some(c.c: Long)))
+    forAll(cuboid)(c => c.squared.get.edges == List(Some(c.a: Long), Some(c.b: Long), Some(c.c: Long)))
 
   test("completions agree with checking every candidate"):
     for n <- 1L to 500L do

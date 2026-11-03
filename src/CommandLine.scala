@@ -93,13 +93,14 @@ object CommandLine:
 
   private val hunt: Opts[Command] =
     Opts.subcommand("hunt", "Long search to FILE up to smallest edge UPTO. Ctrl+C stops, rerun resumes.")(
-      (Opts.argument[String]("FILE"), number("UPTO", Edge.Max, Edge.Max)).mapN(Command.Hunt(_, _))
+      (Opts.argument[String]("FILE"), number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge))
+        .mapN(Command.Hunt(_, _))
     )
 
   private val bench: Opts[Command] =
     Opts.subcommand("bench", "Time the readable, fast and parallel searches up to LIMIT (default 100000).")(
       (
-        number("LIMIT", 100_000, Edge.Max),
+        number("LIMIT", 100_000, Search.MaxSmallestEdge),
         Opts
           .option[Int]("runs", "How many timed runs of each search (default 5).")
           .withDefault(5)

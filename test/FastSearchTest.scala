@@ -7,8 +7,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class FastSearchTest extends munit.ScalaCheckSuite:
 
   property("legsAbove is legsPairedWith, filtered to the legs above a"):
-    forAll(Gen.chooseNum(1L, Edge.Max)): a =>
-      FastSearch.legsAbove(a).toList == Pythagorean.legsPairedWith(a).filter(y => y > a && y <= Edge.Max)
+    forAll(Gen.chooseNum(1L, Search.MaxSmallestEdge)): a =>
+      FastSearch.legsAbove(a).toList == Pythagorean.legsPairedWith(a).filter(_ > a)
 
   test("the fast search finds exactly what the readable one does"):
     for a <- 1L to 3000L do

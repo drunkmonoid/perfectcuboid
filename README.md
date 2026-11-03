@@ -43,6 +43,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | File | What it holds |
 | --- | --- |
 | `src/Arith.scala` | exact integer square roots, gcd, overflow-checked squares |
+| `src/Wide.scala` | 128-bit whole numbers in two Longs: exact squares and square roots beyond a `Long` |
 | `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
 | `src/Box.scala` | the cuboid checks written once for any whole-number type; `BigCuboid` for boxes of any size |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |

@@ -28,6 +28,11 @@ final case class SquaredCuboid private (a2: Long, b2: Long, c2: Long):
 
 object SquaredCuboid:
 
+  /** The largest whole edge for which a² + b² + c² is sure to fit in a Long. The near-miss
+    * searches keep to edges up to here.
+    */
+  val MaxEdge: Long = isqrt(Long.MaxValue / 3)
+
   def of(x2: Long, y2: Long, z2: Long): Option[SquaredCuboid] =
     val sorted = List(x2, y2, z2).sorted
     val fits = BigInt(x2) + y2 + z2 <= Long.MaxValue
@@ -43,7 +48,7 @@ object NearMisses:
     * square. Each face cuboid has exactly one such shared edge, so each is found exactly once.
     */
   def faceCuboidsWithSharedEdge(s: Long): List[Cuboid] =
-    val legs = Pythagorean.legsPairedWith(s).filter(_ <= Edge.Max)
+    val legs = Pythagorean.legsPairedWith(s).filter(_ <= SquaredCuboid.MaxEdge)
     for
       case x :: bigger <- legs.tails.toList
       y <- bigger
@@ -51,9 +56,9 @@ object NearMisses:
       cuboid <- Cuboid.of(s, x, y)
     yield cuboid
 
-  /** Every face cuboid with edges up to Edge.Max, ordered by shared edge. */
+  /** Every face cuboid with edges up to SquaredCuboid.MaxEdge, ordered by shared edge. */
   def allFaceCuboids: LazyList[Cuboid] =
-    LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Edge.Max).flatMap(faceCuboidsWithSharedEdge)
+    LazyList.iterate(1L)(_ + 1).takeWhile(_ <= SquaredCuboid.MaxEdge).flatMap(faceCuboidsWithSharedEdge)
 
   /** Edge cuboids whose irrational edge is √c2.
     *
@@ -64,7 +69,7 @@ object NearMisses:
   def edgeCuboidsWithSquaredEdge(c2: Long): List[SquaredCuboid] =
     if isPerfectSquare(c2) then Nil
     else
-      val xs = Pythagorean.completions(c2).filter(_ <= Edge.Max)
+      val xs = Pythagorean.completions(c2).filter(_ <= SquaredCuboid.MaxEdge)
       val isCompletion = xs.toSet
       for
         case a :: bigger <- xs.tails.toList

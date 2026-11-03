@@ -4,22 +4,24 @@ package perfectcuboid
   *
   * The constructor is `private`, so the only ways to get a Cuboid are `Cuboid.from` and
   * `Cuboid.of`, which check and sort the edges. Every Cuboid that exists is therefore valid,
-  * and since every edge is at most `Edge.Max`, computing its diagonals cannot overflow.
+  * and since every edge is at most `Edge.Max`, its diagonals fit in a Long. Their squares
+  * may not, so they are computed as `Wide` numbers.
   */
 final case class Cuboid private (a: Edge, b: Edge, c: Edge):
 
-  // The checks themselves are in `Box`, shared with `BigCuboid`. `: Long` widens each Edge, so
-  // the compiler uses the `WholeNumber[Long]` instance.
+  // The checks themselves are in `Box`, shared with `BigCuboid`. Given Wide edges, the compiler
+  // uses the `WholeNumber[Wide]` instance.
 
   /** Diagonals of the ab, ac and bc faces, each `None` when it is not a whole number. */
-  def faceDiagonals: List[Option[Diagonal]] = Box.faceDiagonalSquares(a: Long, b, c).map(Diagonal.fromSquare)
+  def faceDiagonals: List[Option[Diagonal]] =
+    Box.faceDiagonalSquares(Wide(a), Wide(b), Wide(c)).map(Diagonal.fromSquare)
 
   /** The diagonal through the inside of the box, from one corner to the opposite one. */
-  def spaceDiagonal: Option[Diagonal] = Diagonal.fromSquare(Box.spaceDiagonalSquare(a: Long, b, c))
+  def spaceDiagonal: Option[Diagonal] = Diagonal.fromSquare(Box.spaceDiagonalSquare(Wide(a), Wide(b), Wide(c)))
 
-  def isEuler: Boolean = Box.isEuler(a: Long, b, c)
+  def isEuler: Boolean = Box.isEuler(Wide(a), Wide(b), Wide(c))
 
-  def isPerfect: Boolean = Box.isPerfect(a: Long, b, c)
+  def isPerfect: Boolean = Box.isPerfect(Wide(a), Wide(b), Wide(c))
 
   /** True when the edges share no common factor, i.e. this is not a scaled-up copy of a smaller box. */
   def isPrimitive: Boolean = Box.isPrimitive(a: Long, b, c)
@@ -28,10 +30,11 @@ final case class Cuboid private (a: Edge, b: Edge, c: Edge):
   def scaled(k: Long): Either[CuboidError, Cuboid] =
     Cuboid.fromBigInt(BigInt(a) * k, BigInt(b) * k, BigInt(c) * k)
 
-  /** The same box described by its squared edges, which never overflow for edges up to Edge.Max. */
-  def squared: SquaredCuboid = SquaredCuboid.of(a * a, b * b, c * c).get
+  /** The same box described by its squared edges, if they are small enough for a `SquaredCuboid`. */
+  def squared: Option[SquaredCuboid] =
+    Option.when(c <= SquaredCuboid.MaxEdge)(SquaredCuboid.of(a * a, b * b, c * c)).flatten
 
-  def kind: Kind = squared.kind
+  def kind: Kind = Box.kind(Wide(a), Wide(b), Wide(c))
 
 object Cuboid:
 

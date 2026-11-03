@@ -15,7 +15,7 @@ class SieveTest extends ScalaCheckSuite:
 
   test("blocks far from the start"):
     agreesWithTrialDivision(1_000_000_000, 1_000_010_000)
-    agreesWithTrialDivision(Edge.Max - 10_000, Edge.Max)
+    agreesWithTrialDivision(Search.MaxSmallestEdge - 10_000, Search.MaxSmallestEdge)
     agreesWithTrialDivision(Sieve.MaxLast - 1000, Sieve.MaxLast)
 
   property("any block within range"):

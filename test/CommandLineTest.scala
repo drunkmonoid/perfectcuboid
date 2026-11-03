@@ -16,13 +16,14 @@ class CommandLineTest extends munit.FunSuite:
 
   test("left-out numbers take their defaults"):
     assertEquals(parse("stats"), Right(Command.Print(Report.Stats(6))))
-    assertEquals(parse("hunt", "bricks.txt"), Right(Command.Hunt("bricks.txt", Edge.Max)))
+    assertEquals(parse("hunt", "bricks.txt"), Right(Command.Hunt("bricks.txt", Search.MaxSmallestEdge)))
     assertEquals(parse("nearmisses"), Right(Command.Print(Report.NearMisses)))
 
   test("bad numbers are errors, not silently replaced by a default"):
     assert(errors("bricks", "lots").exists(_.contains("not a whole number")), errors("bricks", "lots"))
     assert(errors("bricks", "0").exists(_.contains("LIMIT must be at least 1")))
-    assert(errors("hunt", "f.txt", (Edge.Max + 1).toString).exists(_.contains(s"must be from 1 to ${Edge.Max}")))
+    val tooFar = (Search.MaxSmallestEdge + 1).toString
+    assert(errors("hunt", "f.txt", tooFar).exists(_.contains(s"must be from 1 to ${Search.MaxSmallestEdge}")))
     assert(errors("stats", "12").exists(_.contains("from 3 to 9")))
     assert(errors("unbounded", "1.5").nonEmpty)
 

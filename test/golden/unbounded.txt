@@ -1,4 +1,4 @@
-Euler bricks with smallest edge <= 300, other edges up to 1753413056 (* = primitive)
+Euler bricks with smallest edge <= 300, other edges unbounded (* = primitive)
 * 44 × 117 × 240       face diagonals 125, 244, 267
 * 85 × 132 × 720       face diagonals 157, 725, 732
   88 × 234 × 480       face diagonals 250, 488, 534

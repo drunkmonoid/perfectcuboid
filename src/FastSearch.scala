@@ -36,7 +36,7 @@ object FastSearch:
       rest = rest.tail
     out
 
-  /** The legs y with a < y <= Edge.Max that pair with a, sorted. Same as filtering
+  /** The legs y > a that pair with a, sorted. Same as filtering
     * `Pythagorean.legsPairedWith(a)`, but without building any lists.
     */
   def legsAbove(a: Long): IArray[Long] = legsAbove(a, NumberTheory.factorize(a))
@@ -53,7 +53,7 @@ object FastSearch:
       val e = n / d
       if d < e && ((e - d) & 1) == 0 then
         val y = (e - d) / 2
-        if y > a && y <= Edge.Max then
+        if y > a then
           legs(size) = y
           size += 1
       i += 1
@@ -65,8 +65,26 @@ object FastSearch:
   /** Same result as `Search.eulerBricksWithSmallestEdge`. */
   def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] = eulerBricksWithLegs(a, legsAbove(a))
 
-  /** The Euler bricks a × b × c with b and c taken from `legs`, all the legs above a. */
+  /** 63 · 65 · 11. Only 4.5% of remainders mod this number are remainders of squares, and the
+    * remainder mod 64 then rules out most of those: together, 0.84% of sums get through.
+    */
+  private val Modulus = 45_045
+
+  /** Which remainders mod `Modulus` squares can leave. */
+  private val isSquareRemainder: IArray[Boolean] =
+    val squares = new Array[Boolean](Modulus)
+    for r <- 0 until Modulus do squares((r.toLong * r % Modulus).toInt) = true
+    IArray.unsafeFromArray(squares)
+
+  /** The Euler bricks a × b × c with b and c taken from `legs`, all the legs above a.
+    *
+    * Most pairs are ruled out by remainders alone: if b² + c² leaves a remainder mod 45045
+    * that no square leaves, it is not a square. The remainders of b² and c² are computed once
+    * per leg, so each pair costs an addition and a table lookup. Only the rest go on to the
+    * exact test, which needs 128-bit arithmetic once the legs pass 2³¹.
+    */
   private def eulerBricksWithLegs(a: Long, legs: IArray[Long]): List[Cuboid] =
+    val squareRemainders = legs.map(y => (y % Modulus * (y % Modulus) % Modulus).toInt)
     var found = List.empty[Cuboid]
     // Going backwards and prepending leaves the list in increasing order.
     var i = legs.length - 2
@@ -75,8 +93,9 @@ object FastSearch:
       var j = legs.length - 1
       while j > i do
         val c = legs(j)
-        // Both are at most Edge.Max, so b² + c² cannot overflow.
-        if Arith.isPerfectSquare(b * b + c * c) then found = Cuboid.of(a, b, c).toList ::: found
+        val sum = squareRemainders(i) + squareRemainders(j)
+        if isSquareRemainder(if sum >= Modulus then sum - Modulus else sum) && Wide.isSumOfSquaresSquare(b, c) then
+          found = Cuboid.of(a, b, c).toList ::: found
         j -= 1
       i -= 1
     found
@@ -93,12 +112,12 @@ object FastSearch:
     val blockSize = 1000L
     LazyList
       .iterate(1L)(_ + blockSize)
-      .takeWhile(_ <= Edge.Max)
-      .flatMap(start => eulerBricksBetween(start, math.min(start + blockSize - 1, Edge.Max)))
+      .takeWhile(_ <= Search.MaxSmallestEdge)
+      .flatMap(start => eulerBricksBetween(start, math.min(start + blockSize - 1, Search.MaxSmallestEdge)))
 
   /** The same again, but factorising each edge on its own by trial division, for comparison. */
   def allEulerBricksOneByOne: LazyList[Cuboid] =
-    LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Edge.Max).flatMap(eulerBricksWithSmallestEdge)
+    LazyList.iterate(1L)(_ + 1).takeWhile(_ <= Search.MaxSmallestEdge).flatMap(eulerBricksWithSmallestEdge)
 
   /** Same result as `Search.allEulerBricks`, using every core.
     *
@@ -110,10 +129,10 @@ object FastSearch:
       ExecutionContext
   ): LazyList[Cuboid] =
     def searchBlock(start: Long): List[Cuboid] =
-      eulerBricksBetween(start, math.min(start + blockSize - 1, Edge.Max))
+      eulerBricksBetween(start, math.min(start + blockSize - 1, Search.MaxSmallestEdge))
     LazyList
       .iterate(1L)(_ + blockSize * cores)
-      .takeWhile(_ <= Edge.Max)
+      .takeWhile(_ <= Search.MaxSmallestEdge)
       .flatMap: start =>
-        val blocks = (0 until cores).map(start + _ * blockSize).filter(_ <= Edge.Max).toList
+        val blocks = (0 until cores).map(start + _ * blockSize).filter(_ <= Search.MaxSmallestEdge).toList
         Await.result(Future.traverse(blocks)(block => Future(searchBlock(block))), Duration.Inf).flatten

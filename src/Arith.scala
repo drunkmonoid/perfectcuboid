@@ -55,8 +55,16 @@ object Arith:
   private val SquareRemaindersMod64: Long =
     (0L until 64L).foldLeft(0L)((bits, i) => bits | (1L << (i * i % 64)))
 
+  /** False when n's remainder mod 64 shows it is not a square. Uses only the bottom 6 bits,
+    * which stay right even when the arithmetic that produced n overflowed.
+    */
+  def mightBeSquare(n: Long): Boolean = ((SquareRemaindersMod64 >>> (n & 63)) & 1) == 1
+
   def isPerfectSquare(n: Long): Boolean =
-    n >= 0 && ((SquareRemaindersMod64 >>> (n & 63)) & 1) == 1 && exactSqrt(n).isDefined
+    n >= 0 && mightBeSquare(n) && exactSqrt(n).isDefined
+
+  def isPerfectSquareBig(n: BigInt): Boolean =
+    n >= 0 && { val r = isqrtBig(n); r * r == n }
 
   @tailrec def gcd(a: Long, b: Long): Long =
     if b == 0 then a.abs else gcd(b, a % b)

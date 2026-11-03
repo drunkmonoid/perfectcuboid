@@ -54,7 +54,7 @@ object Cli:
   /** Nothing here keeps the bricks once they are described, so memory use stays flat. */
   def unboundedReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge)
-    s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges up to ${Edge.Max} (* = primitive)"
+    s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges unbounded (* = primitive)"
       #:: bricks.map(brick => if brick.isPerfect then s"${describe(brick)}  PERFECT!" else describe(brick))
       :+ s"Done: every smallest edge up to $maxSmallestEdge searched."
 
@@ -99,7 +99,7 @@ object Cli:
     val cuboids =
       LazyList.iterate(1L)(_ + 1).takeWhile(_ <= maxSharedEdge).flatMap(NearMisses.faceCuboidsWithSharedEdge)
     s"Face cuboids whose whole face diagonals meet at an edge <= $maxSharedEdge"
-      #:: cuboids.map(c => describeSquared(c.squared))
+      #:: cuboids.map(c => describeSquared(c.squared.get)) // face cuboids keep to SquaredCuboid.MaxEdge
       :+ "Done."
 
   def edgeReport(maxSquaredEdge: Long): LazyList[String] =
@@ -113,8 +113,8 @@ object Cli:
     LazyList(
       "The first cuboid of each kind, in the order each search finds them:",
       "  Perfect   none known",
-      s"  Body      ${describeSquared(Search.allEulerBricks.head.squared)}",
-      s"  Face      ${describeSquared(NearMisses.allFaceCuboids.head.squared)}",
+      s"  Body      ${describeSquared(Search.allEulerBricks.head.squared.get)}",
+      s"  Face      ${describeSquared(NearMisses.allFaceCuboids.head.squared.get)}",
       s"  Edge      ${describeSquared(NearMisses.allEdgeCuboids.head)}"
     )
 

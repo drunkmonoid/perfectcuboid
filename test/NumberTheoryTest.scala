@@ -26,7 +26,7 @@ class NumberTheoryTest extends munit.ScalaCheckSuite:
     assert(List(44L, 117L, 252L, 275L).forall(legs.contains), legs)
 
   property("every leg returned really makes a Pythagorean triple"):
-    forAll(Gen.chooseNum(1L, Edge.Max)): a =>
+    forAll(Gen.chooseNum(1L, Search.MaxSmallestEdge)): a =>
       Pythagorean
         .legsPairedWith(a)
         .forall: y =>
