@@ -22,6 +22,7 @@ enum Report:
   case BrickOrigins(maxSmallestEdge: Long)
   case Graph(limit: Long)
   case FourDimensions(maxSmallestEdge: Long)
+  case Closest(maxSmallestEdge: Long)
 
 /** Everything the program can do, with its arguments already checked. Hunts and benchmarks
   * touch files and clocks, so `Main` runs them; reports are only printed.
@@ -116,6 +117,9 @@ object CommandLine:
     ),
     report("fourd", "Four-dimensional Euler bricks and near misses from bricks with smallest edge up to LIMIT.")(
       number("LIMIT", 10_000, Search.MaxSmallestEdge).map(Report.FourDimensions(_))
+    ),
+    report("closest", "The primitive bricks, smallest edge up to LIMIT (default 100000), nearest to perfect.")(
+      number("LIMIT", 100_000, Search.MaxSmallestEdge).map(Report.Closest(_))
     ),
     report("nearmisses", "The first body, face and edge cuboid.")(Opts(Report.NearMisses)),
     report("stats", "How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).")(

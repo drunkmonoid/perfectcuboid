@@ -50,6 +50,7 @@ object Cli:
     case Report.BrickOrigins(limit)         => originsReport(limit)
     case Report.Graph(limit)                => graphReport(limit)
     case Report.FourDimensions(limit)       => fourDReport(limit)
+    case Report.Closest(limit)              => closestReport(limit)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -144,6 +145,16 @@ object Cli:
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
+
+  def closestReport(maxSmallestEdge: Long): LazyList[String] =
+    val ranked = ClosestCalls.ranked(FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector)
+    s"The primitive Euler bricks with smallest edge <= $maxSmallestEdge whose space diagonal is nearest a whole number:" #::
+      ranked
+        .take(12)
+        .to(LazyList)
+        .map: (brick, miss) =>
+          val diagonal = math.sqrt(brick.a.toDouble * brick.a + brick.b.toDouble * brick.b + brick.c.toDouble * brick.c)
+          f"  ${s"${brick.a} × ${brick.b} × ${brick.c}"}%-42s space diagonal ${math.round(diagonal)}%,d off by $miss%.2e"
 
   def fourDReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector

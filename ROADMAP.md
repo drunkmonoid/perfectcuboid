@@ -74,7 +74,7 @@ Same rules: one phase, one commit, every test passing.
   a square. Euler bricks are its triangles. Degrees and triangle counts.
 - [x] **28. Four dimensions.** Four edges whose six pairs all have whole diagonals, the
   graph's 4-cliques. Search for them, and count the near misses with five of six.
-- [ ] **29. Closest calls.** The Euler bricks whose space diagonal comes nearest to a whole
+- [x] **29. Closest calls.** The Euler bricks whose space diagonal comes nearest to a whole
   number, as a ranked catalogue.
 
 ### Searching harder

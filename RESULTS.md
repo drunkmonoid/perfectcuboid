@@ -170,6 +170,28 @@ From the 92,014 bricks with smallest edge ≤ 10⁶ there is **no four-dimension
 65,584 near misses, 471 of them primitive. The first is 85 × 132 × 351 × 720: 85 × 132 × 720
 is a brick, and 351 makes whole diagonals with 132 and 720, but not with 85.
 
+## Closest calls
+
+```sh
+scala-cli run . -J -Xmx2g -- closest 1e7   # about 50 seconds
+```
+
+The primitive bricks whose space diagonal comes nearest to a whole number. Only primitive
+bricks count: scaling a brick by k scales the miss by k too.
+
+| primitive brick, smallest edge ≤ 10⁷ | space diagonal | off by |
+| --- | ---: | ---: |
+| 37835 × 269280 × 1244484 | 1,273,846 | 6.5·10⁻⁵ |
+| 318175 × 3357792 × 6431880 | 7,262,581 | 8.8·10⁻⁵ |
+| 330165 × 672220 × 3502992 | 3,582,156 | 9.0·10⁻⁵ |
+| 6954717 × 10367280 × 16888556 | 21,001,712 | 4.1·10⁻⁴ |
+| 241604 × 2965395 × 34911360 | 35,037,908 | 4.6·10⁻⁴ |
+
+If the 1,647 misses were spread evenly between 0 and ½, the smallest would be expected around
+½ / 1,648 ≈ 3·10⁻⁴, and the three closest calls are a few times nearer than that. Nothing
+here suggests the space diagonals are drawn towards whole numbers. They miss about as chance
+would have them miss.
+
 ## Rules proved by computer
 
 ```sh

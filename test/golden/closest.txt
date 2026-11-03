@@ -1,0 +1,13 @@
+The primitive Euler bricks with smallest edge <= 30000 whose space diagonal is nearest a whole number:
+  28083 × 43056 × 105820                     space diagonal 117,645 off by 1.70e-03
+  10395 × 63364 × 327360                     space diagonal 333,598 off by 5.22e-03
+  10395 × 95004 × 220400                     space diagonal 240,229 off by 7.49e-03
+  10296 × 11753 × 16800                      space diagonal 22,943 off by 1.36e-02
+  28704 × 128205 × 247940                    space diagonal 280,597 off by 1.57e-02
+  195 × 748 × 6336                           space diagonal 6,383 off by 2.07e-02
+  4599 × 23760 × 144832                      space diagonal 146,840 off by 3.75e-02
+  832 × 855 × 2640                           space diagonal 2,897 off by 4.14e-02
+  1755 × 4576 × 6732                         space diagonal 8,327 off by 4.18e-02
+  29664 × 1018248 × 2135705                  space diagonal 2,366,209 off by 5.12e-02
+  2163 × 15840 × 37100                       space diagonal 40,398 off by 5.24e-02
+  28512 × 69355 × 138516                     space diagonal 157,511 off by 5.49e-02
