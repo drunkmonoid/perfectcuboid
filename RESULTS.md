@@ -275,7 +275,7 @@ every pair of legs, including the long ones it used to skip. Before that, with t
 fast search took 4.05 s and the parallel one 0.71 s. A filter by remainders mod 45,045
 keeps the extra cost down: it rules out 95.5% of the pairs with an addition and a table lookup.
 
-## Scala Native: works for short commands, not for long ones
+## Scala Native: long runs work, on one thread
 
 The same code builds to a native executable, about 10 MB, with Scala Native 0.5.12. That
 needs clang installed.
@@ -283,6 +283,7 @@ needs clang installed.
 ```sh
 scala-cli --power package . --native --native-mode release-fast -o perfectcuboid
 GC_MAXIMUM_HEAP_SIZE=1g ./perfectcuboid legs 240
+GC_MAXIMUM_HEAP_SIZE=1g ./perfectcuboid hunt hunt-bricks.txt 1e6
 ```
 
 Set `GC_MAXIMUM_HEAP_SIZE`. Without it, Scala Native's garbage collector may grow its heap
@@ -295,21 +296,30 @@ towards all of the machine's memory, and on this laptop the system killed it.
 | `face 1000` | 0.11 s | 1.0 s | same |
 | `rules 100000` | 2.5 s | 1.9 s | same |
 | `bricks 100000` | 3.2 s | 2.4 s | same |
+| `unbounded 1e6`, one thread | 18.5 s, 97 MB | 11.2 s, 290 MB | same |
+| `unbounded 1e6`, every core | crashes, sometimes | 3.6 s, 390 MB | – |
+| `hunt 1e6`, one thread | 16.0 s, 166 MB | | same |
 | `edge 3000000` | out of heap at 1 GB | 12.4 s | – |
-| `unbounded`, `hunt`, `stats` | crash | fine | – |
+| `stats`, `derived`, `origins`, … | crash | fine | – |
+
+The rows that say nothing about threads are from phase 10. The JVM times include its
+start-up, about 0.8 s.
 
 - **Short commands:** native starts instantly and gives the same output. That helps when
   the work itself is small.
-- **Allocation-heavy work:** the JVM is faster. On `bench 100000`, the readable search took
-  6.1 s natively against 1.2 s on the JVM, and the fast one 0.67 s against 0.33 s.
-- **Long, lazy computations** run out of heap on native. Its collector scans the stack
-  conservatively, so it can keep the start of a `LazyList` alive, and then every element
-  computed after it. The JVM knows exactly which variables are still in use, so these run
-  in 64 MB.
-- **Allocating on many threads at once** corrupts memory on native, whether through
-  `Future`s or Cats Effect. It shows up as segmentation faults and garbage array indices.
-  Single-threaded, the same search is correct.
+- **Long runs work, on one thread.** On Scala Native, `unbounded` and `hunt` search on one
+  thread by default (`Platform.defaultThreads`), and they go through an fs2 stream of chunks
+  rather than a `LazyList`, so memory stays flat. In phase 10 both crashed.
+- **The JVM is faster.** One thread for one thread, it takes 11.2 s where native takes 18.5 s,
+  and it can use every core.
+- **Allocating on several threads at once** still breaks native runs. With `--threads 4`,
+  two of four runs crashed, with a segmentation fault or an error exit. The runs that
+  finished gave the right bricks.
+- **Lazy lists** still keep too much alive on native: its collector scans the stack
+  conservatively, so it can hold on to the start of a `LazyList` and every element computed
+  after it. The reports built on `LazyList`s and `Future`s, like `stats`, still crash.
+- **One loss on both platforms:** Scala Native's `Runtime` has no `maxMemory`, so the
+  benchmark no longer prints the heap cap. It is in each command instead, as `-J -Xmx2g`.
 
-So the JVM is the platform for this project. The native build is kept because it costs
-nothing: the dependencies use `org::name::version`, which picks each library's build for
-the current platform.
+So the JVM is the platform for this project, and the native build is for short commands
+and patient single-threaded hunts.

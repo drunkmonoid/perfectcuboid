@@ -7,7 +7,7 @@ import com.monovore.decline.{Argument, Opts}
 /** The commands that only compute lines of text. Pure, so `Cli.run` can be tested directly. */
 enum Report:
   case Bricks(limit: Long)
-  case Unbounded(maxSmallestEdge: Long)
+  case Unbounded(maxSmallestEdge: Long, threads: Int)
   case Rules(limit: Long)
   case Saunderson(limit: Long)
   case Legs(leg: Long)
@@ -29,7 +29,7 @@ enum Report:
   */
 enum Command:
   case Print(report: Report)
-  case Hunt(file: String, upTo: Long, quarry: Quarry[?])
+  case Hunt(file: String, upTo: Long, quarry: Quarry[?], threads: Int)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
 
@@ -61,6 +61,12 @@ object CommandLine:
   private def edge(metavar: String): Opts[BigInt] =
     Opts.argument[BigInt](metavar).validate(s"$metavar must be at least 1")(_ >= 1)
 
+  private val threads: Opts[Int] =
+    Opts
+      .option[Int]("threads", "How many threads to search on (default: every core, but 1 on Scala Native).")
+      .withDefault(Platform.defaultThreads)
+      .validate("--threads must be at least 1")(_ >= 1)
+
   private def report(name: String, help: String)(opts: Opts[Report]): Opts[Command] =
     Opts.subcommand(name, help)(opts.map(Command.Print(_)))
 
@@ -69,7 +75,7 @@ object CommandLine:
       number("LIMIT", 1000).map(Report.Bricks(_))
     ),
     report("unbounded", "Euler bricks by smallest edge up to LIMIT (default 1000), other edges unbounded.")(
-      number("LIMIT", 1000).map(Report.Unbounded(_))
+      (number("LIMIT", 1000), threads).mapN(Report.Unbounded(_, _))
     ),
     report("rules", "Check the known Euler brick rules on every brick with edges up to LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.Rules(_))
@@ -160,8 +166,9 @@ object CommandLine:
       (
         Opts.argument[String]("FILE"),
         number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
-        kind
-      ).mapN(Command.Hunt(_, _, _))
+        kind,
+        threads
+      ).mapN(Command.Hunt(_, _, _, _))
     )
 
   private val bench: Opts[Command] =

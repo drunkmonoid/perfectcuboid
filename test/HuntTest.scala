@@ -105,7 +105,11 @@ class HuntTest extends munit.CatsEffectSuite:
           assertEquals(resume.found.largest.map(_.text), Some("√461776 × 1443 × 1800"))
 
   test("the streamed unbounded report prints the same lines as the pure one"):
-    Unbounded.stream(3000).compile.toList.map(lines => assertEquals(lines, Cli.run(Report.Unbounded(3000)).toList))
+    Unbounded
+      .stream(3000, 4)
+      .compile
+      .toList
+      .map(lines => assertEquals(lines, Cli.run(Report.Unbounded(3000, 3)).toList))
 
   test("blocks come in order, each with the summary of its own finds"):
     Blocks

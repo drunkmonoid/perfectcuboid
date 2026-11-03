@@ -44,7 +44,7 @@ scala-cli setup-ide .                   # set up Metals / VSCode
 scala-cli --power package . --native --native-mode release-fast -o perfectcuboid  # native binary (needs clang)
 ```
 
-The native binary suits short commands only: see [RESULTS.md](RESULTS.md#scala-native-works-for-short-commands-not-for-long-ones).
+The native binary suits short commands and single-threaded hunts: see [RESULTS.md](RESULTS.md#scala-native-long-runs-work-on-one-thread).
 
 A hunt writes each block of edges followed by a checkpoint line, so stopping it at any
 moment loses nothing; just don't run two hunts on the same file at once.
@@ -80,5 +80,6 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
+| `src/Platform.scala` | what differs on Scala Native: one search thread by default |
 | `src/Bench.scala` | timing the searches: warm-up, repeated runs, median and range |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |

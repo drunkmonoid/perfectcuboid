@@ -11,17 +11,21 @@ class CommandLineTest extends munit.FunSuite:
 
   test("numbers can be written with underscores or as powers of ten"):
     assertEquals(parse("legs", "1_000"), Right(Command.Print(Report.Legs(1000))))
-    assertEquals(parse("unbounded", "1e6"), Right(Command.Print(Report.Unbounded(1_000_000))))
+    assertEquals(parse("unbounded", "1e6"), Right(Command.Print(Report.Unbounded(1_000_000, Platform.defaultThreads))))
     assertEquals(
       parse("hunt", "bricks.txt", "2.5e7"),
-      Right(Command.Hunt("bricks.txt", 25_000_000, Quarry.eulerBricks))
+      Right(Command.Hunt("bricks.txt", 25_000_000, Quarry.eulerBricks, Platform.defaultThreads))
     )
+
+  test("the number of threads can be chosen"):
+    assertEquals(parse("unbounded", "100", "--threads", "1"), Right(Command.Print(Report.Unbounded(100, 1))))
+    assert(errors("unbounded", "100", "--threads", "0").nonEmpty)
 
   test("left-out numbers take their defaults"):
     assertEquals(parse("stats"), Right(Command.Print(Report.Stats(6))))
     assertEquals(
       parse("hunt", "bricks.txt"),
-      Right(Command.Hunt("bricks.txt", Search.MaxSmallestEdge, Quarry.eulerBricks))
+      Right(Command.Hunt("bricks.txt", Search.MaxSmallestEdge, Quarry.eulerBricks, Platform.defaultThreads))
     )
     assertEquals(parse("nearmisses"), Right(Command.Print(Report.NearMisses)))
 

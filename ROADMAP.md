@@ -87,7 +87,7 @@ Same rules: one phase, one commit, every test passing.
   so far, time left.
 - [x] **33. Verify.** `verify FILE` re-checks every brick in a results file with `BigInt`,
   and that its checkpoints leave no gaps.
-- [ ] **34. Native, round two.** Single-threaded, iterator-based paths so long runs work on
+- [x] **34. Native, round two.** Single-threaded, iterator-based paths so long runs work on
   Scala Native, measured against the JVM.
 - [ ] **35. The big hunt.** Smallest edge up to 10⁹ with no cap on the other edges, run
   with a capped heap, and recorded in RESULTS.md.

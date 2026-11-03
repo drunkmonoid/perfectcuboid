@@ -91,9 +91,9 @@ object Blocks:
             else Summary.empty
           Block(last, finds, summary)
 
-  /** The finds alone, one by one, from blocks of 2000 keys on every core. */
-  def finds[A](quarry: Quarry[A], from: Long, upTo: Long): Stream[IO, A] =
-    stream(quarry, from, upTo, 2000, Runtime.getRuntime.availableProcessors, summarize = false)
+  /** The finds alone, one by one, from blocks of 2000 keys on `threads` threads. */
+  def finds[A](quarry: Quarry[A], from: Long, upTo: Long, threads: Int = Platform.defaultThreads): Stream[IO, A] =
+    stream(quarry, from, upTo, 2000, threads, summarize = false)
       .flatMap(block => Stream.chunk(block.finds))
 
 /** A long search, for any kind of cuboid, that writes to a file, can be stopped at any time with Ctrl+C,
@@ -132,7 +132,7 @@ object Hunt:
       path: Path,
       upTo: Long,
       blockSize: Long = 10_000,
-      cores: Int = Runtime.getRuntime.availableProcessors
+      cores: Int = Platform.defaultThreads
   ): IO[Unit] =
     for
       resume <- readResume(quarry, path)

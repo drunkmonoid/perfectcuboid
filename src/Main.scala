@@ -23,9 +23,9 @@ object Unbounded:
   /** The report as an fs2 stream: the blocks of edges are searched on every core, and each
     * brick is printed as soon as its block, and every block before it, is done.
     */
-  def stream(maxSmallestEdge: Long): Stream[IO, String] =
+  def stream(maxSmallestEdge: Long, threads: Int): Stream[IO, String] =
     Stream.emit(header(maxSmallestEdge)) ++
-      Blocks.finds(Quarry.eulerBricks, 1, maxSmallestEdge).map(line) ++
+      Blocks.finds(Quarry.eulerBricks, 1, maxSmallestEdge, threads).map(line) ++
       Stream.emit(footer(maxSmallestEdge))
 
 /** The program's entry point. `scala-cli run . -- --help` lists the commands.
@@ -40,12 +40,13 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo, quarry)     => Hunt.run(quarry, Path(file), upTo)
+    case Command.Hunt(file, upTo, quarry, threads) => Hunt.run(quarry, Path(file), upTo, cores = threads)
     case Command.Verify(file, quarry, blocks) => Verify.run(quarry, Path(file), blocks).flatMap(_.traverse_(IO.println))
     case Command.Bench(limit, runs)           => IO.blocking(Bench.run(limit, runs))
     // Each line is computed and printed in turn, so long outputs are never held in memory,
     // and Ctrl+C can stop between any two lines.
-    case Command.Print(Report.Unbounded(limit)) => Unbounded.stream(limit).foreach(IO.println).compile.drain
+    case Command.Print(Report.Unbounded(limit, threads)) =>
+      Unbounded.stream(limit, threads).foreach(IO.println).compile.drain
     case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain
 
 object Cli:
@@ -57,7 +58,7 @@ object Cli:
     */
   def run(report: Report): LazyList[String] = report match
     case Report.Bricks(limit)               => bricksReport(limit)
-    case Report.Unbounded(maxSmallestEdge)  => unboundedReport(maxSmallestEdge)
+    case Report.Unbounded(limit, threads)   => unboundedReport(limit, threads)
     case Report.Rules(limit)                => rulesReport(limit)
     case Report.Saunderson(limit)           => saundersonReport(limit)
     case Report.Legs(leg)                   => legsReport(leg)
@@ -83,8 +84,8 @@ object Cli:
   /** Nothing here keeps the bricks once they are described, so memory use stays flat. `Main`
     * prints the same lines from a stream instead, `Unbounded.stream`.
     */
-  def unboundedReport(maxSmallestEdge: Long): LazyList[String] =
-    val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge)
+  def unboundedReport(maxSmallestEdge: Long, threads: Int): LazyList[String] =
+    val bricks = FastSearch.allEulerBricksParallel(cores = threads).takeWhile(_.a <= maxSmallestEdge)
     Unbounded.header(maxSmallestEdge) #:: bricks.map(Unbounded.line) :+ Unbounded.footer(maxSmallestEdge)
 
   def rulesReport(limit: Long): LazyList[String] =

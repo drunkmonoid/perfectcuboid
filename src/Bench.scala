@@ -55,12 +55,13 @@ object Bench:
     val timed = Vector.fill(runs)(time(body))
     (timed.head._1, Timing(timed.map(_._2)))
 
-  /** Where the timings were taken. The heap cap matters: too small a heap makes the garbage
-    * collector run all the time, and a parallel search allocates on every core at once.
+  /** Where the timings were taken. The heap cap matters too, but there is no way to read it
+    * that also builds for Scala Native, whose `Runtime` has no `maxMemory`: so set it in the
+    * command, with `-J -Xmx2g`.
     */
   def machine: String =
-    val runtime = Runtime.getRuntime
-    f"Java ${System.getProperty("java.version")}, ${runtime.availableProcessors} cores, heap cap ${runtime.maxMemory.toDouble / (1L << 30)}%.1f GiB"
+    val platform = if Platform.isNative then "Scala Native" else s"Java ${System.getProperty("java.version")}"
+    s"$platform, ${Runtime.getRuntime.availableProcessors} cores"
 
   def run(maxSmallestEdge: Long, runs: Int, warmUps: Int = 2): Unit =
     def line(name: String, timing: Timing, note: String) =
