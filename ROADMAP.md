@@ -65,7 +65,7 @@ Same rules: one phase, one commit, every test passing.
   compare with `Theory.scala` and the literature.
 - [x] **24. Derived bricks.** (ab, ac, bc) is an Euler brick whenever (a, b, c) is, and
   deriving twice gives the same shape back, so the primitive bricks come in pairs.
-- [ ] **25. Elliptic curves.** The third edges that go with two fixed edges a, b are points
+- [x] **25. Elliptic curves.** The third edges that go with two fixed edges a, b are points
   on y² = x(x + a²)(x + b²). Exact rational point arithmetic, and new bricks from multiples
   of a known one.
 - [ ] **26. Where bricks come from.** What share of primitive bricks are derived bricks,

@@ -18,6 +18,7 @@ enum Report:
   case Check(a: BigInt, b: BigInt, c: BigInt)
   case LocalRules(maxPrime: Int)
   case DerivedPairs(maxSmallestEdge: Long)
+  case Curve(a: BigInt, b: BigInt, c: BigInt, multiples: Int)
 
 /** Everything the program can do, with its arguments already checked. Hunts and benchmarks
   * touch files and clocks, so `Main` runs them; reports are only printed.
@@ -92,6 +93,17 @@ object CommandLine:
     ),
     report("derived", "Primitive Euler bricks with smallest edge up to LIMIT (default 100000), paired by derivation.")(
       number("LIMIT", 100_000, Search.MaxSmallestEdge).map(Report.DerivedPairs(_))
+    ),
+    report("curve", "New Euler bricks from the brick A × B × C, as multiples of points on elliptic curves.")(
+      (
+        edge("A"),
+        edge("B"),
+        edge("C"),
+        Opts
+          .option[Int]("multiples", "How many multiples of each point (default 4).")
+          .withDefault(4)
+          .validate("--multiples must be from 1 to 8")(n => n >= 1 && n <= 8)
+      ).mapN(Report.Curve(_, _, _, _))
     ),
     report("nearmisses", "The first body, face and edge cuboid.")(Opts(Report.NearMisses)),
     report("stats", "How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).")(

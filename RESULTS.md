@@ -86,6 +86,28 @@ gives back the same shape. So the primitive Euler bricks pair up. The first pair
 So about half of the primitive bricks found have their partner among them as well. No brick is its own
 partner, which would need b² = ac.
 
+## New bricks from elliptic curves
+
+```sh
+scala-cli run . -- curve 44 117 240
+```
+
+Fix two edges a and b. A third edge c works when c² + a² and c² + b² are both squares, and then
+(c², c·√(c² + a²)·√(c² + b²)) is a rational point on the elliptic curve y² = x(x + a²)(x + b²).
+Points on such a curve can be added (draw the line through two of them, take the third point
+where it meets the curve, reflect it), and every multiple of a brick's point is again the
+point of a brick with the same ratio a : b. So each Euler brick gives three infinite
+families, one for each pair of its edges:
+
+| from 44 × 117 × 240, fixing | 2P | 3P |
+| --- | --- | --- |
+| 44, 117 | 9555040 × 22855959 × 25407720 | 17-digit edges |
+| 44, 240 | 8430569 × 38181000 × 208260000 | 19-digit edges |
+| 117, 240 | 9813375 × 20130000 × 24523072 | 16-digit edges |
+
+The edges grow roughly like the square of the multiple: 4P has 28 to 32 digits. The 2P bricks
+are within reach of the search, which finds them too: two independent methods agreeing.
+
 ## Rules proved by computer
 
 ```sh

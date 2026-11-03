@@ -22,6 +22,7 @@ scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C sto
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
 scala-cli run . -- local                # prove such rules by trying every remainder mod p^k
 scala-cli run . -- derived 1e6           # primitive bricks paired with their derived bricks ab × ac × bc
+scala-cli run . -- curve 44 117 240     # new bricks from points on elliptic curves
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
 scala-cli run . -- legs 3825123056546413051  # ... any number up to 2⁶³ − 1
@@ -61,6 +62,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
 | `src/Summary.scala` | a search's results in a few numbers, as a monoid, so summaries of separate blocks add up |
+| `src/Elliptic.scala` | exact fractions, and the curves y² = x(x + a²)(x + b²) whose points are Euler bricks |
 | `src/Local.scala` | divisibility rules for Euler bricks and perfect cuboids, proved by trying every remainder |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |

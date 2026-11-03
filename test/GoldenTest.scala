@@ -46,6 +46,8 @@ class GoldenTest extends munit.FunSuite:
   golden("nearmisses", "nearmisses")
   golden("local", "local", "19")
   golden("derived", "derived", "20000")
+  golden("curve", "curve", "44", "117", "240")
+  golden("curve-not-euler", "curve", "1", "2", "3")
   golden("stats", "stats", "4")
   golden("check-body", "check", "240", "117", "44")
   golden("check-face", "check", "104", "153", "672")

@@ -46,6 +46,7 @@ object Cli:
     case Report.Check(a, b, c)              => checkReport(a, b, c)
     case Report.LocalRules(maxPrime)        => localReport(maxPrime)
     case Report.DerivedPairs(limit)         => derivedReport(limit)
+    case Report.Curve(a, b, c, multiples)   => curveReport(a, b, c, multiples)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -140,6 +141,25 @@ object Cli:
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
+
+  /** For each pair of edges of the brick, the bricks from the multiples of its point. */
+  def curveReport(a: BigInt, b: BigInt, c: BigInt, multiples: Int): LazyList[String] =
+    val brick = BigCuboid.of(a, b, c).get // the command line only lets positive edges through
+    def show(n: BigInt) = if n.toString.length <= 40 then n.toString else s"(${n.toString.length} digits)"
+    if !brick.isEuler then LazyList(s"$a × $b × $c is not an Euler brick.")
+    else
+      val (x, y, z) = (brick.a, brick.b, brick.c)
+      LazyList((x, y, z), (x, z, y), (y, z, x)).flatMap: (p, q, third) =>
+        val curve = EulerCurve(p, q)
+        val point = curve.pointOf(third).get // an Euler brick's third edge always gives a point
+        s"On y² = x(x + $p²)(x + $q²), the point of edge $third gives:" #::
+          curve
+            .multiples(point)
+            .take(multiples)
+            .zipWithIndex
+            .map: (m, i) =>
+              val found = curve.brickOf(m).get // every multiple of a brick's point has a square x
+              s"  ${i + 1}P: ${show(found.a)} × ${show(found.b)} × ${show(found.c)}"
 
   /** Each primitive brick in range with its derived partner, each pair once. */
   def derivedReport(maxSmallestEdge: Long): LazyList[String] =
