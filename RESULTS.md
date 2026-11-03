@@ -14,6 +14,10 @@ found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
 scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a half minutes
 ```
 
+`verify` then checked the file without trusting the search: each of the 2,826,042 bricks again
+with BigInt arithmetic, the checkpoints in order with every brick between the right ones, and
+three blocks spread through the file searched again. It found no problem, in 23 seconds.
+
 The other edges of a brick can be far longer than the smallest: the longest found here is
 22402464 × 15472627027 × 653477074380. Their squares go beyond a `Long`, so the search tests
 b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges were capped at

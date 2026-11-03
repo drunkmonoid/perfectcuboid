@@ -20,6 +20,7 @@ scala-cli run . -- bench 1e6 --runs 3   # time the readable, fast and parallel s
 scala-cli run . -- stats 7              # how the number of Euler bricks grows, up to 10^7
 scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- hunt hunt-face.txt 1e6 --kind face  # ... or of face cuboids, or edge cuboids (--kind edge)
+scala-cli run . -- verify hunt-bricks.txt  # check a hunt's file: every find again with BigInt, and a few blocks
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
 scala-cli run . -- local                # prove such rules by trying every remainder mod p^k
 scala-cli run . -- derived 1e6           # primitive bricks paired with their derived bricks ab × ac × bc
@@ -75,6 +76,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Local.scala` | divisibility rules for Euler bricks and perfect cuboids, proved by trying every remainder |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
+| `src/Verify.scala` | checking a results file without trusting the code that wrote it |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

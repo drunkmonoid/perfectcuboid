@@ -85,7 +85,7 @@ Same rules: one phase, one commit, every test passing.
   iterators, with no `LazyList` in between.
 - [x] **32. Progress and ETA.** A progress line on long hunts: edges per second, bricks
   so far, time left.
-- [ ] **33. Verify.** `verify FILE` re-checks every brick in a results file with `BigInt`,
+- [x] **33. Verify.** `verify FILE` re-checks every brick in a results file with `BigInt`,
   and that its checkpoints leave no gaps.
 - [ ] **34. Native, round two.** Single-threaded, iterator-based paths so long runs work on
   Scala Native, measured against the JVM.

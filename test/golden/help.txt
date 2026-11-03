@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | bench]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | verify | bench]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -43,5 +43,7 @@ Subcommands:
         How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).
     hunt
         Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.
+    verify
+        Check a hunt's FILE: every find again with BigInt, the checkpoints, a few blocks.
     bench
         Time the readable, fast and parallel searches up to LIMIT (default 100000).

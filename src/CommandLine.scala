@@ -30,6 +30,7 @@ enum Report:
 enum Command:
   case Print(report: Report)
   case Hunt(file: String, upTo: Long, quarry: Quarry[?])
+  case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
 
 /** The command line, described with the decline library: every subcommand, its arguments,
@@ -131,20 +132,35 @@ object CommandLine:
     )
   )
 
+  private val kind: Opts[Quarry[?]] =
+    Opts
+      .option[String](
+        "kind",
+        "bricks (by smallest edge, the default), face (by shared edge) or edge (by squared edge)."
+      )
+      .withDefault("bricks")
+      .mapValidated(kind =>
+        Quarry.byName.get(kind).toValidNel(s"--kind must be one of ${Quarry.byName.keys.mkString(", ")}")
+      )
+
+  private val verify: Opts[Command] =
+    Opts.subcommand("verify", "Check a hunt's FILE: every find again with BigInt, the checkpoints, a few blocks.")(
+      (
+        Opts.argument[String]("FILE"),
+        kind,
+        Opts
+          .option[Int]("blocks", "How many blocks to search again (default 3).")
+          .withDefault(3)
+          .validate("--blocks must be at least 0")(_ >= 0)
+      ).mapN(Command.Verify(_, _, _))
+    )
+
   private val hunt: Opts[Command] =
     Opts.subcommand("hunt", "Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.")(
       (
         Opts.argument[String]("FILE"),
         number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
-        Opts
-          .option[String](
-            "kind",
-            "bricks (by smallest edge, the default), face (by shared edge) or edge (by squared edge)."
-          )
-          .withDefault("bricks")
-          .mapValidated(kind =>
-            Quarry.byName.get(kind).toValidNel(s"--kind must be one of ${Quarry.byName.keys.mkString(", ")}")
-          )
+        kind
       ).mapN(Command.Hunt(_, _, _))
     )
 
@@ -161,7 +177,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ bench).reduce(_ orElse _) orElse Opts(Command.Print(Report.Bricks(1000)))
+    (reports :+ hunt :+ verify :+ bench).reduce(_ orElse _) orElse Opts(Command.Print(Report.Bricks(1000)))
 
   def parse(args: List[String]): Either[decline.Help, Command] =
     decline.Command("perfectcuboid", header)(opts).parse(args)
