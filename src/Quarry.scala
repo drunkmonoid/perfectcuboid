@@ -55,6 +55,20 @@ object Quarry:
       cuboid => BigCuboid.from(cuboid).isEuler
     )
 
+  /** The primitive Euler bricks only: the same search, but only primitive bricks are kept.
+    *
+    * For the perfect cuboid question these are enough. Divide a perfect cuboid's edges by
+    * their greatest common divisor and the result is a perfect cuboid too, primitive, with a
+    * smaller smallest edge. So if no primitive brick up to some smallest edge is perfect, no
+    * brick at all is. And there are far fewer of them: about 1 in 300 bricks up to 10⁷.
+    */
+  val primitiveBricks: Quarry[Cuboid] =
+    eulerBricks.copy(
+      name = "primitive Euler bricks",
+      search = (first, last) => FastSearch.eulerBricksIterator(first, last).filter(_.isPrimitive),
+      check = cuboid => eulerBricks.check(cuboid) && cuboid.isPrimitive
+    )
+
   /** The edge of a face cuboid where its two whole face diagonals meet. */
   private def sharedEdge(c: Cuboid): Long =
     val List(ab, ac, bc) = BigCuboid.from(c).faceDiagonals.map(_.isDefined): @unchecked
@@ -117,4 +131,5 @@ object Quarry:
     )
 
   /** By the names the command line uses. */
-  val byName: Map[String, Quarry[?]] = Map("bricks" -> eulerBricks, "face" -> faceCuboids, "edge" -> edgeCuboids)
+  val byName: Map[String, Quarry[?]] =
+    Map("bricks" -> eulerBricks, "primitive" -> primitiveBricks, "face" -> faceCuboids, "edge" -> edgeCuboids)

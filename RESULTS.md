@@ -6,9 +6,37 @@ with the command shown next to it. Timings are on a mid-range laptop (Core i5,
 
 ## No perfect cuboid, as far as we looked
 
-A perfect cuboid would be an Euler brick whose space diagonal is also whole. The hunt searched
-every Euler brick with **smallest edge up to 30,500,000**, however long the other edges. It
-found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
+A perfect cuboid would be an Euler brick whose space diagonal is also whole. Every perfect
+cuboid is a multiple of a primitive one, whose edges share no common factor, so it is enough
+to look at primitive bricks. The big hunt searched every primitive Euler brick with **smallest
+edge up to 1,000,000,000**, however long the other edges. It found 10,220 of them, and no
+perfect cuboid.
+
+```sh
+scala-cli run . -J -Xmx1g -- hunt hunt-primitive.txt 1e9 --kind primitive   # 4 h 15 min on 10 threads
+scala-cli run . -J -Xmx1g -- verify hunt-primitive.txt --kind primitive     # 0 problems
+```
+
+The memory stays flat: blocks of edges are searched and written as they finish, so a 1 GB heap
+is plenty. The speed fell from about 350,000 edges per second at the start to about 50,000
+near the end, since larger edges have more factors and more legs to pair.
+
+| digits in the longest edge | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| primitive bricks | 5 | 14 | 46 | 177 | 462 | 1,180 | 2,747 | 3,930 | 1,384 | 244 | 29 | 2 |
+
+The longest is 825973020 × 74800516901 × 37650741152640, whose longest edge is more than
+45,000 times its shortest.
+
+**Checked against the OEIS.** A031173, A031174 and A031175 list the primitive Euler bricks with
+longest edge below 5·10⁸, each brick's edges in one of the three sequences. Any such brick has
+its smallest edge below 10⁹, so the hunt must contain all of them. It does: the 3,556 bricks in
+the hunt's file with longest edge below 5·10⁸ are exactly the 3,556 in the OEIS tables, with
+none missing and none extra. (The comment in A031174 and A031175 says "3356 primitive bricks";
+the tables the same entries link to have 3,556 rows, so the comment has two digits swapped.)
+
+The earlier hunt of all Euler bricks, not only primitive ones, searched every smallest edge
+up to 30,500,000. It found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
 
 ```sh
 scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a half minutes
@@ -18,7 +46,7 @@ scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a h
 with BigInt arithmetic, the checkpoints in order with every brick between the right ones, and
 three blocks spread through the file searched again. It found no problem, in 23 seconds.
 
-The other edges of a brick can be far longer than the smallest: the longest found here is
+The other edges of a brick can be far longer than the smallest: the longest found in that hunt is
 22402464 × 15472627027 × 653477074380. Their squares go beyond a `Long`, so the search tests
 b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges were capped at
 1,753,413,056, and the same hunt found 11,309 fewer bricks.
@@ -50,7 +78,10 @@ Fitting count ≈ C·Nᵏ between successive rows gives these values of k:
 | 10⁵ and 10⁶ | 0.57 | 0.53 |
 | 10⁶ and 10⁷ | 0.46 | 0.43 |
 
-So primitive Euler bricks grow roughly like √N, perhaps a little slower. The counts of all
+The big hunt carries the last column further: 4,271 primitive bricks with smallest edge up
+to 10⁸, and 10,220 up to 10⁹, which gives k = 0.41 and then 0.38.
+
+So primitive Euler bricks grow roughly like √N, and a little slower as N grows. The counts of all
 bricks grow almost exactly in proportion to N, because every primitive brick contributes all
 its multiples.
 

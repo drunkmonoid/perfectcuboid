@@ -89,7 +89,7 @@ Same rules: one phase, one commit, every test passing.
   and that its checkpoints leave no gaps.
 - [x] **34. Native, round two.** Single-threaded, iterator-based paths so long runs work on
   Scala Native, measured against the JVM.
-- [ ] **35. The big hunt.** Smallest edge up to 10⁹ with no cap on the other edges, run
+- [x] **35. The big hunt.** Smallest edge up to 10⁹ with no cap on the other edges, run
   with a capped heap, and recorded in RESULTS.md.
 
 ### Showing it

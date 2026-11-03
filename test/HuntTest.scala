@@ -120,3 +120,16 @@ class HuntTest extends munit.CatsEffectSuite:
         assertEquals(blocks.map(_.last), List(700L, 1400, 2100, 2800, 3500, 4200, 4900, 5000))
         assertEquals(blocks.flatMap(_.finds.toList), FastSearch.eulerBricksBetween(1, 5000))
         blocks.foreach(block => assertEquals(block.summary, Summary.of(block.finds.toList)))
+
+  test("a primitive hunt keeps exactly the primitive bricks"):
+    withTempFile: path =>
+      for
+        _ <- Hunt.run(Quarry.primitiveBricks, path, 20_000, blockSize = 1000, cores = 4)
+        lines <- Files[IO].readUtf8Lines(path).compile.toList
+        report <- Verify.run(Quarry.primitiveBricks, path, blocks = 3)
+      yield
+        assertEquals(
+          HuntFile.parse(Quarry.primitiveBricks, lines),
+          FastSearch.eulerBricksBetween(1, 20_000).filter(_.isPrimitive)
+        )
+        assertEquals(report.last, "OK", report)
