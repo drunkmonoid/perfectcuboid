@@ -51,7 +51,7 @@ Same rules: one phase, one commit, every test passing.
   them.
 - [x] **19. Factorising whole blocks.** A segmented sieve of smallest prime factors, so the
   search factorises a block of edges at once instead of one by one.
-- [ ] **20. Counting formulas.** How many legs a number pairs with, and in how many ways it
+- [x] **20. Counting formulas.** How many legs a number pairs with, and in how many ways it
   is a hypotenuse, read off its factorisation and checked against the enumerations.
 - [ ] **21. Cuboids of any size.** A `BigInt` cuboid sharing its checks with `Cuboid`
   through a type class.

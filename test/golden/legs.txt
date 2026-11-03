@@ -1,5 +1,5 @@
 240 = 2^4 · 3 · 5
-31 legs pair with 240:
+240 is a leg of 31 Pythagorean triples (4 primitive), and the hypotenuse of 1 (0 primitive).
   240² + 44² = 244²
   240² + 54² = 246²
   240² + 70² = 250²

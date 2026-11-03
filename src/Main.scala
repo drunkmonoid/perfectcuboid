@@ -82,16 +82,17 @@ object Cli:
   def legsReport(a: Long): LazyList[String] =
     val factors = NumberTheory.factorize(a)
     val shown = factors.map((p, k) => if k == 1 then s"$p" else s"$p^$k").mkString(" · ")
+    def triples(n: Long) = if n == 1 then "1 Pythagorean triple" else s"$n Pythagorean triples"
+    val counts =
+      s"$a is a leg of ${triples(Counting.asLeg(factors))} (${Counting.asPrimitiveLeg(a, factors)} primitive), " +
+        s"and the hypotenuse of ${Counting.asHypotenuse(factors)} (${Counting.asPrimitiveHypotenuse(a, factors)} primitive)."
     val divisorsOfSquare = NumberTheory.divisorCount(factors.map((p, k) => p -> 2 * k))
-    if divisorsOfSquare > MaxDivisorsToList then
-      LazyList(s"$a = $shown", s"$a² has $divisorsOfSquare divisors, too many to list the legs from.")
+    if divisorsOfSquare > MaxDivisorsToList then LazyList(s"$a = $shown", counts, "Too many legs to list.")
     else
       val legs = Pythagorean.legsPairedWithAny(a, factors)
       // y can be up to a²/2, so y² needs BigInt.
       def hypotenuse(y: BigInt) = Arith.isqrtBig(BigInt(a).pow(2) + y.pow(2))
-      s"$a = $shown"
-        #:: (if legs.size == 1 then s"1 leg pairs with $a:" else s"${legs.size} legs pair with $a:")
-        #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
+      s"$a = $shown" #:: counts #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
 
   def faceReport(maxSharedEdge: Long): LazyList[String] =
     val cuboids =

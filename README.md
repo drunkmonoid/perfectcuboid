@@ -49,6 +49,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/NumberTheory.scala` | primes (a sieve, and Miller–Rabin for any `Long`), factorisation and divisors |
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula, and the legs paired with any given leg |
 | `src/Search.scala` | bounded Euler brick search, its brute-force check, and the unbounded `LazyList` search |
+| `src/Counting.scala` | how many triples a number is a leg or hypotenuse of, from its factorisation |
 | `src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
 | `src/Sieve.scala` | factorising a block of consecutive numbers at once, by a segmented sieve |
 | `src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |

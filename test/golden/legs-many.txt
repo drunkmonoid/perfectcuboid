@@ -1,2 +1,3 @@
 614889782588491410 = 2 · 3 · 5 · 7 · 11 · 13 · 17 · 19 · 23 · 29 · 31 · 37 · 41 · 43 · 47
-614889782588491410² has 14348907 divisors, too many to list the legs from.
+614889782588491410 is a leg of 2391484 Pythagorean triples (0 primitive), and the hypotenuse of 364 (0 primitive).
+Too many legs to list.
