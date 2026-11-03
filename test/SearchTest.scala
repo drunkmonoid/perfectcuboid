@@ -37,6 +37,6 @@ class SearchTest extends munit.FunSuite:
     assert(bricks.forall(_.isEuler))
 
   test("the command line streams the unbounded search"):
-    val lines = Cli.run(List("unbounded", "100"))
+    val lines = Cli.run(Report.Unbounded(100))
     assert(lines.exists(_.contains("44 × 117 × 240")))
     assert(lines.last.startsWith("Done"))

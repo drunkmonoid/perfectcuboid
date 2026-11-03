@@ -1,44 +1,30 @@
 package perfectcuboid
 
-import cats.effect.{ExitCode, IO, IOApp}
+import cats.effect.{ExitCode, IO}
+import com.monovore.decline.Opts
+import com.monovore.decline.effect.CommandIOApp
 import fs2.Stream
 import fs2.io.file.Path
 import Stats.Counts
 import scala.concurrent.ExecutionContext.Implicits.global
 
-/** The program's entry point.
+/** The program's entry point. `scala-cli run . -- --help` lists the commands.
   *
-  * `run` does not do anything itself: it returns an `IO`, a description of the program, and
-  * the `IOApp` runtime carries it out. Ctrl+C cancels it cleanly, closing any open file.
-  *
-  *   scala-cli run .                          Euler bricks with edges up to 1000
-  *   scala-cli run . -- bricks 5000           ... up to another limit
-  *   scala-cli run . -- unbounded 100000      Euler bricks by smallest edge, however big the others
-  *   scala-cli run . -- hunt bricks.txt 1e9   long search to a file; Ctrl+C stops, rerun resumes
-  *   scala-cli run . -- rules 100000          check the known rules against every brick found
-  *   scala-cli run . -- saunderson 10000000   Saunderson's bricks, from a formula, no search
-  *   scala-cli run . -- legs 240              factorise 240 and list every leg it pairs with
-  *   scala-cli run . -- face 1000             face cuboids with shared edge up to 1000
-  *   scala-cli run . -- edge 3000000          edge cuboids with squared irrational edge up to 3000000
-  *   scala-cli run . -- nearmisses            the first cuboid of each almost-perfect kind
-  *   scala-cli run . -- bench 100000          time the readable, fast and parallel searches
-  *   scala-cli run . -- stats 7               how the number of Euler bricks grows, up to 10^7
+  * `CommandIOApp` parses the command line with `CommandLine.opts`, and prints the help
+  * instead when that fails. Nothing here does anything itself: `execute` returns an `IO`, a
+  * description of the program, and the runtime carries it out. Ctrl+C cancels it cleanly,
+  * closing any open file.
   */
-object Main extends IOApp:
+object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
 
-  def run(args: List[String]): IO[ExitCode] =
-    val program = args match
-      case "hunt" :: file :: rest => Hunt.run(Path(file), rest.headOption.flatMap(parseNumber).getOrElse(Edge.Max))
-      case "hunt" :: Nil          => IO.println("hunt: give a results file, e.g. hunt bricks.txt 1e9")
-      case "bench" :: rest        => IO.blocking(Bench.run(Cli.limit(rest)))
-      // Each line is computed and printed in turn, so long outputs are never held in memory,
-      // and Ctrl+C can stop between any two lines.
-      case _ => Stream.fromIterator[IO](Cli.run(args).iterator, 1).foreach(IO.println).compile.drain
-    program.as(ExitCode.Success)
+  def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
-  /** "1000000", "1_000_000" or "1e6". */
-  def parseNumber(s: String): Option[Long] =
-    s.replace("_", "").toLongOption.orElse(s.toDoubleOption.filter(_.isWhole).map(_.toLong))
+  def execute(command: Command): IO[Unit] = command match
+    case Command.Hunt(file, upTo) => Hunt.run(Path(file), upTo)
+    case Command.Bench(limit)     => IO.blocking(Bench.run(limit))
+    // Each line is computed and printed in turn, so long outputs are never held in memory,
+    // and Ctrl+C can stop between any two lines.
+    case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain
 
 /** Timing reads the clock, which is a side effect, so it lives out here rather than in Cli. */
 object Bench:
@@ -61,25 +47,21 @@ object Bench:
 
 object Cli:
 
-  /** Turns the command line arguments into the lines to print. Pure, so it can be tested.
+  /** Turns a report into the lines to print. Pure, so it can be tested.
     *
     * The lines form a LazyList: each one is only computed when it is about to be printed,
     * so long searches show their results as they go.
     */
-  def run(args: List[String]): LazyList[String] = args match
-    case "rules" :: rest      => rulesReport(limit(rest))
-    case "bricks" :: rest     => bricksReport(limit(rest))
-    case "unbounded" :: rest  => unboundedReport(limit(rest))
-    case "saunderson" :: rest => saundersonReport(limit(rest))
-    case "legs" :: rest       => legsReport(limit(rest))
-    case "face" :: rest       => faceReport(limit(rest))
-    case "edge" :: rest       => edgeReport(limit(rest))
-    case "nearmisses" :: _    => nearMissesReport
-    case "stats" :: rest      => statsReport(rest.headOption.flatMap(_.toIntOption).getOrElse(6))
-    case rest                 => bricksReport(limit(rest))
-
-  def limit(args: List[String]): Long =
-    args.headOption.flatMap(_.toLongOption).getOrElse(1000L)
+  def run(report: Report): LazyList[String] = report match
+    case Report.Bricks(limit)               => bricksReport(limit)
+    case Report.Unbounded(maxSmallestEdge)  => unboundedReport(maxSmallestEdge)
+    case Report.Rules(limit)                => rulesReport(limit)
+    case Report.Saunderson(limit)           => saundersonReport(limit)
+    case Report.Legs(leg)                   => legsReport(leg)
+    case Report.FaceCuboids(maxSharedEdge)  => faceReport(maxSharedEdge)
+    case Report.EdgeCuboids(maxSquaredEdge) => edgeReport(maxSquaredEdge)
+    case Report.NearMisses                  => nearMissesReport
+    case Report.Stats(maxExponent)          => statsReport(maxExponent)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)

@@ -12,6 +12,7 @@ for how the project was built up.
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 
 ```sh
+scala-cli run . -- --help               # every command, its arguments and defaults
 scala-cli run .                         # list Euler bricks with edges up to 1000
 scala-cli run . -- bricks 100000        # ... or up to another limit
 scala-cli run . -- unbounded 10000000   # by smallest edge, other edges unbounded, flat memory
@@ -50,4 +51,5 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
+| `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |

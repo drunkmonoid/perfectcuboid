@@ -22,4 +22,4 @@ class TheoryTest extends munit.ScalaCheckSuite:
     forAll(eulerBrick)(c => Theory.violations(Theory.eulerBrickRules, c).isEmpty)
 
   test("the command line reports that all rules hold"):
-    assert(Cli.run(List("rules", "5000")).exists(_.contains("All rules hold")))
+    assert(Cli.run(Report.Rules(5000)).exists(_.contains("All rules hold")))

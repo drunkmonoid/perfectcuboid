@@ -7,6 +7,7 @@
 //> using options -deprecation -feature -Werror -Wunused:all -Wvalue-discard -Wnonunit-statement -Wsafe-init -Yexplicit-nulls
 //> using dep org.typelevel::cats-effect::3.7.1
 //> using dep co.fs2::fs2-io::3.14.0
+//> using dep com.monovore::decline-effect::2.6.2
 //> using test.dep org.scalameta::munit::1.3.6
 //> using test.dep org.scalameta::munit-scalacheck::1.3.1
 //> using test.dep org.typelevel::munit-cats-effect::2.2.1

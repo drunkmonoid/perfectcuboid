@@ -34,7 +34,7 @@ Same rules: one phase, one commit, every test passing.
   fix whatever they find.
 - [x] **12. Formatting and CI.** `scala-cli fmt` with a checked-in style, and GitHub
   Actions running the tests and the format check on every push.
-- [ ] **13. A real command line.** Subcommands, `--help`, and clear errors for bad input
+- [x] **13. A real command line.** Subcommands, `--help`, and clear errors for bad input
   instead of silently falling back to 1000.
 - [ ] **14. Monoids for results.** Block summaries (counts, extremes, histograms) as
   Cats `Monoid`s, combined with `|+|`, their laws checked with discipline.
