@@ -7,7 +7,7 @@ problem in plain, purely functional Scala 3: is there a box whose edges, face di
 space diagonal are all whole numbers? Nobody knows.
 
 See [RESULTS.md](RESULTS.md) for what the searches have found, and [ROADMAP.md](ROADMAP.md)
-for how the project was built up.
+for how the project was built up. New to Scala? Start with the [guided tour](docs/tour/README.md).
 
 ![How the number of Euler bricks grows](docs/growth.svg)
 

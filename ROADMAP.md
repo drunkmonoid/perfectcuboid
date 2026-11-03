@@ -100,7 +100,7 @@ Same rules: one phase, one commit, every test passing.
   plain Scala into `docs/`.
 - [x] **38. Scala.js.** The core library compiled to JavaScript, and a static page that
   checks any box in the browser.
-- [ ] **39. Guided tour.** Runnable `.sc` worksheets in `docs/` that walk a Scala newcomer
+- [x] **39. Guided tour.** Runnable `.sc` worksheets in `docs/` that walk a Scala newcomer
   through the ideas.
 - [ ] **40. Version 1.0.** A final pass over README and RESULTS, a changelog, and a
   `v1.0` tag.

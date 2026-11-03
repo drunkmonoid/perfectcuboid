@@ -24,3 +24,5 @@ jobs:
         run: scala-cli test . --server=false
       - name: The web page's tests, compiled to JavaScript and run on Node
         run: scala-cli test web --server=false
+      - name: The guided tour's worksheets
+        run: for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
