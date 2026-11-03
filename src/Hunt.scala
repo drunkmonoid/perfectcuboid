@@ -26,7 +26,13 @@ object HuntFile:
   /** What reading a results file tells us. `validBytes` is where the last complete checkpoint
     * ends: anything after it belongs to a block that was not finished, and is thrown away.
     */
-  final case class Resume(searchedUpTo: Long, bricks: Long, validBytes: Long, bricksSinceCheckpoint: Long, bytesRead: Long)
+  final case class Resume(
+      searchedUpTo: Long,
+      bricks: Long,
+      validBytes: Long,
+      bricksSinceCheckpoint: Long,
+      bytesRead: Long
+  )
 
   object Resume:
     val Fresh: Resume = Resume(0, 0, 0, 0, 0)
@@ -48,8 +54,11 @@ object HuntFile:
 
   /** The bricks recorded in a results file, for tests and later analysis. */
   def parseBricks(lines: List[String]): List[(Long, Long, Long)] =
-    lines.filterNot(_.startsWith("#")).map(_.split(" +").toList).collect:
-      case a :: b :: c :: _ => (a.toLong, b.toLong, c.toLong)
+    lines
+      .filterNot(_.startsWith("#"))
+      .map(_.split(" +").toList)
+      .collect:
+        case a :: b :: c :: _ => (a.toLong, b.toLong, c.toLong)
 
 /** A long Euler brick search that writes to a file, can be stopped at any time with Ctrl+C,
   * and resumes where it left off when run again.
@@ -63,16 +72,18 @@ object Hunt:
 
   /** Reads an existing results file, line by line in constant memory, to find where to resume. */
   def readResume(path: Path): IO[HuntFile.Resume] =
-    Files[IO].exists(path).flatMap: exists =>
-      if !exists then IO.pure(HuntFile.Resume.Fresh)
-      else
-        Files[IO]
-          .readUtf8Lines(path)
-          .zipWithNext
-          // A line followed by another was ended by a newline; the very last one was not.
-          .fold(HuntFile.Resume.Fresh)((state, pair) => HuntFile.step(state, pair._1, pair._2.isDefined))
-          .compile
-          .lastOrError
+    Files[IO]
+      .exists(path)
+      .flatMap: exists =>
+        if !exists then IO.pure(HuntFile.Resume.Fresh)
+        else
+          Files[IO]
+            .readUtf8Lines(path)
+            .zipWithNext
+            // A line followed by another was ended by a newline; the very last one was not.
+            .fold(HuntFile.Resume.Fresh)((state, pair) => HuntFile.step(state, pair._1, pair._2.isDefined))
+            .compile
+            .lastOrError
 
   /** Cuts off anything after the last complete checkpoint. (Careful: `Flags.Write` would
     * also empty the file on opening, so only the bare `Write` flag is used.)
@@ -80,7 +91,12 @@ object Hunt:
   def dropUnfinishedBlock(path: Path, resume: HuntFile.Resume): IO[Unit] =
     Files[IO].open(path, Flags(Flag.Write)).use(handle => handle.truncate(resume.validBytes))
 
-  def run(path: Path, upTo: Long, blockSize: Long = 10_000, cores: Int = Runtime.getRuntime.availableProcessors): IO[Unit] =
+  def run(
+      path: Path,
+      upTo: Long,
+      blockSize: Long = 10_000,
+      cores: Int = Runtime.getRuntime.availableProcessors
+  ): IO[Unit] =
     for
       resume <- readResume(path)
       _ <- dropUnfinishedBlock(path, resume).whenA(resume.bytesRead > resume.validBytes)
@@ -100,7 +116,14 @@ object Hunt:
   /** Blocks of edges are searched on every core at once by `parEvalMap`, which hands back
     * the results in their original order, so each block is written after the one before it.
     */
-  private def search(path: Path, from: Long, upTo: Long, blockSize: Long, cores: Int, progress: Ref[IO, Progress]): Stream[IO, Unit] =
+  private def search(
+      path: Path,
+      from: Long,
+      upTo: Long,
+      blockSize: Long,
+      cores: Int,
+      progress: Ref[IO, Progress]
+  ): Stream[IO, Unit] =
     val blocks = Stream
       .iterate(from)(_ + blockSize)
       .takeWhile(_ <= upTo)
@@ -115,7 +138,9 @@ object Hunt:
           for
             moved <- cursor.write(Chunk.array(HuntFile.blockText(bricks, last).getBytes("UTF-8")))
             _ <- progress.update(p => Progress(last, p.bricks + bricks.size))
-            _ <- bricks.filter(_.isPerfect).traverse_(c => IO.println(s"PERFECT CUBOID FOUND: ${c.a} × ${c.b} × ${c.c}"))
+            _ <- bricks
+              .filter(_.isPerfect)
+              .traverse_(c => IO.println(s"PERFECT CUBOID FOUND: ${c.a} × ${c.b} × ${c.c}"))
           yield moved
       .void
 
@@ -132,6 +157,8 @@ object Hunt:
         yield ()
 
   private def summary(outcome: Outcome[IO, Throwable, Unit], p: Progress): String = outcome match
-    case Outcome.Succeeded(_) => f"Done: searched every smallest edge up to ${p.searchedUpTo}%,d, ${p.bricks}%,d bricks, none perfect."
-    case Outcome.Canceled()   => f"Stopped after smallest edge ${p.searchedUpTo}%,d. Run the same command again to resume."
-    case Outcome.Errored(e)   => s"Failed after smallest edge ${p.searchedUpTo}: $e. Run again to resume."
+    case Outcome.Succeeded(_) =>
+      f"Done: searched every smallest edge up to ${p.searchedUpTo}%,d, ${p.bricks}%,d bricks, none perfect."
+    case Outcome.Canceled() =>
+      f"Stopped after smallest edge ${p.searchedUpTo}%,d. Run the same command again to resume."
+    case Outcome.Errored(e) => s"Failed after smallest edge ${p.searchedUpTo}: $e. Run again to resume."

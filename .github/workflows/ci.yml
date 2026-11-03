@@ -1,0 +1,22 @@
+# Checks every push and pull request: the code is formatted, compiles without warnings,
+# and every test passes.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          scala-cli-version: 1.18.0
+          jvm: temurin:17
+      - name: Formatting
+        run: scala-cli fmt --check .
+      - name: Tests
+        run: scala-cli test .

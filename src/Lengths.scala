@@ -41,5 +41,4 @@ object Diagonal:
   def fromSquare(n: Long): Option[Diagonal] = Arith.exactSqrt(n)
 
 /** Extension methods add methods to a type from the outside, here to every Long. */
-extension (n: Long)
-  def toEdge: Either[CuboidError, Edge] = Edge.from(n)
+extension (n: Long) def toEdge: Either[CuboidError, Edge] = Edge.from(n)

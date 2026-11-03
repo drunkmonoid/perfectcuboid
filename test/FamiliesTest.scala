@@ -9,10 +9,13 @@ class FamiliesTest extends munit.ScalaCheckSuite:
   val triple: Gen[Triple] = Gen.oneOf(Families.primitiveTriples.take(3000))
 
   test("the tree starts at (3, 4, 5) with children (5, 12, 13), (21, 20, 29), (15, 8, 17)"):
-    assertEquals(Families.berggrenLevels.take(2).toList, List(
-      List(Triple(3, 4, 5)),
-      List(Triple(5, 12, 13), Triple(21, 20, 29), Triple(15, 8, 17))
-    ))
+    assertEquals(
+      Families.berggrenLevels.take(2).toList,
+      List(
+        List(Triple(3, 4, 5)),
+        List(Triple(5, 12, 13), Triple(21, 20, 29), Triple(15, 8, 17))
+      )
+    )
 
   property("every triple in the tree is a primitive Pythagorean triple"):
     forAll(triple): t =>
@@ -33,8 +36,10 @@ class FamiliesTest extends munit.ScalaCheckSuite:
 
   property("Saunderson bricks are Euler bricks, never perfect, and obey the rules"):
     forAll(triple): t =>
-      Families.saunderson(t).forall: brick =>
-        brick.kind == Kind.Body && Theory.violations(Theory.rulesFor(brick), brick).isEmpty
+      Families
+        .saunderson(t)
+        .forall: brick =>
+          brick.kind == Kind.Body && Theory.violations(Theory.rulesFor(brick), brick).isEmpty
 
   test("the search finds every Saunderson brick in its range"):
     val limit = 20_000L

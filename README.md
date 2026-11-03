@@ -1,5 +1,7 @@
 # perfectcuboid
 
+[![CI](https://github.com/drunkmonoid/perfectcuboid/actions/workflows/ci.yml/badge.svg)](https://github.com/drunkmonoid/perfectcuboid/actions/workflows/ci.yml)
+
 Playing around with the [perfect cuboid](https://en.wikipedia.org/wiki/Euler_brick#Perfect_cuboid)
 problem in plain, purely functional Scala 3: is there a box whose edges, face diagonals and
 space diagonal are all whole numbers? Nobody knows.
@@ -23,6 +25,7 @@ scala-cli run . -- nearmisses           # the first body, face and edge cuboid
 scala-cli run . -- face 1000            # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000         # edge cuboids: one edge irrational
 scala-cli test .                        # run the tests
+scala-cli fmt .                         # format the code (CI checks it)
 scala-cli repl .                        # REPL with the project loaded
 scala-cli setup-ide .                   # set up Metals / VSCode
 scala-cli --power package . --native --native-mode release-fast -o perfectcuboid  # native binary (needs clang)

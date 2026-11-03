@@ -32,7 +32,7 @@ Same rules: one phase, one commit, every test passing.
 
 - [x] **11. Stricter compiler.** `-Werror`, explicit nulls and safe initialisation, and
   fix whatever they find.
-- [ ] **12. Formatting and CI.** `scala-cli fmt` with a checked-in style, and GitHub
+- [x] **12. Formatting and CI.** `scala-cli fmt` with a checked-in style, and GitHub
   Actions running the tests and the format check on every push.
 - [ ] **13. A real command line.** Subcommands, `--help`, and clear errors for bad input
   instead of silently falling back to 1000.

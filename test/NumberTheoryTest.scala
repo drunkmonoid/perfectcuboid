@@ -19,8 +19,7 @@ class NumberTheoryTest extends munit.ScalaCheckSuite:
       value(factors) == n && primes == primes.sorted.distinct && primes.forall(isPrimeSlowly)
 
   test("divisors agree with checking every candidate"):
-    for n <- 1L to 2000L do
-      assertEquals(divisors(n), (1L to n).filter(n % _ == 0).toList)
+    for n <- 1L to 2000L do assertEquals(divisors(n), (1L to n).filter(n % _ == 0).toList)
 
   test("the legs paired with 240 include the other edges of two Euler bricks"):
     val legs = Pythagorean.legsPairedWith(240)
@@ -28,9 +27,11 @@ class NumberTheoryTest extends munit.ScalaCheckSuite:
 
   property("every leg returned really makes a Pythagorean triple"):
     forAll(Gen.chooseNum(1L, Edge.Max)): a =>
-      Pythagorean.legsPairedWith(a).forall: y =>
-        val z = BigInt(a).pow(2) + BigInt(y).pow(2)
-        Arith.isqrtBig(z).pow(2) == z
+      Pythagorean
+        .legsPairedWith(a)
+        .forall: y =>
+          val z = BigInt(a).pow(2) + BigInt(y).pow(2)
+          Arith.isqrtBig(z).pow(2) == z
 
   test("legsPairedWith finds exactly the partners the old method finds"):
     val limit = 3000L

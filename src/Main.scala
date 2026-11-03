@@ -128,13 +128,15 @@ object Cli:
         #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
 
   def faceReport(maxSharedEdge: Long): LazyList[String] =
-    val cuboids = LazyList.iterate(1L)(_ + 1).takeWhile(_ <= maxSharedEdge).flatMap(NearMisses.faceCuboidsWithSharedEdge)
+    val cuboids =
+      LazyList.iterate(1L)(_ + 1).takeWhile(_ <= maxSharedEdge).flatMap(NearMisses.faceCuboidsWithSharedEdge)
     s"Face cuboids whose whole face diagonals meet at an edge <= $maxSharedEdge"
       #:: cuboids.map(c => describeSquared(c.squared))
       :+ "Done."
 
   def edgeReport(maxSquaredEdge: Long): LazyList[String] =
-    val cuboids = LazyList.iterate(2L)(_ + 1).takeWhile(_ <= maxSquaredEdge).flatMap(NearMisses.edgeCuboidsWithSquaredEdge)
+    val cuboids =
+      LazyList.iterate(2L)(_ + 1).takeWhile(_ <= maxSquaredEdge).flatMap(NearMisses.edgeCuboidsWithSquaredEdge)
     s"Edge cuboids whose irrational edge is at most √$maxSquaredEdge"
       #:: cuboids.map(describeSquared)
       :+ "Done."
@@ -154,7 +156,8 @@ object Cli:
       rows.zip(rows.tail).map((r1, r2) => f"${Stats.exponent(r1.limit, counts(r1), r2.limit, counts(r2))}%.2f")
     val table = rows.map: r =>
       f"| 10^${math.log10(r.limit.toDouble).round} | ${r.byLargest}%,d | ${r.byLargestPrimitive}%,d | ${r.bySmallest}%,d | ${r.bySmallestPrimitive}%,d |"
-    val (saunderson, primitive) = Stats.saundersonShare(rows.last.limit min 1_000_000L, FastSearch.allEulerBricksParallel())
+    val (saunderson, primitive) =
+      Stats.saundersonShare(rows.last.limit min 1_000_000L, FastSearch.allEulerBricksParallel())
     LazyList(
       "| N | all edges <= N | primitive | smallest edge <= N | primitive |",
       "| --- | --- | --- | --- | --- |"

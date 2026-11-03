@@ -8,8 +8,7 @@ class TheoryTest extends munit.ScalaCheckSuite:
   val bricks: Vector[Cuboid] = Search.eulerBricks(20_000)
 
   test("every Euler brick found obeys every rule that applies to it"):
-    for brick <- bricks do
-      assertEquals(Theory.violations(Theory.rulesFor(brick), brick).map(_.name), Nil, brick)
+    for brick <- bricks do assertEquals(Theory.violations(Theory.rulesFor(brick), brick).map(_.name), Nil, brick)
 
   test("the primitive rules are really about primitive bricks"):
     val doubled = Cuboid.of(88, 234, 480).get

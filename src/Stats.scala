@@ -4,7 +4,13 @@ package perfectcuboid
 object Stats:
 
   /** Euler brick counts up to `limit`, by smallest edge and by largest edge, all and primitive. */
-  final case class Counts(limit: Long, bySmallest: Long, bySmallestPrimitive: Long, byLargest: Long, byLargestPrimitive: Long):
+  final case class Counts(
+      limit: Long,
+      bySmallest: Long,
+      bySmallestPrimitive: Long,
+      byLargest: Long,
+      byLargestPrimitive: Long
+  ):
 
     def add(brick: Cuboid): Counts =
       def one(condition: Boolean) = if condition then 1L else 0L

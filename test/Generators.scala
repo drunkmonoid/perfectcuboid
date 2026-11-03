@@ -31,6 +31,12 @@ object Generators:
   /** Known Euler bricks and their multiples, since random cuboids are almost never interesting. */
   val eulerBrick: Gen[Cuboid] =
     for
-      (a, b, c) <- Gen.oneOf((44L, 117L, 240L), (85L, 132L, 720L), (140L, 480L, 693L), (160L, 231L, 792L), (240L, 252L, 275L))
+      (a, b, c) <- Gen.oneOf(
+        (44L, 117L, 240L),
+        (85L, 132L, 720L),
+        (140L, 480L, 693L),
+        (160L, 231L, 792L),
+        (240L, 252L, 275L)
+      )
       k <- Gen.chooseNum(1L, 1000L)
     yield Cuboid.of(k * a, k * b, k * c).get
