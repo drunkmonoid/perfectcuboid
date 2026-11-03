@@ -77,3 +77,12 @@ final class Montgomery(val m: Long):
       square = multiply(square, square)
       rest >>= 1
     fromMontgomery(result)
+
+  /** For Pollard's rho method, which needs only products and gcds with m, so its numbers can
+    * stay in Montgomery form throughout: multiplying by R, which has no factor in common with
+    * m, changes no gcd with m. These work on numbers below m that are already in that form.
+    */
+  def times(x: Long, y: Long): Long = multiply(x, y)
+
+  /** The rho step x ↦ x² + c (in Montgomery form), for 0 <= c < m. */
+  def squarePlus(x: Long, c: Long): Long = addMod(multiply(x, x), c)

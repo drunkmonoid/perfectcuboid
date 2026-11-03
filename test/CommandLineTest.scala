@@ -22,7 +22,7 @@ class CommandLineTest extends munit.FunSuite:
   test("bad numbers are errors, not silently replaced by a default"):
     assert(errors("bricks", "lots").exists(_.contains("not a whole number")), errors("bricks", "lots"))
     assert(errors("bricks", "0").exists(_.contains("LIMIT must be at least 1")))
-    assert(errors("legs", (Edge.Max + 1).toString).exists(_.contains(s"must be from 1 to ${Edge.Max}")))
+    assert(errors("hunt", "f.txt", (Edge.Max + 1).toString).exists(_.contains(s"must be from 1 to ${Edge.Max}")))
     assert(errors("stats", "12").exists(_.contains("from 3 to 9")))
     assert(errors("unbounded", "1.5").nonEmpty)
 

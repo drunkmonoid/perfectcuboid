@@ -47,7 +47,7 @@ Same rules: one phase, one commit, every test passing.
 
 - [x] **17. Primality for any `Long`.** Deterministic Miller–Rabin, with overflow-free
   modular multiplication, checked against the sieve.
-- [ ] **18. Pollard–Brent rho.** Factorise any 64-bit number, so `legs` works for all of
+- [x] **18. Pollard–Brent rho.** Factorise any 64-bit number, so `legs` works for all of
   them.
 - [ ] **19. Factorising whole blocks.** A segmented sieve of smallest prime factors, so the
   search factorises a block of edges at once instead of one by one.

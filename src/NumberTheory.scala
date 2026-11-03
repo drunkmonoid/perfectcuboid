@@ -2,7 +2,7 @@ package perfectcuboid
 
 import scala.annotation.tailrec
 
-/** Prime factorisation and divisors. */
+/** Primes, prime factorisation and divisors. */
 object NumberTheory:
 
   /** A number written as primes and their exponents, smallest prime first:
@@ -25,13 +25,17 @@ object NumberTheory:
     do composite(multiple) = true
     IArray.from((2 until limit).filterNot(composite(_)).map(_.toLong))
 
-  /** The i-th number to try as a factor: the small primes, then every odd number after them. */
-  private def candidate(i: Int): Long =
-    if i < smallPrimes.length then smallPrimes(i)
-    else smallPrimes.last + 2L * (i - smallPrimes.length + 1)
+  /** Trial division tries the primes below 2¹⁶. That fully factorises any number below
+    * 2³² (no composite can avoid a prime factor up to its square root), which covers every
+    * edge the searches look at, and leaves only large factors for Pollard's rho.
+    */
+  private val TrialPrimes: Int = smallPrimes.indexWhere(_ > 65_536)
 
-  /** Factorise by trial division: divide out each prime in turn, up to the square root.
-    * Fast for numbers up to 10¹², whose square root is a million; correct for any Long.
+  /** The prime factorisation of any positive Long.
+    *
+    * Small primes are divided out by trial division. What is left has only prime factors
+    * above 2¹⁶: if it is prime (Miller–Rabin says so for certain), it is the last factor;
+    * otherwise Pollard's rho splits it into two smaller numbers, and each is factorised in turn.
     */
   def factorize(n: Long): Factorization =
     require(n >= 1, s"can only factorise positive numbers, not $n")
@@ -40,16 +44,27 @@ object NumberTheory:
     @tailrec def divideOut(m: Long, p: Long, times: Int): (Long, Int) =
       if m % p == 0 then divideOut(m / p, p, times + 1) else (m, times)
 
-    @tailrec def loop(m: Long, i: Int, found: Factorization): Factorization =
-      val p = candidate(i)
-      if m == 1 then found.reverse
-      else if p > m / p then ((m -> 1) :: found).reverse // no factor up to √m: m is prime
+    // Divides out the trial primes from the i-th on, and returns what is left with the factors found.
+    @tailrec def trial(m: Long, i: Int, found: Factorization): (Long, Factorization) =
+      val p = smallPrimes(i)
+      if m == 1 then (1, found.reverse)
+      else if p > m / p then (1, ((m -> 1) :: found).reverse) // no factor up to √m: m is prime
+      else if i == TrialPrimes then (m, found.reverse)
       else
         divideOut(m, p, 0) match
-          case (_, 0)        => loop(m, i + 1, found)
-          case (rest, times) => loop(rest, i + 1, (p -> times) :: found)
+          case (_, 0)        => trial(m, i + 1, found)
+          case (rest, times) => trial(rest, i + 1, (p -> times) :: found)
 
-    loop(n, 0, Nil)
+    // The prime factors of m, repeated as often as they divide it, unsorted.
+    def large(m: Long): List[Long] =
+      if m == 1 then Nil
+      else if isPrime(m) then List(m)
+      else
+        val d = PollardRho.factor(m)
+        large(d) ++ large(m / d)
+
+    val (rest, small) = trial(n, 0, Nil)
+    small ++ large(rest).groupMapReduce(identity)(_ => 1)(_ + _).toList.sorted
 
   /** The number a factorisation stands for. */
   def value(factors: Factorization): Long =
@@ -69,6 +84,18 @@ object NumberTheory:
       yield d * power(p, i)
 
   def divisors(n: Long): List[Long] = divisors(factorize(n)).sorted
+
+  /** The same divisors as BigInts, for factorisations of numbers too big for a Long, like a². */
+  def divisorsBig(factors: Factorization): List[BigInt] =
+    factors.foldLeft(List(BigInt(1))): (divisorsSoFar, pk) =>
+      val (p, k) = pk
+      for
+        d <- divisorsSoFar
+        i <- (0 to k).toList
+      yield d * BigInt(p).pow(i)
+
+  /** How many divisors the number with these prime factors has: (k₁ + 1)(k₂ + 1)… */
+  def divisorCount(factors: Factorization): BigInt = factors.map((_, k) => BigInt(k + 1)).product
 
   /** Whether n is prime, for any Long, by the Miller–Rabin test.
     *

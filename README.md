@@ -22,6 +22,7 @@ scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C sto
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
+scala-cli run . -- legs 3825123056546413051  # ... any number up to 2⁶³ − 1
 scala-cli run . -- nearmisses           # the first body, face and edge cuboid
 scala-cli run . -- face 1000            # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000         # edge cuboids: one edge irrational
@@ -44,6 +45,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
 | `src/Montgomery.scala` | a·b mod m for any 64-bit numbers, without overflow, by Montgomery's trick |
+| `src/PollardRho.scala` | Pollard's rho method with Brent's improvements, for large factors |
 | `src/NumberTheory.scala` | primes (a sieve, and Miller–Rabin for any `Long`), factorisation and divisors |
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula, and the legs paired with any given leg |
 | `src/Search.scala` | bounded Euler brick search, its brute-force check, and the unbounded `LazyList` search |

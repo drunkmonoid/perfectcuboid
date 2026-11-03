@@ -76,18 +76,21 @@ object Cli:
       #:: bricks.map(describe).to(LazyList)
       :+ verdict(bricks.filter(_.isPerfect).toVector)
 
+  /** Beyond this many divisors of a², the legs are counted but not listed. */
+  val MaxDivisorsToList: BigInt = 2_000_000
+
   def legsReport(a: Long): LazyList[String] =
-    if a < 1 || a > Edge.Max then LazyList(s"legs: give a number from 1 to ${Edge.Max}")
+    val factors = NumberTheory.factorize(a)
+    val shown = factors.map((p, k) => if k == 1 then s"$p" else s"$p^$k").mkString(" · ")
+    val divisorsOfSquare = NumberTheory.divisorCount(factors.map((p, k) => p -> 2 * k))
+    if divisorsOfSquare > MaxDivisorsToList then
+      LazyList(s"$a = $shown", s"$a² has $divisorsOfSquare divisors, too many to list the legs from.")
     else
-      val factors = NumberTheory
-        .factorize(a)
-        .map((p, k) => if k == 1 then s"$p" else s"$p^$k")
-        .mkString(" · ")
-      val legs = Pythagorean.legsPairedWith(a)
+      val legs = Pythagorean.legsPairedWithAny(a, factors)
       // y can be up to a²/2, so y² needs BigInt.
-      def hypotenuse(y: Long) = Arith.isqrtBig(BigInt(a).pow(2) + BigInt(y).pow(2))
-      s"$a = $factors"
-        #:: s"${legs.size} legs pair with $a:"
+      def hypotenuse(y: BigInt) = Arith.isqrtBig(BigInt(a).pow(2) + y.pow(2))
+      s"$a = $shown"
+        #:: (if legs.size == 1 then s"1 leg pairs with $a:" else s"${legs.size} legs pair with $a:")
         #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
 
   def faceReport(maxSharedEdge: Long): LazyList[String] =

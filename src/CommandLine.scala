@@ -65,7 +65,7 @@ object CommandLine:
       number("LIMIT", 1000).map(Report.Saunderson(_))
     ),
     report("legs", "Factorise N (default 1000) and list every leg it pairs with.")(
-      number("N", 1000, Edge.Max).map(Report.Legs(_))
+      number("N", 1000).map(Report.Legs(_))
     ),
     report("face", "Face cuboids whose whole face diagonals meet at an edge up to LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.FaceCuboids(_))

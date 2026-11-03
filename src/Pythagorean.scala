@@ -50,6 +50,20 @@ object Pythagorean:
   def legsPairedWith(a: Long): List[Long] =
     completions(square(a), NumberTheory.factorize(a).map((p, k) => p -> 2 * k))
 
+  /** Every y with a² + y² a perfect square, for any positive Long a, as BigInts: a² and the
+    * legs can be far beyond a Long. Same method as `legsPairedWith`, given a's factorisation.
+    */
+  def legsPairedWithAny(a: Long, factors: NumberTheory.Factorization): List[BigInt] =
+    val n = BigInt(a).pow(2)
+    val legs =
+      for
+        d <- NumberTheory.divisorsBig(factors.map((p, k) => p -> 2 * k))
+        if d < a
+        e = n / d
+        if (e - d) % 2 == 0
+      yield (e - d) / 2
+    legs.sorted
+
   /** For each leg up to `limit`, the set of other legs it forms a Pythagorean triple with. */
   def partners(limit: Long): Map[Long, Set[Long]] =
     legPairs(limit)
