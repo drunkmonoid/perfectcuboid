@@ -48,6 +48,7 @@ object Cli:
     case Report.DerivedPairs(limit)         => derivedReport(limit)
     case Report.Curve(a, b, c, multiples)   => curveReport(a, b, c, multiples)
     case Report.BrickOrigins(limit)         => originsReport(limit)
+    case Report.Graph(limit)                => graphReport(limit)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -141,6 +142,23 @@ object Cli:
       s"  all edges <= N, primitive:     ${growth(_.byLargestPrimitive).mkString(", ")}",
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
+    )
+
+  def graphReport(limit: Long): LazyList[String] =
+    val graph = PythagoreanGraph.upTo(limit)
+    val pieces = graph.components
+    val (busiest, most) = graph.neighbours.view.mapValues(_.size).maxBy((x, d) => (d, -x))
+    val degrees = graph.degreeCounts.toList.sorted
+    val triangles = graph.triangles
+    LazyList(
+      s"The Pythagorean graph on 1 to $limit: x and y joined when x² + y² is a square.",
+      s"  numbers with a neighbour: ${graph.neighbours.size} of $limit",
+      s"  links:                    ${graph.links}",
+      s"  most neighbours:          $busiest, with $most",
+      s"  numbers by neighbours:    ${degrees.take(8).map((d, n) => s"$d: $n").mkString(", ")}, …",
+      s"  connected pieces:         ${pieces.size}, the largest with ${pieces.headOption.fold(0)(_.size)} numbers",
+      s"  triangles (Euler bricks): ${triangles.size}",
+      s"  numbers in a triangle:    ${triangles.flatMap((x, y, z) => List(x, y, z)).distinct.size}"
     )
 
   def originsReport(maxSmallestEdge: Long): LazyList[String] =

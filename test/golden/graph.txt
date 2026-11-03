@@ -1,0 +1,8 @@
+The Pythagorean graph on 1 to 3000: x and y joined when x² + y² is a square.
+  numbers with a neighbour: 1922 of 3000
+  links:                    3694
+  most neighbours:          840, with 37
+  numbers by neighbours:    1: 765, 2: 289, 3: 218, 4: 163, 5: 85, 6: 77, 7: 59, 8: 42, …
+  connected pieces:         208, the largest with 1379 numbers
+  triangles (Euler bricks): 39
+  numbers in a triangle:    86

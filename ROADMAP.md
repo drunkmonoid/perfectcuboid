@@ -70,7 +70,7 @@ Same rules: one phase, one commit, every test passing.
   of a known one.
 - [x] **26. Where bricks come from.** What share of primitive bricks are derived bricks,
   Saunderson bricks or curve multiples of smaller ones.
-- [ ] **27. The Pythagorean graph.** Numbers as vertices, joined when their squares add to
+- [x] **27. The Pythagorean graph.** Numbers as vertices, joined when their squares add to
   a square. Euler bricks are its triangles. Degrees and triangle counts.
 - [ ] **28. Four dimensions.** Four edges whose six pairs all have whole diagonals, the
   graph's 4-cliques. Search for them, and count the near misses with five of six.

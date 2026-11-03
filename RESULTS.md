@@ -130,6 +130,31 @@ starting from something smaller?
 So nearly three quarters of the primitive bricks come from none of these: they are only found
 by searching.
 
+## The Pythagorean graph
+
+```sh
+scala-cli run . -J -Xmx3g -- graph 1e6   # about 20 seconds
+```
+
+Join two numbers when the sum of their squares is a square. An Euler brick is then a triangle:
+three numbers all joined to each other.
+
+| numbers 1 to N | 10⁵ | 10⁶ |
+| --- | ---: | ---: |
+| with at least one neighbour | 66,636 | 677,205 |
+| links | 185,864 | 2,269,788 |
+| most neighbours | 18480: 145 | 240240: 341 |
+| with exactly one neighbour | 24,156 | 233,766 |
+| connected pieces | 6,053 | 56,664 |
+| largest piece | 41,079 | 390,363 |
+| triangles (Euler bricks) | 1,714 | 17,873 |
+| numbers in some triangle | 2,941 | 29,611 |
+
+About two thirds of all numbers are a leg of some triple with the other leg in range, and
+the links average about 7 per number. Only 3% of numbers are in a triangle. The graph does
+not hang together: 3 and 4, for example, pair only with each other, and form a piece of
+their own.
+
 ## Rules proved by computer
 
 ```sh
