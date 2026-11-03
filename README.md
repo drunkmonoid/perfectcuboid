@@ -13,6 +13,9 @@ for how the project was built up.
 
 ![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
 
+[`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser: the
+same Scala, compiled to JavaScript by Scala.js. Open it from a clone of the repository.
+
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 
 ```sh
@@ -46,6 +49,8 @@ UPDATE_GOLDEN=1 scala-cli test .        # accept changed command output into tes
 scala-cli fmt .                         # format the code (CI checks it)
 scala-cli repl .                        # REPL with the project loaded
 scala-cli setup-ide .                   # set up Metals / VSCode
+scala-cli test web                      # the web page's tests, on Node
+scala-cli --power package web --js --js-mode release -o docs/check/main.js -f  # rebuild the page's JavaScript
 scala-cli --power package . --native --native-mode release-fast -o perfectcuboid  # native binary (needs clang)
 ```
 

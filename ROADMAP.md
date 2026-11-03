@@ -98,7 +98,7 @@ Same rules: one phase, one commit, every test passing.
   fixtures.
 - [x] **37. Pictures.** SVG charts (growth on log–log axes, bricks by edge size) written by
   plain Scala into `docs/`.
-- [ ] **38. Scala.js.** The core library compiled to JavaScript, and a static page that
+- [x] **38. Scala.js.** The core library compiled to JavaScript, and a static page that
   checks any box in the browser.
 - [ ] **39. Guided tour.** Runnable `.sc` worksheets in `docs/` that walk a Scala newcomer
   through the ideas.

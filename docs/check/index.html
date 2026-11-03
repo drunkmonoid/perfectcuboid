@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check a Box</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb; --raised: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --line: #e6e5e0;
+    --accent: #2a78d6; --problem: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface: #1a1a19; --raised: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --line: #383835;
+      --accent: #3987e5; --problem: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font: 16px/1.5 system-ui, sans-serif;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+  .lede { color: var(--ink-2); margin: 0 0 1.5rem; }
+  .edges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  label { display: block; font-size: .85rem; color: var(--ink-2); }
+  input {
+    width: 100%; margin-top: .25rem; padding: .5rem .6rem; font: inherit;
+    font-variant-numeric: tabular-nums; color: var(--ink); background: var(--raised);
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .examples { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 1.5rem; }
+  button {
+    font: inherit; font-size: .85rem; padding: .3rem .7rem; cursor: pointer;
+    color: var(--ink); background: var(--raised); border: 1px solid var(--line); border-radius: 999px;
+  }
+  button:hover { border-color: var(--accent); }
+  #result { background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.25rem; }
+  .verdict { font-weight: 600; margin: 0 0 .75rem; }
+  .problem { color: var(--problem); margin: 0; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1rem; margin: 0; }
+  dt { color: var(--ink-2); }
+  dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  ul { margin: 0; padding-left: 1.25rem; overflow-wrap: anywhere; }
+  footer { margin-top: 2rem; color: var(--ink-2); font-size: .85rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Check a box</h1>
+  <p class="lede">Type three edges, of any size, and see all seven lengths: which are whole, and how
+    close the box comes to a perfect cuboid. Everything is worked out in your browser.</p>
+  <div class="edges">
+    <label>edge a <input id="a" inputmode="numeric" value="44"></label>
+    <label>edge b <input id="b" inputmode="numeric" value="117"></label>
+    <label>edge c <input id="c" inputmode="numeric" value="240"></label>
+  </div>
+  <div class="examples">
+    <button data-box="44 117 240">Euler brick</button>
+    <button data-box="104 153 672">face cuboid</button>
+    <button data-box="140 480 693">another brick</button>
+    <button data-box="15939000000000000000 18460000000000000000 48720000000000000000">a big one</button>
+    <button data-box="1 2 3">ordinary box</button>
+  </div>
+  <section id="result" aria-live="polite"></section>
+  <footer>Scala 3 compiled to JavaScript with Scala.js, from
+    <a href="https://github.com/drunkmonoid/perfectcuboid">perfectcuboid</a>.</footer>
+</main>
+<script src="main.js"></script>
+</body>
+</html>
