@@ -107,3 +107,21 @@ object BigCuboid:
   def from(cuboid: Cuboid): BigCuboid = BigCuboid(cuboid.a, cuboid.b, cuboid.c)
 
   given Ordering[BigCuboid] = Ordering.by(box => (box.c, box.b, box.a))
+
+object Derived:
+
+  /** The derived brick of a × b × c: the primitive brick of shape ab × ac × bc.
+    *
+    * If a² + b² = d², then (ac)² + (bc)² = c²d², a square; the same goes for the other two
+    * faces. So the derived brick of an Euler brick is an Euler brick. It is the original box
+    * with each edge replaced by the product of the other two, which is abc times 1/a, 1/b,
+    * 1/c: the box of reciprocals, scaled up to whole numbers.
+    *
+    * Deriving twice gives a²bc × ab²c × abc², which is abc · (a, b, c): the original shape
+    * again. So derivation pairs up the primitive Euler bricks, each with its partner.
+    */
+  def derived(box: BigCuboid): BigCuboid =
+    BigCuboid.of(box.a * box.b, box.a * box.c, box.b * box.c).get.primitive
+
+  /** A box is its own partner when ab : ac : bc = a : b : c, which happens exactly when b² = ac. */
+  def isSelfDerived(box: BigCuboid): Boolean = box.b * box.b == box.a * box.c

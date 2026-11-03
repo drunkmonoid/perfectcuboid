@@ -21,6 +21,7 @@ scala-cli run . -- stats 7              # how the number of Euler bricks grows, 
 scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
 scala-cli run . -- local                # prove such rules by trying every remainder mod p^k
+scala-cli run . -- derived 1e6           # primitive bricks paired with their derived bricks ab × ac × bc
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
 scala-cli run . -- legs 3825123056546413051  # ... any number up to 2⁶³ − 1
@@ -46,7 +47,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Arith.scala` | exact integer square roots, gcd, overflow-checked squares |
 | `src/Wide.scala` | 128-bit whole numbers in two Longs: exact squares and square roots beyond a `Long` |
 | `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
-| `src/Box.scala` | the cuboid checks written once for any whole-number type; `BigCuboid` for boxes of any size |
+| `src/Box.scala` | the cuboid checks written once for any whole-number type; `BigCuboid` for boxes of any size; derived bricks |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
 | `src/Montgomery.scala` | a·b mod m for any 64-bit numbers, without overflow, by Montgomery's trick |
 | `src/PollardRho.scala` | Pollard's rho method with Brent's improvements, for large factors |

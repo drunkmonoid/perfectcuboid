@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | nearmisses | stats | hunt | bench]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | nearmisses | stats | hunt | bench]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -25,6 +25,8 @@ Subcommands:
         The seven lengths of the box A × B × C, of any size, and how near perfect it is.
     local
         Rules every Euler brick and perfect cuboid obeys mod primes up to P (default 37), by computer.
+    derived
+        Primitive Euler bricks with smallest edge up to LIMIT (default 100000), paired by derivation.
     nearmisses
         The first body, face and edge cuboid.
     stats

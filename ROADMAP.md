@@ -63,8 +63,8 @@ Same rules: one phase, one commit, every test passing.
 - [x] **23. Local obstructions.** Work out by computer which residues modulo small numbers
   an Euler brick or a perfect cuboid can have, derive divisibility rules from them, and
   compare with `Theory.scala` and the literature.
-- [ ] **24. Derived bricks.** (ab, ac, bc) is an Euler brick whenever (a, b, c) is. Other
-  such maps, and the orbits they make.
+- [x] **24. Derived bricks.** (ab, ac, bc) is an Euler brick whenever (a, b, c) is, and
+  deriving twice gives the same shape back, so the primitive bricks come in pairs.
 - [ ] **25. Elliptic curves.** The third edges that go with two fixed edges a, b are points
   on y² = x(x + a²)(x + b²). Exact rational point arithmetic, and new bricks from multiples
   of a known one.

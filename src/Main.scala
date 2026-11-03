@@ -45,6 +45,7 @@ object Cli:
     case Report.Stats(maxExponent)          => statsReport(maxExponent)
     case Report.Check(a, b, c)              => checkReport(a, b, c)
     case Report.LocalRules(maxPrime)        => localReport(maxPrime)
+    case Report.DerivedPairs(limit)         => derivedReport(limit)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -140,6 +141,23 @@ object Cli:
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
 
+  /** Each primitive brick in range with its derived partner, each pair once. */
+  def derivedReport(maxSmallestEdge: Long): LazyList[String] =
+    val primitive = FastSearch
+      .allEulerBricksParallel()
+      .takeWhile(_.a <= maxSmallestEdge)
+      .filter(_.isPrimitive)
+      .map(BigCuboid.from)
+      .toVector
+    val inRange = primitive.toSet
+    def show(box: BigCuboid) = s"${box.a} × ${box.b} × ${box.c}"
+    val partners = primitive.map(box => box -> Derived.derived(box))
+    val bothInRange = partners.filter((box, partner) => inRange(partner) && Ordering[BigCuboid].lt(box, partner))
+    LazyList(
+      s"${primitive.size} primitive Euler bricks with smallest edge <= $maxSmallestEdge.",
+      s"${bothInRange.size} pairs have both partners among them, ${partners.count((box, _) => Derived.isSelfDerived(box))} bricks are their own partner:"
+    ) ++ bothInRange.map((box, partner) => f"  ${show(box)}%-34s ↔  ${show(partner)}")
+
   /** Each prime's rules are only worked out when its line is about to be printed. */
   def localReport(maxPrime: Int): LazyList[String] =
     def describe(rules: List[Rule]) = if rules.isEmpty then "nothing" else rules.map(_.name).mkString("; ")
@@ -166,9 +184,11 @@ object Cli:
     val faces = Box.faceDiagonalSquares(box.a, box.b, box.c).map(length).mkString(", ")
     val verdict = box.kind match
       case Kind.Perfect => "A PERFECT CUBOID: all seven lengths are whole!"
-      case Kind.Body    => "An Euler brick (body cuboid): only the space diagonal is irrational."
-      case Kind.Face    => "A face cuboid: only one face diagonal is irrational."
-      case _            =>
+      case Kind.Body    =>
+        val partner = Derived.derived(box)
+        s"An Euler brick (body cuboid): only the space diagonal is irrational. Derived brick: ${partner.a} × ${partner.b} × ${partner.c}."
+      case Kind.Face => "A face cuboid: only one face diagonal is irrational."
+      case _         =>
         val irrational = box.faceDiagonals.count(_.isEmpty) + (if box.spaceDiagonal.isEmpty then 1 else 0)
         s"$irrational of the seven lengths are irrational."
     LazyList(

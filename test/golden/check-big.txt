@@ -1,4 +1,4 @@
 15939000000000000000 × 18460000000000000000 × 48720000000000000000  (15939 × 18460 × 48720 scaled up)
   face diagonals 24389000000000000000, 51261000000000000000, 52100000000000000000
   space diagonal √2968461721000000000000000000000000000000
-An Euler brick (body cuboid): only the space diagonal is irrational.
+An Euler brick (body cuboid): only the space diagonal is irrational. Derived brick: 700557 × 1848924 × 2141360.

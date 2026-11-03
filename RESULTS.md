@@ -67,6 +67,25 @@ Every one of the 925,637 Euler bricks with smallest edge ≤ 10⁷ obeys every r
 - so the product of the edges is divisible by 95,040 = 2⁶·3³·5·11;
 - in a primitive brick, exactly one edge and exactly two face diagonals are odd.
 
+## Derived bricks come in pairs
+
+```sh
+scala-cli run . -- derived 1e7
+```
+
+If a × b × c is an Euler brick, so is ab × ac × bc, its derived brick, and deriving twice
+gives back the same shape. So the primitive Euler bricks pair up. The first pair is
+44 × 117 × 240 and 429 × 880 × 2340, and two of the five smallest bricks, 140 × 480 × 693 and
+160 × 231 × 792, are partners.
+
+| smallest edge ≤ | primitive bricks | pairs with both partners in range |
+| --- | ---: | ---: |
+| 10⁶ | 608 | 153 |
+| 10⁷ | 1,647 | 390 |
+
+So about half of the primitive bricks found have their partner among them as well. No brick is its own
+partner, which would need b² = ac.
+
 ## Rules proved by computer
 
 ```sh
