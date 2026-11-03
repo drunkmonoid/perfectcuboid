@@ -20,30 +20,11 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo) => Hunt.run(Path(file), upTo)
-    case Command.Bench(limit)     => IO.blocking(Bench.run(limit))
+    case Command.Hunt(file, upTo)   => Hunt.run(Path(file), upTo)
+    case Command.Bench(limit, runs) => IO.blocking(Bench.run(limit, runs))
     // Each line is computed and printed in turn, so long outputs are never held in memory,
     // and Ctrl+C can stop between any two lines.
     case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain
-
-/** Timing reads the clock, which is a side effect, so it lives out here rather than in Cli. */
-object Bench:
-
-  def time[A](body: => A): (A, Double) =
-    val start = System.nanoTime
-    val result = body
-    (result, (System.nanoTime - start) / 1e9)
-
-  def run(maxSmallestEdge: Long): Unit =
-    def upTo(bricks: LazyList[Cuboid]) = bricks.takeWhile(_.a <= maxSmallestEdge).toVector
-    println(s"Euler bricks with smallest edge <= $maxSmallestEdge:")
-    val _ = time(upTo(FastSearch.allEulerBricks)) // warm up the JVM, so the first timing is fair
-    val (readable, t1) = time(upTo(Search.allEulerBricks))
-    println(f"  readable  $t1%7.2fs  ${readable.size} bricks")
-    val (fast, t2) = time(upTo(FastSearch.allEulerBricks))
-    println(f"  fast      $t2%7.2fs  ${t1 / t2}%5.1fx  same result: ${fast == readable}")
-    val (parallel, t3) = time(upTo(FastSearch.allEulerBricksParallel()))
-    println(f"  parallel  $t3%7.2fs  ${t1 / t3}%5.1fx  same result: ${parallel == readable}")
 
 object Cli:
 

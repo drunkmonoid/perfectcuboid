@@ -40,7 +40,7 @@ Same rules: one phase, one commit, every test passing.
   Cats `Monoid`s, combined with `|+|`, their laws checked with discipline.
 - [x] **15. Golden tests.** The output of every command saved under `test/golden`, so a
   refactor cannot change it unnoticed.
-- [ ] **16. A better benchmark.** Warm-up, repeated runs, median and spread, and the heap
+- [x] **16. A better benchmark.** Warm-up, repeated runs, median and spread, and the heap
   cap printed with every result.
 
 ### Number theory engine

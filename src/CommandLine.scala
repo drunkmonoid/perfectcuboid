@@ -22,7 +22,7 @@ enum Report:
 enum Command:
   case Print(report: Report)
   case Hunt(file: String, upTo: Long)
-  case Bench(maxSmallestEdge: Long)
+  case Bench(maxSmallestEdge: Long, runs: Int)
 
 /** The command line, described with the decline library: every subcommand, its arguments,
   * their defaults and their help. Parsing turns a list of words into a `Command`, or into
@@ -90,7 +90,13 @@ object CommandLine:
 
   private val bench: Opts[Command] =
     Opts.subcommand("bench", "Time the readable, fast and parallel searches up to LIMIT (default 100000).")(
-      number("LIMIT", 100_000, Edge.Max).map(Command.Bench(_))
+      (
+        number("LIMIT", 100_000, Edge.Max),
+        Opts
+          .option[Int]("runs", "How many timed runs of each search (default 5).")
+          .withDefault(5)
+          .validate("--runs must be at least 1")(_ >= 1)
+      ).mapN(Command.Bench(_, _))
     )
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */

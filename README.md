@@ -16,7 +16,7 @@ scala-cli run . -- --help               # every command, its arguments and defau
 scala-cli run .                         # list Euler bricks with edges up to 1000
 scala-cli run . -- bricks 100000        # ... or up to another limit
 scala-cli run . -- unbounded 10000000   # by smallest edge, other edges unbounded, flat memory
-scala-cli run . -- bench 1000000        # time the readable, fast and parallel searches
+scala-cli run . -- bench 1e6 --runs 3   # time the readable, fast and parallel searches
 scala-cli run . -- stats 7              # how the number of Euler bricks grows, up to 10^7
 scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- rules 100000         # check the known Euler brick rules on them
@@ -54,4 +54,5 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
+| `src/Bench.scala` | timing the searches: warm-up, repeated runs, median and range |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |

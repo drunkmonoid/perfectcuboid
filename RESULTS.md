@@ -83,14 +83,17 @@ scala-cli run . -- nearmisses
 ## Speed
 
 ```sh
-scala-cli run . -- bench 1000000
+scala-cli run . -J -Xmx2g -- bench 1e6 --runs 3
 ```
 
-| version, smallest edge ≤ 10⁶ | time |
-| --- | ---: |
-| readable (`Search`) | 12.8 s |
-| fast (`FastSearch`) | 4.3 s |
-| parallel, 12 threads | 1.0 s |
+Each search runs twice untimed to let the JVM compile it, then three times timed. The table
+gives the median run and the range.
+
+| version, smallest edge ≤ 10⁶ | median | range |
+| --- | ---: | ---: |
+| readable (`Search`) | 11.75 s | 11.71 – 11.85 s |
+| fast (`FastSearch`) | 4.25 s | 4.25 – 4.26 s |
+| parallel, 12 threads | 1.15 s | 1.13 – 1.16 s |
 
 ## Scala Native: works for short commands, not for long ones
 
