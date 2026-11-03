@@ -70,6 +70,33 @@ object NumberTheory:
 
   def divisors(n: Long): List[Long] = divisors(factorize(n)).sorted
 
-  def isPrime(n: Long): Boolean = n >= 2 && factorize(n) == List(n -> 1)
+  /** Whether n is prime, for any Long, by the Miller–Rabin test.
+    *
+    * Fermat: if n is prime then aⁿ⁻¹ ≡ 1 (mod n). Write n − 1 = d·2ˢ with d odd; then the
+    * sequence aᵈ, a²ᵈ, a⁴ᵈ, …, aⁿ⁻¹ must reach 1 either straight away or right after −1, since
+    * modulo a prime only ±1 square to 1. A composite n fails this for most bases a.
+    *
+    * For n below 2⁶⁴ it is enough to try the seven bases below: every composite fails for at
+    * least one of them (Jim Sinclair, 2011), so the answer is certain, not just probable.
+    */
+  def isPrime(n: Long): Boolean =
+    if n < 2 then false
+    else
+      smallPrimes.iterator.take(25).find(n % _ == 0) match // the primes below 100
+        case Some(p) => n == p
+        case None    => n < 100 * 100 || passesMillerRabin(n)
+
+  private val MillerRabinBases = List(2L, 325L, 9375L, 28178L, 450775L, 9780504L, 1795265022L)
+
+  private def passesMillerRabin(n: Long): Boolean =
+    val modular = Montgomery(n)
+    val s = java.lang.Long.numberOfTrailingZeros(n - 1)
+    val d = (n - 1) >> s
+    def probablyPrimeFor(a: Long): Boolean =
+      val start = modular.powMod(a, d)
+      start == 1 || start == n - 1 ||
+      Iterator.iterate(start)(x => modular.mulMod(x, x)).slice(1, s).contains(n - 1)
+    // A base that is a multiple of n says nothing, so it is skipped.
+    MillerRabinBases.filter(_ % n != 0).forall(probablyPrimeFor)
 
   private def power(p: Long, k: Int): Long = List.fill(k)(p).product

@@ -45,7 +45,7 @@ Same rules: one phase, one commit, every test passing.
 
 ### Number theory engine
 
-- [ ] **17. Primality for any `Long`.** Deterministic Miller–Rabin, with overflow-free
+- [x] **17. Primality for any `Long`.** Deterministic Miller–Rabin, with overflow-free
   modular multiplication, checked against the sieve.
 - [ ] **18. Pollard–Brent rho.** Factorise any 64-bit number, so `legs` works for all of
   them.

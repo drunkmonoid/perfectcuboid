@@ -43,7 +43,8 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Arith.scala` | exact integer square roots, gcd, overflow-checked squares |
 | `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
-| `src/NumberTheory.scala` | prime factorisation and divisors |
+| `src/Montgomery.scala` | a·b mod m for any 64-bit numbers, without overflow, by Montgomery's trick |
+| `src/NumberTheory.scala` | primes (a sieve, and Miller–Rabin for any `Long`), factorisation and divisors |
 | `src/Pythagorean.scala` | Pythagorean triples via Euclid's formula, and the legs paired with any given leg |
 | `src/Search.scala` | bounded Euler brick search, its brute-force check, and the unbounded `LazyList` search |
 | `src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
