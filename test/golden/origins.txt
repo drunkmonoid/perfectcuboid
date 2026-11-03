@@ -1,0 +1,6 @@
+Primitive Euler bricks with smallest edge <= 30000: 93
+  Saunderson bricks:                      8
+  derived bricks of smaller bricks:       23
+  2P, 3P or 4P on another brick's curve:  0
+  at least one of these:                  31
+  none of these, found only by searching: 62

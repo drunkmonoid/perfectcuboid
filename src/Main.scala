@@ -47,6 +47,7 @@ object Cli:
     case Report.LocalRules(maxPrime)        => localReport(maxPrime)
     case Report.DerivedPairs(limit)         => derivedReport(limit)
     case Report.Curve(a, b, c, multiples)   => curveReport(a, b, c, multiples)
+    case Report.BrickOrigins(limit)         => originsReport(limit)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -141,6 +142,25 @@ object Cli:
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
+
+  def originsReport(maxSmallestEdge: Long): LazyList[String] =
+    val primitive = FastSearch
+      .allEulerBricksParallel()
+      .takeWhile(_.a <= maxSmallestEdge)
+      .filter(_.isPrimitive)
+      .map(BigCuboid.from)
+      .toVector
+    val origins = Origins.classify(primitive)
+    def count(of: Origins.Origin => Boolean) = origins.count((_, origin) => of(origin))
+    def show(box: BigCuboid) = s"${box.a} × ${box.b} × ${box.c}"
+    LazyList(
+      s"Primitive Euler bricks with smallest edge <= $maxSmallestEdge: ${primitive.size}",
+      s"  Saunderson bricks:                      ${count(_.saunderson)}",
+      s"  derived bricks of smaller bricks:       ${count(_.derivedFromSmaller)}",
+      s"  2P, 3P or 4P on another brick's curve:  ${count(_.curveMultiple)}",
+      s"  at least one of these:                  ${count(_.any)}",
+      s"  none of these, found only by searching: ${count(!_.any)}"
+    ) ++ origins.collect { case (brick, origin) if origin.curveMultiple => s"  curve multiple: ${show(brick)}" }
 
   /** For each pair of edges of the brick, the bricks from the multiples of its point. */
   def curveReport(a: BigInt, b: BigInt, c: BigInt, multiples: Int): LazyList[String] =

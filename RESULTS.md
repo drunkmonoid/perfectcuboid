@@ -108,6 +108,28 @@ families, one for each pair of its edges:
 The edges grow roughly like the square of the multiple: 4P has 28 to 32 digits. The 2P bricks
 are within reach of the search, which finds them too: two independent methods agreeing.
 
+## Where the primitive bricks come from
+
+```sh
+scala-cli run . -J -Xmx2g -- origins 1e7   # about a minute
+```
+
+How many of the primitive bricks found by searching would a formula or a map have given,
+starting from something smaller?
+
+| smallest edge ≤ | primitive | Saunderson | derived from a smaller brick | 2P–4P on another's curve | any of these | only by search |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 10⁶ | 608 | 23 | 153 | 1 | 177 | 431 |
+| 10⁷ | 1,647 | 53 | 390 | 7 | 449 | 1,198 |
+
+- **Saunderson:** his brick from (u, v, w) has a face diagonal of exactly w³, which is how
+  `Origins.isSaunderson` spots one.
+- **Curves:** the first curve multiple is 412425 × 4267872 × 4657400, the double of a point
+  of 240 × 252 × 275 and also of its derived partner 1008 × 1100 × 1155.
+
+So nearly three quarters of the primitive bricks come from none of these: they are only found
+by searching.
+
 ## Rules proved by computer
 
 ```sh

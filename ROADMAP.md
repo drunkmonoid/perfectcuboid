@@ -68,7 +68,7 @@ Same rules: one phase, one commit, every test passing.
 - [x] **25. Elliptic curves.** The third edges that go with two fixed edges a, b are points
   on y² = x(x + a²)(x + b²). Exact rational point arithmetic, and new bricks from multiples
   of a known one.
-- [ ] **26. Where bricks come from.** What share of primitive bricks are derived bricks,
+- [x] **26. Where bricks come from.** What share of primitive bricks are derived bricks,
   Saunderson bricks or curve multiples of smaller ones.
 - [ ] **27. The Pythagorean graph.** Numbers as vertices, joined when their squares add to
   a square. Euler bricks are its triangles. Degrees and triangle counts.

@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | nearmisses | stats | hunt | bench]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | origins | nearmisses | stats | hunt | bench]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -29,6 +29,8 @@ Subcommands:
         Primitive Euler bricks with smallest edge up to LIMIT (default 100000), paired by derivation.
     curve
         New Euler bricks from the brick A × B × C, as multiples of points on elliptic curves.
+    origins
+        Which primitive bricks, smallest edge up to LIMIT (default 100000), come from formulas.
     nearmisses
         The first body, face and edge cuboid.
     stats
