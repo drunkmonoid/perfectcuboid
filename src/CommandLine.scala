@@ -21,6 +21,7 @@ enum Report:
   case Curve(a: BigInt, b: BigInt, c: BigInt, multiples: Int)
   case BrickOrigins(maxSmallestEdge: Long)
   case Graph(limit: Long)
+  case FourDimensions(maxSmallestEdge: Long)
 
 /** Everything the program can do, with its arguments already checked. Hunts and benchmarks
   * touch files and clocks, so `Main` runs them; reports are only printed.
@@ -112,6 +113,9 @@ object CommandLine:
     ),
     report("graph", "The graph on 1 to LIMIT (default 10000) joining x and y when x² + y² is a square.")(
       number("LIMIT", 10_000, 2_000_000).map(Report.Graph(_))
+    ),
+    report("fourd", "Four-dimensional Euler bricks and near misses from bricks with smallest edge up to LIMIT.")(
+      number("LIMIT", 10_000, Search.MaxSmallestEdge).map(Report.FourDimensions(_))
     ),
     report("nearmisses", "The first body, face and edge cuboid.")(Opts(Report.NearMisses)),
     report("stats", "How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).")(

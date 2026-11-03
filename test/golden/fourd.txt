@@ -1,0 +1,14 @@
+From the 849 Euler bricks with smallest edge <= 10000:
+  four edges with all six pairs whole (a 4D Euler brick): 0
+  four edges with five of six pairs whole: 579, 58 of them primitive
+The first primitive ones, by longest edge:
+  85 × 132 × 351 × 720
+  960 × 1008 × 1100 × 1155
+  140 × 480 × 693 × 2376
+  429 × 880 × 2340 × 4800
+  1120 × 1617 × 3840 × 5544
+  5040 × 5292 × 5500 × 5775
+  1560 × 2295 × 4950 × 5984
+  528 × 5520 × 5796 × 6325
+  195 × 748 × 4080 × 6336
+  748 × 1989 × 4080 × 6336

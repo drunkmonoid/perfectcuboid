@@ -49,6 +49,7 @@ object Cli:
     case Report.Curve(a, b, c, multiples)   => curveReport(a, b, c, multiples)
     case Report.BrickOrigins(limit)         => originsReport(limit)
     case Report.Graph(limit)                => graphReport(limit)
+    case Report.FourDimensions(limit)       => fourDReport(limit)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -143,6 +144,18 @@ object Cli:
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
+
+  def fourDReport(maxSmallestEdge: Long): LazyList[String] =
+    val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector
+    val found = FourD.search(bricks)
+    val (full, near) = found.partition(_.wholePairs == 6)
+    val primitive = near.filter(_.isPrimitive)
+    LazyList(
+      s"From the ${bricks.size} Euler bricks with smallest edge <= $maxSmallestEdge:",
+      s"  four edges with all six pairs whole (a 4D Euler brick): ${full.size}",
+      s"  four edges with five of six pairs whole: ${near.size}, ${primitive.size} of them primitive",
+      "The first primitive ones, by longest edge:"
+    ) ++ (full ++ primitive.sortBy(_.edges.last)).take(10).map(q => s"  ${q.edges.mkString(" × ")}")
 
   def graphReport(limit: Long): LazyList[String] =
     val graph = PythagoreanGraph.upTo(limit)

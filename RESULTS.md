@@ -155,6 +155,21 @@ the links average about 7 per number. Only 3% of numbers are in a triangle. The 
 not hang together: 3 and 4, for example, pair only with each other, and form a piece of
 their own.
 
+## Four dimensions
+
+```sh
+scala-cli run . -J -Xmx3g -- fourd 1e6   # about 35 seconds
+```
+
+A four-dimensional Euler brick would have four edges with all six pairs making whole face
+diagonals: four numbers all joined to each other in the graph above. Any such four contain a
+three-dimensional brick, and so do the near misses with five whole pairs out of six, so both
+are found by trying to add a fourth edge to every brick.
+
+From the 92,014 bricks with smallest edge ≤ 10⁶ there is **no four-dimensional brick**, and
+65,584 near misses, 471 of them primitive. The first is 85 × 132 × 351 × 720: 85 × 132 × 720
+is a brick, and 351 makes whole diagonals with 132 and 720, but not with 85.
+
 ## Rules proved by computer
 
 ```sh

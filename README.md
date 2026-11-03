@@ -25,6 +25,7 @@ scala-cli run . -- derived 1e6           # primitive bricks paired with their de
 scala-cli run . -- curve 44 117 240     # new bricks from points on elliptic curves
 scala-cli run . -- origins 1e6          # which primitive bricks come from formulas, and which only from searching
 scala-cli run . -- graph 1e5            # the graph joining x and y when x² + y² is a square
+scala-cli run . -- fourd 1e5            # four-dimensional Euler bricks, and those missing one pair
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
 scala-cli run . -- legs 3825123056546413051  # ... any number up to 2⁶³ − 1
@@ -67,6 +68,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Elliptic.scala` | exact fractions, and the curves y² = x(x + a²)(x + b²) whose points are Euler bricks |
 | `src/Origins.scala` | telling Saunderson bricks, derived bricks and curve multiples apart from the rest |
 | `src/Graph.scala` | the Pythagorean graph: degrees, connected pieces, and its triangles, the Euler bricks |
+| `src/FourD.scala` | four edges with all six pairs whole, and with five of six |
 | `src/Local.scala` | divisibility rules for Euler bricks and perfect cuboids, proved by trying every remainder |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
