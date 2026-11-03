@@ -23,6 +23,7 @@ scala-cli run . -- rules 100000         # check the known Euler brick rules on t
 scala-cli run . -- saunderson 10000000  # Saunderson's bricks, built from a formula
 scala-cli run . -- legs 240             # factorise 240 and list every leg it pairs with
 scala-cli run . -- legs 3825123056546413051  # ... any number up to 2⁶³ − 1
+scala-cli run . -- check 44 117 240     # the seven lengths of any box, of any size
 scala-cli run . -- nearmisses           # the first body, face and edge cuboid
 scala-cli run . -- face 1000            # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000         # edge cuboids: one edge irrational
@@ -43,6 +44,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | --- | --- |
 | `src/Arith.scala` | exact integer square roots, gcd, overflow-checked squares |
 | `src/Lengths.scala` | `Edge` and `Diagonal` as opaque types, and `CuboidError` |
+| `src/Box.scala` | the cuboid checks written once for any whole-number type; `BigCuboid` for boxes of any size |
 | `src/Cuboid.scala` | the `Cuboid` type, its diagonals, and how close it is to perfect |
 | `src/Montgomery.scala` | a·b mod m for any 64-bit numbers, without overflow, by Montgomery's trick |
 | `src/PollardRho.scala` | Pollard's rho method with Brent's improvements, for large factors |

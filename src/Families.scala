@@ -45,14 +45,15 @@ object Families:
       .flatten
 
   /** Saunderson's Euler brick (1740) built from a Pythagorean triple (u, v, w):
-    * edges u·|4v² − w²|, v·|4u² − w²| and 4uvw.
-    *
-    * The edges grow like the cube of the triple, so they are computed with BigInt and
-    * `None` is returned when they are too large to be an `Edge`.
+    * edges u·|4v² − w²|, v·|4u² − w²| and 4uvw. The edges grow like the cube of the triple,
+    * so they are BigInts.
     */
-  def saunderson(t: Triple): Option[Cuboid] =
+  def saundersonBig(t: Triple): BigCuboid =
     val (u, v, w) = (BigInt(t.a), BigInt(t.b), BigInt(t.c))
-    Cuboid.fromBigInt(u * (4 * v * v - w * w).abs, v * (4 * u * u - w * w).abs, 4 * u * v * w).toOption
+    BigCuboid.of(u * (4 * v * v - w * w).abs, v * (4 * u * u - w * w).abs, 4 * u * v * w).get
+
+  /** Saunderson's brick as a `Cuboid`, or `None` when it is too large for one. */
+  def saunderson(t: Triple): Option[Cuboid] = saundersonBig(t).toCuboid.toOption
 
   /** Saunderson's bricks with every edge <= max, sorted.
     *

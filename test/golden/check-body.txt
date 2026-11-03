@@ -1,0 +1,4 @@
+44 × 117 × 240
+  face diagonals 125, 244, 267
+  space diagonal √73225
+An Euler brick (body cuboid): only the space diagonal is irrational.

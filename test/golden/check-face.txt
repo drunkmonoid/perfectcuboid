@@ -1,0 +1,4 @@
+104 × 153 × 672
+  face diagonals 185, 680, √474993
+  space diagonal 697
+A face cuboid: only one face diagonal is irrational.

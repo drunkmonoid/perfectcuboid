@@ -1,0 +1,4 @@
+2 × 4 × 6  (1 × 2 × 3 scaled up)
+  face diagonals √20, √40, √52
+  space diagonal √56
+4 of the seven lengths are irrational.

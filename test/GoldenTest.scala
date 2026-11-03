@@ -45,5 +45,10 @@ class GoldenTest extends munit.FunSuite:
   golden("edge", "edge", "5e5")
   golden("nearmisses", "nearmisses")
   golden("stats", "stats", "4")
+  golden("check-body", "check", "240", "117", "44")
+  golden("check-face", "check", "104", "153", "672")
+  golden("check-other", "check", "2", "4", "6")
+  // Saunderson's brick from (20, 21, 29), scaled by 10¹⁵: its squares are far beyond a Long.
+  golden("check-big", "check", "15939000000000000000", "18460000000000000000", "48720000000000000000")
   golden("help", "--help")
   golden("bad-number", "bricks", "0")

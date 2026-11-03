@@ -15,6 +15,7 @@ enum Report:
   case EdgeCuboids(maxSquaredEdge: Long)
   case NearMisses
   case Stats(maxExponent: Int)
+  case Check(a: BigInt, b: BigInt, c: BigInt)
 
 /** Everything the program can do, with its arguments already checked. Hunts and benchmarks
   * touch files and clocks, so `Main` runs them; reports are only printed.
@@ -48,6 +49,10 @@ object CommandLine:
       .withDefault(default)
       .validate(s"$metavar must be $range")(n => n >= 1 && n <= max)
 
+  /** A positive whole number of any size. */
+  private def edge(metavar: String): Opts[BigInt] =
+    Opts.argument[BigInt](metavar).validate(s"$metavar must be at least 1")(_ >= 1)
+
   private def report(name: String, help: String)(opts: Opts[Report]): Opts[Command] =
     Opts.subcommand(name, help)(opts.map(Command.Print(_)))
 
@@ -72,6 +77,9 @@ object CommandLine:
     ),
     report("edge", "Edge cuboids whose irrational edge is at most √LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.EdgeCuboids(_))
+    ),
+    report("check", "The seven lengths of the box A × B × C, of any size, and how near perfect it is.")(
+      (edge("A"), edge("B"), edge("C")).mapN(Report.Check(_, _, _))
     ),
     report("nearmisses", "The first body, face and edge cuboid.")(Opts(Report.NearMisses)),
     report("stats", "How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).")(

@@ -1,7 +1,5 @@
 package perfectcuboid
 
-import Arith.*
-
 /** A box with whole-number edges a <= b <= c.
   *
   * The constructor is `private`, so the only ways to get a Cuboid are `Cuboid.from` and
@@ -10,19 +8,21 @@ import Arith.*
   */
 final case class Cuboid private (a: Edge, b: Edge, c: Edge):
 
+  // The checks themselves are in `Box`, shared with `BigCuboid`. `: Long` widens each Edge, so
+  // the compiler uses the `WholeNumber[Long]` instance.
+
   /** Diagonals of the ab, ac and bc faces, each `None` when it is not a whole number. */
-  def faceDiagonals: List[Option[Diagonal]] =
-    List(a -> b, a -> c, b -> c).map((x, y) => Diagonal.fromSquare(sumOfSquares(x, y)))
+  def faceDiagonals: List[Option[Diagonal]] = Box.faceDiagonalSquares(a: Long, b, c).map(Diagonal.fromSquare)
 
   /** The diagonal through the inside of the box, from one corner to the opposite one. */
-  def spaceDiagonal: Option[Diagonal] = Diagonal.fromSquare(sumOfSquares(a, b, c))
+  def spaceDiagonal: Option[Diagonal] = Diagonal.fromSquare(Box.spaceDiagonalSquare(a: Long, b, c))
 
-  def isEuler: Boolean = faceDiagonals.forall(_.isDefined)
+  def isEuler: Boolean = Box.isEuler(a: Long, b, c)
 
-  def isPerfect: Boolean = isEuler && spaceDiagonal.isDefined
+  def isPerfect: Boolean = Box.isPerfect(a: Long, b, c)
 
   /** True when the edges share no common factor, i.e. this is not a scaled-up copy of a smaller box. */
-  def isPrimitive: Boolean = gcd(gcd(a, b), c) == 1
+  def isPrimitive: Boolean = Box.isPrimitive(a: Long, b, c)
 
   /** The same box with every edge multiplied by k. */
   def scaled(k: Long): Either[CuboidError, Cuboid] =

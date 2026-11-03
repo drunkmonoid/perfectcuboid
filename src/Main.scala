@@ -43,6 +43,7 @@ object Cli:
     case Report.EdgeCuboids(maxSquaredEdge) => edgeReport(maxSquaredEdge)
     case Report.NearMisses                  => nearMissesReport
     case Report.Stats(maxExponent)          => statsReport(maxExponent)
+    case Report.Check(a, b, c)              => checkReport(a, b, c)
 
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
@@ -136,6 +137,26 @@ object Cli:
       s"  all edges <= N, primitive:     ${growth(_.byLargestPrimitive).mkString(", ")}",
       s"  smallest edge <= N, primitive: ${growth(_.bySmallestPrimitive).mkString(", ")}",
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
+    )
+
+  def checkReport(a: BigInt, b: BigInt, c: BigInt): LazyList[String] =
+    val box = BigCuboid.of(a, b, c).get // the command line only lets positive edges through
+    def length(square: BigInt) = summon[WholeNumber[BigInt]].exactSqrt(square).fold(s"√$square")(_.toString)
+    val faces = Box.faceDiagonalSquares(box.a, box.b, box.c).map(length).mkString(", ")
+    val verdict = box.kind match
+      case Kind.Perfect => "A PERFECT CUBOID: all seven lengths are whole!"
+      case Kind.Body    => "An Euler brick (body cuboid): only the space diagonal is irrational."
+      case Kind.Face    => "A face cuboid: only one face diagonal is irrational."
+      case _            =>
+        val irrational = box.faceDiagonals.count(_.isEmpty) + (if box.spaceDiagonal.isEmpty then 1 else 0)
+        s"$irrational of the seven lengths are irrational."
+    LazyList(
+      s"${box.a} × ${box.b} × ${box.c}" + (if box.isPrimitive then ""
+                                           else
+                                             s"  (${box.primitive.a} × ${box.primitive.b} × ${box.primitive.c} scaled up)"),
+      s"  face diagonals $faces",
+      s"  space diagonal ${length(Box.spaceDiagonalSquare(box.a, box.b, box.c))}",
+      verdict
     )
 
   /** All 7 lengths, irrational ones written as √n. */
