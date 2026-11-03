@@ -9,6 +9,10 @@ space diagonal are all whole numbers? Nobody knows.
 See [RESULTS.md](RESULTS.md) for what the searches have found, and [ROADMAP.md](ROADMAP.md)
 for how the project was built up.
 
+![How the number of Euler bricks grows](docs/growth.svg)
+
+![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
+
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 
 ```sh
@@ -18,6 +22,7 @@ scala-cli run . -- bricks 100000        # ... or up to another limit
 scala-cli run . -- unbounded 10000000   # by smallest edge, other edges unbounded, flat memory
 scala-cli run . -- bench 1e6 --runs 3   # time the readable, fast and parallel searches
 scala-cli run . -- stats 7              # how the number of Euler bricks grows, up to 10^7
+scala-cli run . -- pictures docs 7      # the two charts above, as SVG files
 scala-cli run . -- hunt hunt-bricks.txt 1e9  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- hunt hunt-face.txt 1e6 --kind face  # ... or of face cuboids, or edge cuboids (--kind edge)
 scala-cli run . -- verify hunt-bricks.txt  # check a hunt's file: every find again with BigInt, and a few blocks
@@ -74,6 +79,8 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/FourD.scala` | four edges with all six pairs whole, and with five of six |
 | `src/ClosestCalls.scala` | how far a brick's space diagonal is from a whole number, accurately |
 | `src/Local.scala` | divisibility rules for Euler bricks and perfect cuboids, proved by trying every remainder |
+| `src/Charts.scala` | SVG line and scatter charts with log axes, written as plain text |
+| `src/Pictures.scala` | the charts in `docs/`, from search results |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
 | `src/Verify.scala` | checking a results file without trusting the code that wrote it |

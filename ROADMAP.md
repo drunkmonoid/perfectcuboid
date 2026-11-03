@@ -96,7 +96,7 @@ Same rules: one phase, one commit, every test passing.
 
 - [x] **36. Cross-check with the OEIS.** The published Euler brick sequences as test
   fixtures.
-- [ ] **37. Pictures.** SVG charts (growth on log–log axes, bricks by edge size) written by
+- [x] **37. Pictures.** SVG charts (growth on log–log axes, bricks by edge size) written by
   plain Scala into `docs/`.
 - [ ] **38. Scala.js.** The core library compiled to JavaScript, and a static page that
   checks any box in the browser.

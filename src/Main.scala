@@ -5,7 +5,7 @@ import cats.syntax.all.*
 import com.monovore.decline.Opts
 import com.monovore.decline.effect.CommandIOApp
 import fs2.Stream
-import fs2.io.file.Path
+import fs2.io.file.{Files, Path}
 import Stats.Counts
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -41,6 +41,15 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
 
   def execute(command: Command): IO[Unit] = command match
     case Command.Hunt(file, upTo, quarry, threads) => Hunt.run(quarry, Path(file), upTo, cores = threads)
+    case Command.Pictures(directory, exponent)     =>
+      val dir = Path(directory)
+      def write(name: String, svg: String) =
+        fs2.Stream.emit(svg).through(Files[IO].writeUtf8(dir / name)).compile.drain >> IO.println(
+          s"Wrote ${dir / name}"
+        )
+      Files[IO].createDirectories(dir) >>
+        IO.blocking(Pictures.growth(exponent)).flatMap(write("growth.svg", _)) >>
+        IO.blocking(Pictures.bricks(exponent)).flatMap(write("bricks.svg", _))
     case Command.Verify(file, quarry, blocks) => Verify.run(quarry, Path(file), blocks).flatMap(_.traverse_(IO.println))
     case Command.Bench(limit, runs)           => IO.blocking(Bench.run(limit, runs))
     // Each line is computed and printed in turn, so long outputs are never held in memory,

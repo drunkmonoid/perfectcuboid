@@ -31,6 +31,7 @@ enum Command:
   case Print(report: Report)
   case Hunt(file: String, upTo: Long, quarry: Quarry[?], threads: Int)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
+  case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
 
 /** The command line, described with the decline library: every subcommand, its arguments,
@@ -161,6 +162,14 @@ object CommandLine:
       ).mapN(Command.Verify(_, _, _))
     )
 
+  private val pictures: Opts[Command] =
+    Opts.subcommand("pictures", "Write SVG charts to DIRECTORY, from the bricks up to 10^EXPONENT (default 6).")(
+      (
+        Opts.argument[String]("DIRECTORY"),
+        Opts.argument[Int]("EXPONENT").withDefault(6).validate("EXPONENT must be from 3 to 8")(e => e >= 3 && e <= 8)
+      ).mapN(Command.Pictures(_, _))
+    )
+
   private val hunt: Opts[Command] =
     Opts.subcommand("hunt", "Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.")(
       (
@@ -184,7 +193,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ verify :+ bench).reduce(_ orElse _) orElse Opts(Command.Print(Report.Bricks(1000)))
+    (reports :+ hunt :+ verify :+ pictures :+ bench).reduce(_ orElse _) orElse Opts(Command.Print(Report.Bricks(1000)))
 
   def parse(args: List[String]): Either[decline.Help, Command] =
     decline.Command("perfectcuboid", header)(opts).parse(args)
