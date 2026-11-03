@@ -51,7 +51,7 @@ object Bench:
   def run(maxSmallestEdge: Long): Unit =
     def upTo(bricks: LazyList[Cuboid]) = bricks.takeWhile(_.a <= maxSmallestEdge).toVector
     println(s"Euler bricks with smallest edge <= $maxSmallestEdge:")
-    time(upTo(FastSearch.allEulerBricks)) // warm up the JVM, so the first timing is fair
+    val _ = time(upTo(FastSearch.allEulerBricks)) // warm up the JVM, so the first timing is fair
     val (readable, t1) = time(upTo(Search.allEulerBricks))
     println(f"  readable  $t1%7.2fs  ${readable.size} bricks")
     val (fast, t2) = time(upTo(FastSearch.allEulerBricks))
