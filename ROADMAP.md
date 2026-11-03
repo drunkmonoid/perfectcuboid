@@ -79,7 +79,7 @@ Same rules: one phase, one commit, every test passing.
 
 ### Searching harder
 
-- [ ] **30. Hunt any kind.** The resumable hunt made generic, so face and edge cuboids get
+- [x] **30. Hunt any kind.** The resumable hunt made generic, so face and edge cuboids get
   long runs too.
 - [ ] **31. Chunked streams.** The hunt emits one fs2 `Chunk` per block straight from
   iterators, with no `LazyList` in between.

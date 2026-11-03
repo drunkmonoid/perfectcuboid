@@ -235,7 +235,8 @@ scala-cli run . -- nearmisses
 | face | 104 × 153 × 672, face diagonal √474993 | the edge shared by its two whole face diagonals |
 | edge | √461776 × 1443 × 1800 | the irrational edge |
 
-- **Face cuboids:** there are 5,092 with shared edge ≤ 10⁵, of which 170 are primitive.
+- **Face cuboids:** there are 5,092 with shared edge ≤ 10⁵, of which 170 are primitive
+  (`hunt hunt-face.txt 1e5 --kind face`, 13 seconds). The longest is 9321 × 85428 × 14479920.
 - **Edge cuboids:** they are rare. Only 5 have an irrational edge ≤ √5,000,000, and 3 of
   those are multiples of the first two. The one usually quoted, 520 × 576 × √618849, is the
   second; 1443 × 1800 × √461776 comes first.

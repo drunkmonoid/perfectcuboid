@@ -20,8 +20,8 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo)   => Hunt.run(Path(file), upTo)
-    case Command.Bench(limit, runs) => IO.blocking(Bench.run(limit, runs))
+    case Command.Hunt(file, upTo, quarry) => Hunt.run(quarry, Path(file), upTo)
+    case Command.Bench(limit, runs)       => IO.blocking(Bench.run(limit, runs))
     // Each line is computed and printed in turn, so long outputs are never held in memory,
     // and Ctrl+C can stop between any two lines.
     case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain

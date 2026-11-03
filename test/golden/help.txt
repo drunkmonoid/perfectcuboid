@@ -42,6 +42,6 @@ Subcommands:
     stats
         How the number of Euler bricks grows, up to 10^EXPONENT (3 to 9, default 6).
     hunt
-        Long search to FILE up to smallest edge UPTO. Ctrl+C stops, rerun resumes.
+        Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.
     bench
         Time the readable, fast and parallel searches up to LIMIT (default 100000).

@@ -28,7 +28,7 @@ class LawsTest extends DisciplineSuite:
 
   test("a summary of the bricks with smallest edge up to 1000"):
     val found = Summary.of(FastSearch.eulerBricksBetween(1, 1000))
-    assertEquals(found.bricks, 69L) // RESULTS.md: 69 bricks, 14 primitive
+    assertEquals(found.found, 69L) // RESULTS.md: 69 bricks, 14 primitive
     assertEquals(found.primitive, 14L)
     assertEquals(found.perfect, 0L)
     assertEquals(found.byDigits.values.sum, 69L)

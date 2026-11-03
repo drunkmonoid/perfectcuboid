@@ -29,7 +29,7 @@ enum Report:
   */
 enum Command:
   case Print(report: Report)
-  case Hunt(file: String, upTo: Long)
+  case Hunt(file: String, upTo: Long, quarry: Quarry[?])
   case Bench(maxSmallestEdge: Long, runs: Int)
 
 /** The command line, described with the decline library: every subcommand, its arguments,
@@ -132,9 +132,20 @@ object CommandLine:
   )
 
   private val hunt: Opts[Command] =
-    Opts.subcommand("hunt", "Long search to FILE up to smallest edge UPTO. Ctrl+C stops, rerun resumes.")(
-      (Opts.argument[String]("FILE"), number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge))
-        .mapN(Command.Hunt(_, _))
+    Opts.subcommand("hunt", "Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.")(
+      (
+        Opts.argument[String]("FILE"),
+        number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
+        Opts
+          .option[String](
+            "kind",
+            "bricks (by smallest edge, the default), face (by shared edge) or edge (by squared edge)."
+          )
+          .withDefault("bricks")
+          .mapValidated(kind =>
+            Quarry.byName.get(kind).toValidNel(s"--kind must be one of ${Quarry.byName.keys.mkString(", ")}")
+          )
+      ).mapN(Command.Hunt(_, _, _))
     )
 
   private val bench: Opts[Command] =

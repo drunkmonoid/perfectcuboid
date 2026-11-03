@@ -12,11 +12,17 @@ class CommandLineTest extends munit.FunSuite:
   test("numbers can be written with underscores or as powers of ten"):
     assertEquals(parse("legs", "1_000"), Right(Command.Print(Report.Legs(1000))))
     assertEquals(parse("unbounded", "1e6"), Right(Command.Print(Report.Unbounded(1_000_000))))
-    assertEquals(parse("hunt", "bricks.txt", "2.5e7"), Right(Command.Hunt("bricks.txt", 25_000_000)))
+    assertEquals(
+      parse("hunt", "bricks.txt", "2.5e7"),
+      Right(Command.Hunt("bricks.txt", 25_000_000, Quarry.eulerBricks))
+    )
 
   test("left-out numbers take their defaults"):
     assertEquals(parse("stats"), Right(Command.Print(Report.Stats(6))))
-    assertEquals(parse("hunt", "bricks.txt"), Right(Command.Hunt("bricks.txt", Search.MaxSmallestEdge)))
+    assertEquals(
+      parse("hunt", "bricks.txt"),
+      Right(Command.Hunt("bricks.txt", Search.MaxSmallestEdge, Quarry.eulerBricks))
+    )
     assertEquals(parse("nearmisses"), Right(Command.Print(Report.NearMisses)))
 
   test("bad numbers are errors, not silently replaced by a default"):
