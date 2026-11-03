@@ -94,7 +94,7 @@ Same rules: one phase, one commit, every test passing.
 
 ### Showing it
 
-- [ ] **36. Cross-check with the OEIS.** The published Euler brick sequences as test
+- [x] **36. Cross-check with the OEIS.** The published Euler brick sequences as test
   fixtures.
 - [ ] **37. Pictures.** SVG charts (growth on log–log axes, bricks by edge size) written by
   plain Scala into `docs/`.
