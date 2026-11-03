@@ -186,7 +186,7 @@ three numbers all joined to each other.
 | numbers in some triangle | 2,941 | 29,611 |
 
 About two thirds of all numbers are a leg of some triple with the other leg in range, and
-the links average about 7 per number. Only 3% of numbers are in a triangle. The graph does
+those have about 7 neighbours each on average. Only 3% of numbers are in a triangle. The graph does
 not hang together: 3 and 4, for example, pair only with each other, and form a piece of
 their own.
 

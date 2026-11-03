@@ -102,5 +102,5 @@ Same rules: one phase, one commit, every test passing.
   checks any box in the browser.
 - [x] **39. Guided tour.** Runnable `.sc` worksheets in `docs/` that walk a Scala newcomer
   through the ideas.
-- [ ] **40. Version 1.0.** A final pass over README and RESULTS, a changelog, and a
+- [x] **40. Version 1.0.** A final pass over README and RESULTS, a changelog, and a
   `v1.0` tag.
