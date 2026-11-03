@@ -21,7 +21,7 @@ class HuntTest extends munit.CatsEffectSuite:
     val flags = lines.indices.map(_ < lines.size - 1)
     val resume = lines.zip(flags).foldLeft(HuntFile.Resume.Fresh)((s, lf) => HuntFile.step(s, lf._1, lf._2))
     assertEquals(resume.searchedUpTo, 100L)
-    assertEquals(resume.bricks, 1L)
+    assertEquals(resume.found, Summary.of(Cuboid.of(44, 117, 240)))
     assertEquals(resume.validBytes, HuntFile.blockText(Cuboid.of(44, 117, 240).toList, 100).length.toLong)
 
   test("a hunt records every brick and its progress"):
@@ -33,7 +33,7 @@ class HuntTest extends munit.CatsEffectSuite:
       yield
         assertEquals(bricks, expected(3000))
         assertEquals(resume.searchedUpTo, 3000L)
-        assertEquals(resume.bricks, bricks.size.toLong)
+        assertEquals(resume.found, Summary.of(FastSearch.eulerBricksBetween(1, 3000)))
 
   test("a hunt in two runs gives the same file as one run"):
     withTempFile: path =>

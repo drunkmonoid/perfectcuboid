@@ -25,17 +25,18 @@ object HuntFile:
 
   /** What reading a results file tells us. `validBytes` is where the last complete checkpoint
     * ends: anything after it belongs to a block that was not finished, and is thrown away.
+    * `found` sums up the bricks before that point, `sinceCheckpoint` those after it.
     */
   final case class Resume(
       searchedUpTo: Long,
-      bricks: Long,
+      found: Summary,
       validBytes: Long,
-      bricksSinceCheckpoint: Long,
+      sinceCheckpoint: Summary,
       bytesRead: Long
   )
 
   object Resume:
-    val Fresh: Resume = Resume(0, 0, 0, 0, 0)
+    val Fresh: Resume = Resume(0, Summary.empty, 0, Summary.empty, 0)
 
   /** Takes one line of the file into account. A line only counts once it is known to be
     * complete, i.e. followed by a newline: a checkpoint cut off half-way would give the wrong number.
@@ -45,20 +46,29 @@ object HuntFile:
     if !complete then state.copy(bytesRead = bytesRead)
     else if line.startsWith(CheckpointPrefix) then
       line.stripPrefix(CheckpointPrefix).toLongOption match
-        case Some(n) =>
-          Resume(n, state.bricks + state.bricksSinceCheckpoint, bytesRead, 0, bytesRead)
+        case Some(n) => Resume(n, state.found |+| state.sinceCheckpoint, bytesRead, Summary.empty, bytesRead)
+        case None    => state.copy(bytesRead = bytesRead)
+    else
+      parseBrick(line) match
+        case Some(brick) =>
+          state.copy(sinceCheckpoint = state.sinceCheckpoint |+| Summary.of(brick), bytesRead = bytesRead)
         case None => state.copy(bytesRead = bytesRead)
-    else if line.nonEmpty then
-      state.copy(bricksSinceCheckpoint = state.bricksSinceCheckpoint + 1, bytesRead = bytesRead)
-    else state.copy(bytesRead = bytesRead)
+
+  /** A brick line, "44 117 240", possibly followed by "  PERFECT". */
+  def parseBrick(line: String): Option[Cuboid] =
+    line.split(" +").toList match
+      case a :: b :: c :: _ =>
+        for
+          x <- a.toLongOption
+          y <- b.toLongOption
+          z <- c.toLongOption
+          brick <- Cuboid.of(x, y, z)
+        yield brick
+      case _ => None
 
   /** The bricks recorded in a results file, for tests and later analysis. */
   def parseBricks(lines: List[String]): List[(Long, Long, Long)] =
-    lines
-      .filterNot(_.startsWith("#"))
-      .map(_.split(" +").toList)
-      .collect:
-        case a :: b :: c :: _ => (a.toLong, b.toLong, c.toLong)
+    lines.filterNot(_.startsWith("#")).flatMap(parseBrick).map(c => (c.a, c.b, c.c))
 
 /** A long Euler brick search that writes to a file, can be stopped at any time with Ctrl+C,
   * and resumes where it left off when run again.
@@ -68,7 +78,7 @@ object HuntFile:
   */
 object Hunt:
 
-  final case class Progress(searchedUpTo: Long, bricks: Long)
+  final case class Progress(searchedUpTo: Long, found: Summary)
 
   /** Reads an existing results file, line by line in constant memory, to find where to resume. */
   def readResume(path: Path): IO[HuntFile.Resume] =
@@ -102,9 +112,9 @@ object Hunt:
       _ <- dropUnfinishedBlock(path, resume).whenA(resume.bytesRead > resume.validBytes)
       _ <- IO.println(
         if resume.searchedUpTo == 0 then s"Hunting for Euler bricks, writing to $path"
-        else s"Resuming after smallest edge ${resume.searchedUpTo} (${resume.bricks} bricks so far)"
+        else s"Resuming after smallest edge ${resume.searchedUpTo} (${resume.found.bricks} bricks so far)"
       )
-      progress <- Ref.of[IO, Progress](Progress(resume.searchedUpTo, resume.bricks))
+      progress <- Ref.of[IO, Progress](Progress(resume.searchedUpTo, resume.found))
       started <- IO.monotonic
       _ <- search(path, resume.searchedUpTo + 1, upTo, blockSize, cores, progress)
         .concurrently(report(progress, resume.searchedUpTo, started))
@@ -115,6 +125,8 @@ object Hunt:
 
   /** Blocks of edges are searched on every core at once by `parEvalMap`, which hands back
     * the results in their original order, so each block is written after the one before it.
+    * Each block is also summed up on the core that searched it, and the summaries are combined
+    * with `|+|` as the blocks are written.
     */
   private def search(
       path: Path,
@@ -128,16 +140,19 @@ object Hunt:
       .iterate(from)(_ + blockSize)
       .takeWhile(_ <= upTo)
       .map(start => (start, math.min(start + blockSize - 1, upTo)))
-      .parEvalMap(cores)((first, last) => IO(last -> FastSearch.eulerBricksBetween(first, last)))
+      .parEvalMap(cores): (first, last) =>
+        IO:
+          val bricks = FastSearch.eulerBricksBetween(first, last)
+          (last, bricks, Summary.of(bricks))
     Stream
       .resource(Files[IO].writeCursor(path, Flags.Append))
       .flatMap: cursor =>
         // A write cursor remembers its position, and each write gives back the moved cursor.
         blocks.evalScan(cursor): (cursor, block) =>
-          val (last, bricks) = block
+          val (last, bricks, found) = block
           for
             moved <- cursor.write(Chunk.array(HuntFile.blockText(bricks, last).getBytes("UTF-8")))
-            _ <- progress.update(p => Progress(last, p.bricks + bricks.size))
+            _ <- progress.update(p => Progress(last, p.found |+| found))
             _ <- bricks
               .filter(_.isPerfect)
               .traverse_(c => IO.println(s"PERFECT CUBOID FOUND: ${c.a} × ${c.b} × ${c.c}"))
@@ -153,12 +168,13 @@ object Hunt:
           p <- progress.get
           now <- IO.monotonic
           rate = (p.searchedUpTo - startedAt) / (now - started).toUnit(SECONDS)
-          _ <- IO.println(f"  searched up to ${p.searchedUpTo}%,d  (${p.bricks}%,d bricks, $rate%,.0f edges/s)")
+          _ <- IO.println(f"  searched up to ${p.searchedUpTo}%,d  (${p.found.bricks}%,d bricks, $rate%,.0f edges/s)")
         yield ()
 
-  private def summary(outcome: Outcome[IO, Throwable, Unit], p: Progress): String = outcome match
-    case Outcome.Succeeded(_) =>
-      f"Done: searched every smallest edge up to ${p.searchedUpTo}%,d, ${p.bricks}%,d bricks, none perfect."
-    case Outcome.Canceled() =>
-      f"Stopped after smallest edge ${p.searchedUpTo}%,d. Run the same command again to resume."
-    case Outcome.Errored(e) => s"Failed after smallest edge ${p.searchedUpTo}: $e. Run again to resume."
+  private def summary(outcome: Outcome[IO, Throwable, Unit], p: Progress): String =
+    val headline = outcome match
+      case Outcome.Succeeded(_) => f"Done: searched every smallest edge up to ${p.searchedUpTo}%,d."
+      case Outcome.Canceled()   =>
+        f"Stopped after smallest edge ${p.searchedUpTo}%,d. Run the same command again to resume."
+      case Outcome.Errored(e) => s"Failed after smallest edge ${p.searchedUpTo}: $e. Run again to resume."
+    (headline :: p.found.describe.map("  " + _)).mkString("\n")

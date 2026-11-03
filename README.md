@@ -49,6 +49,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |
 | `src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `src/Theory.scala` | known divisibility and parity rules for Euler bricks |
+| `src/Summary.scala` | a search's results in a few numbers, as a monoid: summaries of blocks add up with `|+|` |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

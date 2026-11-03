@@ -135,9 +135,11 @@ object Cli:
   def statsReport(maxExponent: Int): LazyList[String] =
     val rows = Stats.growth(maxExponent, FastSearch.allEulerBricksParallel())
     def growth(counts: Counts => Long) =
-      rows.zip(rows.tail).map((r1, r2) => f"${Stats.exponent(r1.limit, counts(r1), r2.limit, counts(r2))}%.2f")
+      rows
+        .zip(rows.tail)
+        .map((r1, r2) => f"${Stats.exponent(r1.limit, counts(r1.counts), r2.limit, counts(r2.counts))}%.2f")
     val table = rows.map: r =>
-      f"| 10^${math.log10(r.limit.toDouble).round} | ${r.byLargest}%,d | ${r.byLargestPrimitive}%,d | ${r.bySmallest}%,d | ${r.bySmallestPrimitive}%,d |"
+      f"| 10^${math.log10(r.limit.toDouble).round} | ${r.counts.byLargest}%,d | ${r.counts.byLargestPrimitive}%,d | ${r.counts.bySmallest}%,d | ${r.counts.bySmallestPrimitive}%,d |"
     val (saunderson, primitive) =
       Stats.saundersonShare(rows.last.limit min 1_000_000L, FastSearch.allEulerBricksParallel())
     LazyList(

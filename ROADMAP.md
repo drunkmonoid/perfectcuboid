@@ -36,7 +36,7 @@ Same rules: one phase, one commit, every test passing.
   Actions running the tests and the format check on every push.
 - [x] **13. A real command line.** Subcommands, `--help`, and clear errors for bad input
   instead of silently falling back to 1000.
-- [ ] **14. Monoids for results.** Block summaries (counts, extremes, histograms) as
+- [x] **14. Monoids for results.** Block summaries (counts, extremes, histograms) as
   Cats `Monoid`s, combined with `|+|`, their laws checked with discipline.
 - [ ] **15. Golden tests.** The output of every command saved under `test/golden`, so a
   refactor cannot change it unnoticed.
