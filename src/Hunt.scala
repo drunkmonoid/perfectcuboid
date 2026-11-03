@@ -58,6 +58,44 @@ object HuntFile:
   def parse[A](quarry: Quarry[A], lines: List[String]): List[A] =
     lines.filterNot(_.startsWith("#")).flatMap(quarry.parse)
 
+/** One block of a parallel search: the last key in it, what it found, and their summary. */
+final case class Block[A](last: Long, finds: Chunk[A], summary: Summary)
+
+object Blocks:
+
+  /** The blocks of keys from `from` to `upTo`, searched on `cores` cores at once by
+    * `parEvalMap`, which hands them on in their original order. Each block's finds go straight
+    * from the search's iterator into one `Chunk`, an array-backed piece of a stream, and, if
+    * `summarize`, are summed up on the core that found them.
+    */
+  def stream[A](
+      quarry: Quarry[A],
+      from: Long,
+      upTo: Long,
+      blockSize: Long,
+      cores: Int,
+      summarize: Boolean = true
+  ): Stream[IO, Block[A]] =
+    Stream
+      .iterate(from)(_ + blockSize)
+      .takeWhile(_ <= upTo)
+      .map(start => (start, math.min(start + blockSize - 1, upTo)))
+      .parEvalMap(cores): (first, last) =>
+        // A block can take seconds of pure computation. On Cats Effect's own few threads that
+        // would keep everything else waiting, progress reports included, so it runs on the
+        // pool meant for long, blocking work.
+        IO.blocking:
+          val finds = Chunk.from(quarry.search(first, last).toVector)
+          val summary =
+            if summarize then finds.foldLeft(Summary.empty)((summary, find) => summary |+| quarry.summarize(find))
+            else Summary.empty
+          Block(last, finds, summary)
+
+  /** The finds alone, one by one, from blocks of 2000 keys on every core. */
+  def finds[A](quarry: Quarry[A], from: Long, upTo: Long): Stream[IO, A] =
+    stream(quarry, from, upTo, 2000, Runtime.getRuntime.availableProcessors, summarize = false)
+      .flatMap(block => Stream.chunk(block.finds))
+
 /** A long search, for any kind of cuboid, that writes to a file, can be stopped at any time with Ctrl+C,
   * and resumes where it left off when run again.
   *
@@ -112,10 +150,8 @@ object Hunt:
         .guaranteeCase(outcome => progress.get.flatMap(p => IO.println(summary(quarry, outcome, p))))
     yield ()
 
-  /** Blocks of keys are searched on every core at once by `parEvalMap`, which hands back
-    * the results in their original order, so each block is written after the one before it.
-    * Each block is also summed up on the core that searched it, and the summaries are combined
-    * with `|+|` as the blocks are written.
+  /** The blocks come in order, so each is written after the one before it. Their summaries,
+    * made on the cores that searched them, are combined with `|+|` as they are written.
     */
   private def search[A](
       quarry: Quarry[A],
@@ -126,27 +162,18 @@ object Hunt:
       cores: Int,
       progress: Ref[IO, Progress]
   ): Stream[IO, Unit] =
-    val blocks = Stream
-      .iterate(from)(_ + blockSize)
-      .takeWhile(_ <= upTo)
-      .map(start => (start, math.min(start + blockSize - 1, upTo)))
-      .parEvalMap(cores): (first, last) =>
-        // A block can take seconds of pure computation. On Cats Effect's own few threads that
-        // would keep everything else waiting, the progress reports too, so it runs on the
-        // pool meant for long, blocking work.
-        IO.blocking:
-          val finds = quarry.search(first, last)
-          (last, finds, finds.foldLeft(Summary.empty)((summary, find) => summary |+| quarry.summarize(find)))
+    val blocks = Blocks.stream(quarry, from, upTo, blockSize, cores)
     Stream
       .resource(Files[IO].writeCursor(path, Flags.Append))
       .flatMap: cursor =>
         // A write cursor remembers its position, and each write gives back the moved cursor.
         blocks.evalScan(cursor): (cursor, block) =>
-          val (last, finds, found) = block
           for
-            moved <- cursor.write(Chunk.array(HuntFile.blockText(quarry, finds, last).getBytes("UTF-8")))
-            _ <- progress.update(p => Progress(last, p.found |+| found))
-            _ <- finds
+            moved <- cursor.write(
+              Chunk.array(HuntFile.blockText(quarry, block.finds.toList, block.last).getBytes("UTF-8"))
+            )
+            _ <- progress.update(p => Progress(block.last, p.found |+| block.summary))
+            _ <- block.finds
               .filter(quarry.summarize(_).perfect > 0)
               .traverse_(find => IO.println(s"PERFECT CUBOID FOUND: ${quarry.line(find)}"))
           yield moved

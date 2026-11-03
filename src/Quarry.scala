@@ -9,12 +9,12 @@ package perfectcuboid
   * @param key
   *   what the search counts up through, as in "smallest edge"
   * @param search
-  *   everything found for keys from `first` to `last`, in order
+  *   everything found for keys from `first` to `last`, in order, one at a time
   */
 final case class Quarry[A](
     name: String,
     key: String,
-    search: (Long, Long) => List[A],
+    search: (Long, Long) => Iterator[A],
     line: A => String,
     parse: String => Option[A],
     summarize: A => Summary
@@ -37,14 +37,14 @@ object Quarry:
       case _ => None
 
   val eulerBricks: Quarry[Cuboid] =
-    Quarry("Euler bricks", "smallest edge", FastSearch.eulerBricksBetween, cuboidLine, parseCuboid, Summary.of)
+    Quarry("Euler bricks", "smallest edge", FastSearch.eulerBricksIterator, cuboidLine, parseCuboid, Summary.of)
 
   /** Face cuboids, and any perfect cuboid, by the edge their two whole face diagonals share. */
   val faceCuboids: Quarry[Cuboid] =
     Quarry(
       "face cuboids",
       "shared edge",
-      (first, last) => (first to last).toList.flatMap(NearMisses.faceCuboidsWithSharedEdge),
+      (first, last) => (first to last).iterator.flatMap(NearMisses.faceCuboidsWithSharedEdge),
       cuboidLine,
       parseCuboid,
       Summary.of
@@ -78,7 +78,7 @@ object Quarry:
     Quarry(
       "edge cuboids",
       "squared irrational edge",
-      (first, last) => (first to last).toList.flatMap(NearMisses.edgeCuboidsWithSquaredEdge),
+      (first, last) => (first to last).iterator.flatMap(NearMisses.edgeCuboidsWithSquaredEdge),
       squaredLine,
       parseSquared,
       summarizeSquared

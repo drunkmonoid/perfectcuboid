@@ -8,6 +8,25 @@ import fs2.io.file.Path
 import Stats.Counts
 import scala.concurrent.ExecutionContext.Implicits.global
 
+/** The lines of the `unbounded` report, shared by its two versions. */
+object Unbounded:
+
+  def header(maxSmallestEdge: Long): String =
+    s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges unbounded (* = primitive)"
+
+  def line(brick: Cuboid): String =
+    if brick.isPerfect then s"${Cli.describe(brick)}  PERFECT!" else Cli.describe(brick)
+
+  def footer(maxSmallestEdge: Long): String = s"Done: every smallest edge up to $maxSmallestEdge searched."
+
+  /** The report as an fs2 stream: the blocks of edges are searched on every core, and each
+    * brick is printed as soon as its block, and every block before it, is done.
+    */
+  def stream(maxSmallestEdge: Long): Stream[IO, String] =
+    Stream.emit(header(maxSmallestEdge)) ++
+      Blocks.finds(Quarry.eulerBricks, 1, maxSmallestEdge).map(line) ++
+      Stream.emit(footer(maxSmallestEdge))
+
 /** The program's entry point. `scala-cli run . -- --help` lists the commands.
   *
   * `CommandIOApp` parses the command line with `CommandLine.opts`, and prints the help
@@ -24,6 +43,7 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
     case Command.Bench(limit, runs)       => IO.blocking(Bench.run(limit, runs))
     // Each line is computed and printed in turn, so long outputs are never held in memory,
     // and Ctrl+C can stop between any two lines.
+    case Command.Print(Report.Unbounded(limit)) => Unbounded.stream(limit).foreach(IO.println).compile.drain
     case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain
 
 object Cli:
@@ -58,12 +78,12 @@ object Cli:
       #:: bricks.map(describe).to(LazyList)
       :+ verdict(bricks.filter(_.isPerfect))
 
-  /** Nothing here keeps the bricks once they are described, so memory use stays flat. */
+  /** Nothing here keeps the bricks once they are described, so memory use stays flat. `Main`
+    * prints the same lines from a stream instead, `Unbounded.stream`.
+    */
   def unboundedReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge)
-    s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges unbounded (* = primitive)"
-      #:: bricks.map(brick => if brick.isPerfect then s"${describe(brick)}  PERFECT!" else describe(brick))
-      :+ s"Done: every smallest edge up to $maxSmallestEdge searched."
+    Unbounded.header(maxSmallestEdge) #:: bricks.map(Unbounded.line) :+ Unbounded.footer(maxSmallestEdge)
 
   def rulesReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)

@@ -103,3 +103,16 @@ class HuntTest extends munit.CatsEffectSuite:
           assert(one.contains("√461776 1443 1800"), one)
           assertEquals(resume.found.found, 1L)
           assertEquals(resume.found.largest.map(_.text), Some("√461776 × 1443 × 1800"))
+
+  test("the streamed unbounded report prints the same lines as the pure one"):
+    Unbounded.stream(3000).compile.toList.map(lines => assertEquals(lines, Cli.run(Report.Unbounded(3000)).toList))
+
+  test("blocks come in order, each with the summary of its own finds"):
+    Blocks
+      .stream(Quarry.eulerBricks, 1, 5000, 700, 3)
+      .compile
+      .toList
+      .map: blocks =>
+        assertEquals(blocks.map(_.last), List(700L, 1400, 2100, 2800, 3500, 4200, 4900, 5000))
+        assertEquals(blocks.flatMap(_.finds.toList), FastSearch.eulerBricksBetween(1, 5000))
+        blocks.foreach(block => assertEquals(block.summary, Summary.of(block.finds.toList)))

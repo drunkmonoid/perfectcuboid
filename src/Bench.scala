@@ -1,5 +1,6 @@
 package perfectcuboid
 
+import cats.effect.unsafe.IORuntime
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /** Repeated timings of one piece of code, in seconds. The statistics are pure. */
@@ -36,7 +37,12 @@ object Bench:
   val others: List[(String, BrickSearch)] = List(
     "fast, one edge at a time" -> (n => FastSearch.allEulerBricksOneByOne.takeWhile(_.a <= n).toVector),
     "fast, sieving blocks" -> (n => FastSearch.allEulerBricks.takeWhile(_.a <= n).toVector),
-    "parallel" -> (n => FastSearch.allEulerBricksParallel().takeWhile(_.a <= n).toVector)
+    // The stream is a description of the search; `unsafeRunSync` runs it, on Cats Effect's
+    // global runtime, and waits for the result.
+    "parallel, fs2 chunks" -> (n =>
+      Blocks.finds(Quarry.eulerBricks, 1, n).compile.toVector.unsafeRunSync()(using IORuntime.global)
+    ),
+    "parallel, futures" -> (n => FastSearch.allEulerBricksParallel().takeWhile(_.a <= n).toVector)
   )
 
   def time[A](body: => A): (A, Double) =

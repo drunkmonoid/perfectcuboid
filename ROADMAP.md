@@ -81,7 +81,7 @@ Same rules: one phase, one commit, every test passing.
 
 - [x] **30. Hunt any kind.** The resumable hunt made generic, so face and edge cuboids get
   long runs too.
-- [ ] **31. Chunked streams.** The hunt emits one fs2 `Chunk` per block straight from
+- [x] **31. Chunked streams.** The hunt emits one fs2 `Chunk` per block straight from
   iterators, with no `LazyList` in between.
 - [ ] **32. Progress and ETA.** A progress line on long hunts: edges per second, bricks
   so far, time left.

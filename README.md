@@ -75,7 +75,7 @@ moment loses nothing; just don't run two hunts on the same file at once.
 | `src/Local.scala` | divisibility rules for Euler bricks and perfect cuboids, proved by trying every remainder |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
-| `src/Hunt.scala` | long searches with Cats Effect and fs2: results file, checkpoints, resume |
+| `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
 | `src/Bench.scala` | timing the searches: warm-up, repeated runs, median and range |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |

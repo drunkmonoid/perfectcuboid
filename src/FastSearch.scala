@@ -103,9 +103,12 @@ object FastSearch:
   /** The Euler bricks with smallest edge from `first` to `last`, in order. The edges are
     * factorised all together by the sieve, instead of one at a time.
     */
-  def eulerBricksBetween(first: Long, last: Long): List[Cuboid] =
+  def eulerBricksBetween(first: Long, last: Long): List[Cuboid] = eulerBricksIterator(first, last).toList
+
+  /** The same bricks, handed out one at a time, without first collecting them in a list. */
+  def eulerBricksIterator(first: Long, last: Long): Iterator[Cuboid] =
     val factors = Sieve.factorizeBlock(first, last)
-    (first to last).toList.flatMap(a => eulerBricksWithLegs(a, legsAbove(a, factors((a - first).toInt))))
+    (first to last).iterator.flatMap(a => eulerBricksWithLegs(a, legsAbove(a, factors((a - first).toInt))))
 
   /** Same result as `Search.allEulerBricks`, a block of edges at a time. */
   def allEulerBricks: LazyList[Cuboid] =

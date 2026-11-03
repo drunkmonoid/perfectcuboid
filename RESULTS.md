@@ -252,10 +252,16 @@ gives the median run and the range.
 
 | version, smallest edge ≤ 10⁶ | median | range |
 | --- | ---: | ---: |
-| readable (`Search`) | 17.77 s | 17.67 – 17.88 s |
-| fast, factorising one edge at a time | 6.65 s | 6.64 – 6.76 s |
-| fast, sieving blocks of edges | 6.22 s | 6.21 – 6.25 s |
-| parallel, sieving blocks, 12 threads | 1.64 s | 1.22 – 1.65 s |
+| readable (`Search`) | 17.61 s | 17.59 – 17.65 s |
+| fast, factorising one edge at a time | 6.61 s | 6.61 – 6.66 s |
+| fast, sieving blocks of edges | 6.24 s | 6.22 – 6.25 s |
+| parallel, an fs2 stream of chunks, 12 threads | 0.95 s | 0.94 – 1.40 s |
+| parallel, futures, 12 threads | 1.52 s | 1.51 – 1.56 s |
+
+The two parallel versions are equally fast. Whichever of them runs second takes about 30%
+longer: run in the other order, the futures took 1.1 s and the stream 1.5 s. On a laptop that
+is most likely heat: after a few minutes at full load the processor slows itself down. So
+compare timings taken in the same position, or with pauses between them.
 
 Factorising the edges by a sieve instead of trial division saves only 7%, so most of the
 time goes into listing the legs and testing pairs of them, not into factorising.
