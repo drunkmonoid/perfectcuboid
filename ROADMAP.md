@@ -147,7 +147,7 @@ buys, and make the results easier to see and to reuse.
 
 ### More mathematics
 
-- [ ] **53. How unlucky are we?** A heuristic for the number of perfect cuboids to expect among
+- [x] **53. How unlucky are we?** A heuristic for the number of perfect cuboids to expect among
   the bricks found, if each space diagonal were a square by chance, and how it grows.
 - [ ] **54. Perfect parallelepipeds.** Sawyer and Reiter's 2009 box with slanted faces, whose
   edges, face diagonals and body diagonals are all whole, checked exactly, and a small search.

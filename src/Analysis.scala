@@ -87,8 +87,9 @@ object Analysis:
       rules(bricks, which),
       derived(primitive, which).take(2),
       origins(primitive, which),
-      closest(bricks, which)
-    ).flatMap(section => "" :: section).drop(1)
+      closest(bricks, which),
+      if from == 1 then Chance.lines(bricks, searchedUpTo) else Nil
+    ).filter(_.nonEmpty).flatMap(section => "" :: section).drop(1)
 
   /** The bricks a hunt's file holds up to its last checkpoint, and its range. */
   def read(quarry: Quarry[Cuboid], path: Path): IO[(Vector[Cuboid], HuntFile.Resume)] =

@@ -115,6 +115,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Verify.scala` | checking a results file without trusting the code that wrote it |
 | `src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
 | `src/Analysis.scala` | the reports that need only a list of bricks, for a fresh search or a hunt's file |
+| `src/Chance.scala` | how many perfect cuboids chance alone would put among the bricks found |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

@@ -275,6 +275,48 @@ Spread evenly, 10,220 misses would put the smallest around ½ / 10,221 ≈ 4.9·
 closest is 4.2·10⁻⁵. Nothing here suggests the space diagonals are drawn towards whole numbers.
 They miss about as chance would have them miss.
 
+## How unlucky are we?
+
+```sh
+scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive   # its last table
+```
+
+Suppose chance alone decided whether a brick's space diagonal is whole. How many perfect
+cuboids should the hunt have found? Near a number N, squares are about 2√N apart, so a number
+taken at random is a square with a chance of about 1 / (2√N). Remainders change that: if
+N ≡ r (mod m) and s(r) numbers x mod m have x² ≡ r, the chance becomes s(r) / (2√N), which is
+0 when no square leaves remainder r. `Chance.scala` takes m = 2⁶ · 3² · 5 · 7 · 11 · 13 and N
+the square of each primitive brick's space diagonal, and adds up the chances.
+
+| primitive bricks, smallest edge | bricks | by size alone | by size and remainder | ruled out by remainder |
+| --- | ---: | ---: | ---: | ---: |
+| up to 100 | 2 | 2.5·10⁻³ | 0 | 2 |
+| 101 to 1,000 | 12 | 3.4·10⁻³ | 0.13 | 7 |
+| to 10⁴ | 42 | 1.0·10⁻³ | 0.054 | 9 |
+| to 10⁵ | 124 | 2.7·10⁻⁴ | 0.015 | 37 |
+| to 10⁶ | 428 | 1.2·10⁻⁴ | 0.0062 | 142 |
+| to 10⁷ | 1,039 | 2.6·10⁻⁵ | 0.0015 | 270 |
+| to 10⁸ | 2,624 | 6.5·10⁻⁶ | 4.0·10⁻⁴ | 709 |
+| to 10⁹ | 5,949 | 1.5·10⁻⁶ | 9.6·10⁻⁵ | 1,600 |
+| **in all** | **10,220** | **0.0085** | **0.21** | **2,776** |
+
+- **Remainders matter a great deal.** 2,776 of the 10,220 bricks, 27%, have a space diagonal
+  whose square leaves a remainder no square leaves, so they could never have been perfect,
+  among them the first two, 44 × 117 × 240 and 85 × 132 × 720. The rest leave remainders that
+  squares leave unusually often, mostly from high powers of 2 and 3, and together that makes
+  the chance 25 times what size alone suggests.
+- **So: about one chance in five** that a perfect cuboid would have turned up below 10⁹. Not
+  finding one is no surprise.
+- **Most of that chance was spent early.** Each decade adds about a quarter of what the one
+  before it added: the bricks there are 2½ times as many, but their space diagonals are ten
+  times as long. If that goes on, all the bricks beyond 10⁹ together add about 3·10⁻⁵.
+
+On this reckoning a perfect cuboid, if one exists, is most likely small enough that searches
+would have found it already, and the expected number of them is finite and well below one.
+That fits the general belief that there are none. It is a heuristic, not evidence: whether a
+diagonal is whole is not decided by chance, and a structure that made perfect cuboids exist
+would be just the kind of thing this reckoning cannot see.
+
 ## Rules proved by computer
 
 ```sh
