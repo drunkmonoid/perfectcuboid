@@ -41,4 +41,4 @@ program.unsafeRunSync()
 
 // The hunt in src/Hunt.scala is this idea grown up: blocks searched in parallel by fs2
 // streams, written to a file with checkpoints, stopped cleanly by Ctrl+C, resumed later.
-// That is the end of the tour. RESULTS.md says what the searches have found.
+// Part 6 looks at numbers too big for a Long, part 7 at the hunt's file, part 8 at platforms.

@@ -1,4 +1,4 @@
-# On every version tag (v2.0, …): native executables for Linux and macOS and a jar that runs on
+# On every version tag (v2.0, …): a native executable for Linux and a jar that runs on
 # any Java from 17, attached to a GitHub release whose notes are that version's section of
 # CHANGELOG.md.
 name: Release
@@ -17,8 +17,6 @@ jobs:
         include:
           - os: ubuntu-latest
             name: perfectcuboid-linux-x86_64
-          - os: macos-latest
-            name: perfectcuboid-macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

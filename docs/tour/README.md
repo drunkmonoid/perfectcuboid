@@ -1,6 +1,6 @@
 # A guided tour
 
-Five worksheets for someone new to Scala, each a short runnable file that explains one idea
+Eight worksheets for someone new to Scala, each a short runnable file that explains one idea
 with the project's own code. Read the file, run it, change something, run it again.
 
 | run | about |
@@ -10,3 +10,6 @@ with the project's own code. Read the file, run it, change something, run it aga
 | `scala-cli run docs/tour/tour3_searching.sc` | for-comprehensions, lazy infinite lists, the search itself |
 | `scala-cli run docs/tour/tour4_monoids.sc` | monoids with cats, and why they make parallel work safe |
 | `scala-cli run docs/tour/tour5_effects.sc` | `IO`: programs as values, run in parallel |
+| `scala-cli run docs/tour/tour6_wide.sc` | numbers beyond a `Long`, a fast exact test for squares, filters by remainders |
+| `scala-cli run docs/tour/tour7_files.sc` | a hunt's file: derived line formats, stopping and resuming, `verify`, shards |
+| `scala-cli run docs/tour/tour8_platforms.sc` | the same code on the JVM, JavaScript (`--js`) and Scala Native (`--native`) |

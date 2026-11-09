@@ -178,9 +178,9 @@ buys, and make the results easier to see and to reuse.
   with progress, and stopped at any time.
 - [x] **65. The catalogue online.** A page listing the primitive bricks found, sortable and
   filterable, each one opening in the checker.
-- [x] **66. Releases.** On a tag, CI builds native binaries for Linux and macOS and a runnable
-  jar, and attaches them to a GitHub release.
-- [ ] **67. Tour, part two.** Worksheets for what came after 1.0: `Wide`, the hunt's effects,
+- [x] **66. Releases.** On a tag, CI builds a native binary for Linux and a runnable jar, and
+  attaches them to a GitHub release.
+- [x] **67. Tour, part two.** Worksheets for what came after 1.0: `Wide`, the hunt's effects,
   the browser build.
 - [ ] **68. An essay.** What looking for a perfect cuboid taught us, in plain words, with the
   charts, for readers who know neither the problem nor Scala.
