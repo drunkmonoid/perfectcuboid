@@ -140,7 +140,7 @@ buys, and make the results easier to see and to reuse.
   `Cuboid` holds.)
 - [ ] **50. The long hunt.** Every primitive brick with smallest edge up to 3·10⁹, over several
   resumable nights, verified, and recorded in RESULTS.md.
-- [ ] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
+- [x] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
   closest near misses found.
 - [x] **52. Search by space diagonal.** Face cuboids found a second way, from the sums of three
   squares that make a square, as an independent check on the first.

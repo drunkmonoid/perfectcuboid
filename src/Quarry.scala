@@ -95,9 +95,7 @@ object Quarry:
 
   /** An edge cuboid is primitive when no square k² > 1 divides all three of its squared edges. */
   private def summarizeSquared(c: SquaredCuboid): Summary =
-    val g = Arith.gcd(Arith.gcd(c.a2, c.b2), c.c2)
-    val primitive = NumberTheory.factorize(g).forall(_._2 == 1)
-    Summary.one(primitive, c.kind == Kind.Perfect, Specimen(BigInt(c.c2), squaredLine(c).replace(" ", " × ")))
+    Summary.one(c.isPrimitive, c.kind == Kind.Perfect, Specimen(BigInt(c.c2), squaredLine(c).replace(" ", " × ")))
 
   /** One irrational edge, and the other six lengths whole, worked out with BigInt. */
   private def checkSquared(c: SquaredCuboid): Boolean =

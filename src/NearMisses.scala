@@ -18,6 +18,11 @@ final case class SquaredCuboid private (a2: Long, b2: Long, c2: Long):
   /** The space diagonal, `None` when it is irrational. */
   def spaceDiagonal: Option[Long] = exactSqrt(a2 + b2 + c2)
 
+  /** Whether this is no smaller box scaled up: no square k² > 1 divides all three squared edges,
+    * which is to say their greatest common divisor has no prime twice.
+    */
+  def isPrimitive: Boolean = NumberTheory.factorize(gcd(gcd(a2, b2), c2)).forall(_._2 == 1)
+
   /** Which of the seven lengths are whole. */
   def kind: Kind =
     val irrationalEdges = edges.count(_.isEmpty)

@@ -44,6 +44,7 @@ enum Command:
   case Families(file: String, maxHypotenuse: Long)
   case Densities(file: String)
   case Records(file: String, legsUpTo: Long)
+  case NearCalls(file: String, face: Boolean)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
@@ -270,6 +271,20 @@ object CommandLine:
       ).mapN(Command.Records(_, _))
     )
 
+  private val nearCalls: Opts[Command] =
+    Opts.subcommand(
+      "nearcalls",
+      "The face or edge cuboids in a hunt's FILE whose irrational length is nearest a whole number."
+    )(
+      (
+        Opts.argument[String]("FILE"),
+        Opts
+          .option[String]("kind", "face or edge, as the hunt was run.")
+          .validate("--kind must be face or edge")(Set("face", "edge"))
+          .map(_ == "face")
+      ).mapN(Command.NearCalls(_, _))
+    )
+
   private val merge: Opts[Command] =
     Opts.subcommand("merge", "Join hunts' FILEs over ranges that follow on from each other into a new file OUT.")(
       (Opts.argument[String]("OUT"), Opts.arguments[String]("FILE").map(_.toList), kind).mapN(Command.Merge(_, _, _))
@@ -307,7 +322,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ nearCalls :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )

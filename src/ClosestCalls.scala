@@ -22,6 +22,40 @@ object ClosestCalls:
   def miss(brick: Cuboid): Double =
     distanceToWhole(BigInt(brick.a).pow(2) + BigInt(brick.b).pow(2) + BigInt(brick.c).pow(2))
 
+  /** How far a face cuboid's one irrational face diagonal is from a whole number. */
+  def faceMiss(cuboid: Cuboid): Double =
+    val (a, b, c) = (BigInt(cuboid.a), BigInt(cuboid.b), BigInt(cuboid.c))
+    List(a * a + b * b, a * a + c * c, b * b + c * c)
+      .filterNot(Arith.isPerfectSquareBig)
+      .map(distanceToWhole)
+      .minOption
+      .getOrElse(0.0)
+
+  /** How far an edge cuboid's one irrational edge is from a whole number. */
+  def edgeMiss(cuboid: SquaredCuboid): Double =
+    List(cuboid.a2, cuboid.b2, cuboid.c2)
+      .filterNot(Arith.isPerfectSquare)
+      .map(n => distanceToWhole(BigInt(n)))
+      .minOption
+      .getOrElse(0.0)
+
+  /** The near misses closest to perfect, `count` of them, and the lines that show them: how many
+    * there are, the closest, and how close chance alone would put the closest of so many.
+    */
+  def nearLines[A](
+      finds: Vector[A],
+      what: String,
+      miss: A => Double,
+      show: A => String,
+      count: Int = 12
+  ): List[String] =
+    val ranked = finds.map(f => (find = f, miss = miss(f))).sortBy(_.miss)
+    val header = f"The primitive $what nearest to perfect, of ${finds.size}%,d:"
+    val rows = ranked.take(count).toList.map(r => f"  ${show(r.find)}   off by ${r.miss}%.2e")
+    val chance =
+      f"Spread evenly between 0 and ½, the smallest of ${finds.size}%,d misses would be about ${0.5 / (finds.size + 1)}%.1e."
+    (header :: rows) :+ chance
+
   /** The primitive bricks among these, closest first. */
   def ranked(bricks: Iterable[Cuboid]): Vector[(brick: Cuboid, miss: Double)] =
     bricks.iterator.filter(_.isPrimitive).map(b => (brick = b, miss = miss(b))).toVector.sortBy(_.miss)

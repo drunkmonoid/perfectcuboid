@@ -54,6 +54,7 @@ scala-cli run . -- records hunt-primitive.txt                    # the edges wit
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- crosscheck 1e5        # face cuboids found two independent ways, compared
+scala-cli run . -- nearcalls hunt-face.txt --kind face   # the face (or edge) cuboids nearest to perfect
 scala-cli run . -- parallelepiped 300    # slanted boxes with all 13 lengths whole
 scala-cli run . -- nearmisses            # the first body, face and edge cuboid
 scala-cli run . -- bench 1e6 --runs 3    # time the readable, fast and parallel searches

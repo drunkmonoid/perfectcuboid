@@ -74,6 +74,7 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
         _ <- IO.println("")
         _ <- IO.blocking(Records.legsLines(all, legsUpTo)).flatMap(_.traverse_(IO.println))
       yield ()
+    case Command.NearCalls(file, face)     => Analysis.nearCalls(face, Path(file)).flatMap(_.traverse_(IO.println))
     case Command.Merge(out, files, quarry) =>
       Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Pictures(directory, exponent) =>

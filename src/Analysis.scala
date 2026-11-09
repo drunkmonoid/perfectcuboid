@@ -132,3 +132,37 @@ object Analysis:
                 Stream.emit(svg).through(Files[IO].writeUtf8(dir / name)).compile.drain.as(s"Wrote ${dir / name}")
               )
               .map(written => lines ++ ("" :: written))
+
+  /** The finds in a hunt's file up to its last complete checkpoint, of any kind. */
+  def finds[A](quarry: Quarry[A], path: Path): IO[(finds: Vector[A], resume: HuntFile.Resume)] =
+    Hunt
+      .readResume(quarry, path)
+      .flatMap: resume =>
+        Files[IO]
+          .readRange(path, 64 * 1024, 0, resume.validBytes)
+          .through(fs2.text.utf8.decode)
+          .through(fs2.text.lines)
+          .map(quarry.parse)
+          .unNone
+          .compile
+          .toVector
+          .map(found => (finds = found, resume = resume))
+
+  /** The face or edge cuboids of a hunt's file that come nearest to perfect. */
+  def nearCalls(face: Boolean, path: Path): IO[List[String]] =
+    if face then
+      finds(Quarry.faceCuboids, path).map: read =>
+        ClosestCalls.nearLines(
+          read.finds.filter(_.isPrimitive),
+          s"face cuboids with shared edge up to ${read.resume.searchedUpTo}",
+          ClosestCalls.faceMiss,
+          c => Cli.describeSquared(c.squared.get)
+        )
+    else
+      finds(Quarry.edgeCuboids, path).map: read =>
+        ClosestCalls.nearLines(
+          read.finds.filter(_.isPrimitive),
+          s"edge cuboids with squared irrational edge up to ${read.resume.searchedUpTo}",
+          ClosestCalls.edgeMiss,
+          Cli.describeSquared
+        )

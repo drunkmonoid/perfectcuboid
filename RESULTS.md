@@ -523,6 +523,46 @@ scala-cli run . -- nearmisses
   those are multiples of the first two. The one usually quoted, 520 × 576 × √618849, is the
   second; 1443 × 1800 × √461776 comes first.
 
+### Near misses, far
+
+```sh
+scala-cli run . -J -Xmx1g -- hunt hunt-face.txt 1e7 --kind face   # 4 minutes on 4 threads
+scala-cli run . -J -Xmx1g -- hunt hunt-edge.txt 1e9 --kind edge   # 71 minutes on 4 threads
+scala-cli run . -J -Xmx2g -- nearcalls hunt-face.txt --kind face
+scala-cli run . -J -Xmx2g -- nearcalls hunt-edge.txt --kind edge
+```
+
+Both hunts ran next to the primitive hunt to 3·10⁹, and `verify` found no problem in either.
+
+| kind, how far | found | primitive | perfect |
+| --- | ---: | ---: | ---: |
+| face cuboids, shared edge ≤ 10⁷ (other edges ≤ 1.75·10⁹) | 529,157 | 1,326 | 0 |
+| edge cuboids, squared irrational edge ≤ 10⁹ | 173 | 28 | 0 |
+
+The face cuboid search keeps to edges up to `SquaredCuboid.MaxEdge` ≈ 1.75·10⁹, so that the
+squares of all seven lengths fit in a `Long`; its longest, 9328689 × 292195148 × 1721130480,
+comes close to that.
+
+`nearcalls` ranks the primitive ones by how far their one irrational length is from a whole
+number:
+
+| closest primitive face cuboids | irrational face diagonal | off by |
+| --- | --- | ---: |
+| 3107 × 28476 × 4826640 | √23296463343049 | 1.7·10⁻⁵ |
+| 1053273 × 178528220 × 1636259436 | √2709217267235406496 | 3.5·10⁻⁵ |
+| 975156 × 1828392 × 2522275 | √4293946530000 | 3.5·10⁻⁵ |
+
+| closest primitive edge cuboids | irrational edge | off by |
+| --- | --- | ---: |
+| 215 × 912 × √533332800 | √533332800 ≈ 23094.0008 | 7.8·10⁻⁴ |
+| 1320 × √10284624 × 4301 | √10284624 | 0.035 |
+| √38142400 × 11529 × 14760 | √38142400 | 0.047 |
+
+Spread evenly between 0 and ½, the closest of 1,326 misses would be about 3.8·10⁻⁴ off, and of
+28 about 0.017: the best face cuboid is 22 times nearer than that, the best edge cuboid about
+20 times. Lucky draws rather than a pattern, as far as one table can say, and nowhere near the
+exact whole number a perfect cuboid needs.
+
 ### Face cuboids, found a second way
 
 ```sh
