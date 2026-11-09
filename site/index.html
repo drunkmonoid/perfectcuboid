@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Perfect Cuboid</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb; --raised: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --line: #e6e5e0;
+    --accent: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface: #1a1a19; --raised: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --line: #383835;
+      --accent: #3987e5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--ink); font: 16px/1.55 system-ui, sans-serif; }
+  main { max-width: 48rem; margin: 0 auto; padding: 2.5rem 16px 4rem; }
+  h1 { font-size: 1.8rem; margin: 0 0 .5rem; }
+  h2 { font-size: 1.1rem; margin: 2.5rem 0 .75rem; }
+  p { margin: 0 0 1rem; }
+  .lede { color: var(--ink-2); font-size: 1.05rem; }
+  a { color: var(--accent); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: .75rem; }
+  .card {
+    display: block; padding: 1rem 1.1rem; text-decoration: none; color: var(--ink);
+    background: var(--raised); border: 1px solid var(--line); border-radius: 12px;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card strong { display: block; margin-bottom: .25rem; }
+  .card span { color: var(--ink-2); font-size: .9rem; }
+  figure { margin: 0 0 1.5rem; }
+  /* An <object>, not an <img>: only then do the charts' hover titles work. */
+  figure object { display: block; width: 100%; aspect-ratio: 720 / 440; border: 1px solid var(--line); border-radius: 8px; }
+  figcaption { color: var(--ink-2); font-size: .9rem; margin-top: .4rem; }
+  footer { margin-top: 3rem; color: var(--ink-2); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>The perfect cuboid</h1>
+  <p class="lede">Is there a box whose three edges, six face diagonals and space diagonal are all whole
+    numbers? Nobody knows. This project looks for one in plain, purely functional Scala 3, and keeps
+    track of everything it finds on the way.</p>
+  <p>The biggest search so far went through every primitive Euler brick with smallest edge up to
+    10⁹ (a brick whose face diagonals are whole, but not yet its space diagonal): 10,220 of them, and
+    no perfect cuboid.</p>
+
+  <div class="cards">
+    <a class="card" href="check/"><strong>Check a box</strong><span>Type three edges of any size and see all seven lengths, worked out in your browser.</span></a>
+    <a class="card" href="api/"><strong>API docs</strong><span>Every public definition of the library, described.</span></a>
+    <a class="card" href="https://github.com/drunkmonoid/perfectcuboid/blob/main/RESULTS.md"><strong>Results</strong><span>What the searches found, with the commands to find it again.</span></a>
+    <a class="card" href="https://github.com/drunkmonoid/perfectcuboid"><strong>Source</strong><span>The code, the roadmap and a guided tour for newcomers to Scala.</span></a>
+  </div>
+
+  <h2>Charts</h2>
+  <figure>
+    <object type="image/svg+xml" data="charts/growth.svg" aria-label="How the number of Euler bricks grows with the smallest edge, all of them and the primitive ones, on log–log axes">How the number of Euler bricks grows with the smallest edge, all of them and the primitive ones, on log–log axes</object>
+    <figcaption>How many Euler bricks there are with smallest edge up to N.</figcaption>
+  </figure>
+  <figure>
+    <object type="image/svg+xml" data="charts/bricks-1e9.svg" aria-label="The 10,220 primitive Euler bricks with smallest edge up to a billion, by smallest and longest edge">The 10,220 primitive Euler bricks with smallest edge up to a billion, by smallest and longest edge</object>
+    <figcaption>The primitive bricks up to 10⁹, by smallest and longest edge. Hover a dot to read its edges.</figcaption>
+  </figure>
+  <figure>
+    <object type="image/svg+xml" data="charts/threads.svg" aria-label="Search speed near a billion on 1 to 12 threads, measured and as perfect scaling would have it">Search speed near a billion on 1 to 12 threads, measured and as perfect scaling would have it</object>
+    <figcaption>How the search speeds up with threads on a 12-thread laptop.</figcaption>
+  </figure>
+
+  <footer>Built by the project's CI from its repository, with Scala.js and Scaladoc.</footer>
+</main>
+</body>
+</html>

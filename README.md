@@ -17,7 +17,10 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 ![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
 
 [`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser: the
-same Scala, compiled to JavaScript by Scala.js. Open it from a clone of the repository.
+same Scala, compiled to JavaScript by Scala.js. Open it from a clone of the repository, or on the
+project's site, which also has the charts and the API docs. The site is built by the `Pages`
+workflow on every version tag, once GitHub Pages is switched on for the repository (Settings >
+Pages > Source: GitHub Actions); it then lives at https://drunkmonoid.github.io/perfectcuboid/.
 
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
 `scala-cli run . -- --help` lists every command with its arguments and defaults. For the

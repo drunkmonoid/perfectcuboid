@@ -1,0 +1,51 @@
+# Builds the project's site and publishes it on GitHub Pages: the page that checks a box, the
+# charts, and the API docs, under a short landing page.
+#
+# It runs by hand (Actions > Pages > Run workflow) and on every version tag. Pages must first be
+# switched on in the repository's settings, with "GitHub Actions" as its source.
+name: Pages
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          scala-cli-version: 1.18.0
+          jvm: temurin:17
+      - name: Put the site together
+        run: |
+          mkdir -p _site/charts
+          cp site/index.html _site/
+          cp -r docs/check _site/check
+          cp docs/*.svg _site/charts/
+          scala-cli doc . -o _site/api --server=false -O -project:perfectcuboid
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
