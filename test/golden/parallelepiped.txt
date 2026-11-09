@@ -1,0 +1,5 @@
+Sawyer and Reiter's perfect parallelepiped (2009):
+  edges 271, 106, 103; face diagonals 323, 255, 312, 266, 183, 101; body diagonals 374, 300, 278, 272
+  every length whole: true, a solid box: true
+Perfect parallelepipeds with every edge <= 300: 1, none of them a cuboid
+  edges 271, 106, 103; face diagonals 323, 255, 312, 266, 183, 101; body diagonals 374, 300, 278, 272

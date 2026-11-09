@@ -86,6 +86,7 @@ object Cli:
     case Report.Legs(leg)                   => legsReport(leg)
     case Report.FaceCuboids(maxSharedEdge)  => faceReport(maxSharedEdge)
     case Report.CrossCheck(limit)           => crossCheckReport(limit)
+    case Report.Parallelepipeds(limit)      => parallelepipedReport(limit)
     case Report.EdgeCuboids(maxSquaredEdge) => edgeReport(maxSquaredEdge)
     case Report.NearMisses                  => nearMissesReport
     case Report.Stats(maxExponent)          => statsReport(maxExponent)
@@ -155,6 +156,20 @@ object Cli:
       if missing.isEmpty then "  the same cuboids both ways" else s"  ${missing.size} found only one way:"
     ) ++ missing.map(c => "    " + describeSquared(c.squared.get)) ++
       LazyList("The first few:") ++ fromDiagonals.take(5).map(c => "  " + describeSquared(c.squared.get))
+
+  def parallelepipedReport(maxEdge: Long): LazyList[String] =
+    val example = Parallelepiped.sawyerReiter
+    val found = Parallelepiped.search(maxEdge)
+    LazyList(
+      "Sawyer and Reiter's perfect parallelepiped (2009):",
+      s"  ${example.describe}",
+      s"  every length whole: ${example.isPerfect}, a solid box: ${example.isSolid}",
+      s"Perfect parallelepipeds with every edge <= $maxEdge: ${found.size}" +
+        (if found.exists(_.isCuboid) then ", A PERFECT CUBOID AMONG THEM!" else ", none of them a cuboid")
+    ) ++ found.map: shape =>
+      s"  ${shape.describe}" + shape.scaledFrom.fold("")((k, from) =>
+        s"  ($k × the one with edges ${from.a}, ${from.b}, ${from.c})"
+      )
 
   def edgeReport(maxSquaredEdge: Long): LazyList[String] =
     val cuboids =

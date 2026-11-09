@@ -317,6 +317,41 @@ That fits the general belief that there are none. It is a heuristic, not evidenc
 diagonal is whole is not decided by chance, and a structure that made perfect cuboids exist
 would be just the kind of thing this reckoning cannot see.
 
+## Perfect parallelepipeds
+
+```sh
+scala-cli run . -J -Xmx2g -- parallelepiped 700   # about a minute
+```
+
+Let the box lean. A parallelepiped is spanned by three edge vectors u, v, w, with
+parallelograms for faces, and has 13 lengths: 3 edges, 6 different face diagonals |u ± v|,
+|u ± w|, |v ± w|, and 4 body diagonals. A perfect parallelepiped has all 13 whole, and the
+perfect cuboid is the one whose edges meet at right angles. Sawyer and Reiter showed in 2009
+that slanted perfect parallelepipeds exist, with this example:
+
+| edges | face diagonals | body diagonals |
+| --- | --- | --- |
+| 271, 106, 103 | 101, 183, 255, 266, 312, 323 | 272, 278, 300, 374 |
+
+`Parallelepiped.scala` holds a shape by its edges and p = 2u·v, q = 2u·w, r = 2v·w, which
+are whole numbers, and every squared length is a sum of them: |u ± v|² = a² + b² ± p, and so
+on. The example checks out, with u·v = 9826, u·w = 6647 and v·w = 5822, and the three vectors
+span a solid (their matrix of dot products is positive definite).
+
+To search, note that |u + v|² + |u − v|² = 2(a² + b²): the two face diagonals of a face split
+2(a² + b²) into two squares, and each split gives one possible p. Splitting for every pair of
+edges, and trying the combinations for each triple:
+
+| every edge ≤ | perfect parallelepipeds |
+| ---: | --- |
+| 300 | 1: Sawyer and Reiter's, the smallest there is |
+| 700 | 4: theirs, twice theirs, 630 × 365 × 335 and 647 × 540 × 375 |
+
+None is a cuboid. Whether the last two are in Sawyer and Reiter's paper, which lists more
+examples, has not been checked here. Unlike cuboids, slanted perfect boxes turn up readily in
+a small search: so whatever stops a perfect cuboid from existing, if anything does, needs the
+right angles.
+
 ## Rules proved by computer
 
 ```sh

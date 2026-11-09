@@ -38,6 +38,7 @@ scala-cli run . -- analyse hunt-primitive.txt --kind primitive   # counts, rules
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- crosscheck 1e5        # face cuboids found two independent ways, compared
+scala-cli run . -- parallelepiped 300    # slanted boxes with all 13 lengths whole
 scala-cli run . -- nearmisses            # the first body, face and edge cuboid
 scala-cli run . -- bench 1e6 --runs 3    # time the readable, fast and parallel searches
 scala-cli run . -- scaling --chart t.svg # search speed on 1 thread, 2, ... every core
@@ -116,6 +117,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
 | `src/Analysis.scala` | the reports that need only a list of bricks, for a fresh search or a hunt's file |
 | `src/Chance.scala` | how many perfect cuboids chance alone would put among the bricks found |
+| `src/Parallelepiped.scala` | slanted boxes, and the perfect ones among them |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

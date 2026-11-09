@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | pictures | bench | scaling]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -21,6 +21,8 @@ Subcommands:
         Face cuboids whose whole face diagonals meet at an edge up to LIMIT (default 1000).
     crosscheck
         Face cuboids with space diagonal up to LIMIT (default 10000), found two ways, compared.
+    parallelepiped
+        Perfect parallelepipeds, slanted boxes with 13 whole lengths, with edges up to LIMIT (default 300).
     edge
         Edge cuboids whose irrational edge is at most √LIMIT (default 1000).
     check

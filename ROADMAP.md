@@ -149,7 +149,7 @@ buys, and make the results easier to see and to reuse.
 
 - [x] **53. How unlucky are we?** A heuristic for the number of perfect cuboids to expect among
   the bricks found, if each space diagonal were a square by chance, and how it grows.
-- [ ] **54. Perfect parallelepipeds.** Sawyer and Reiter's 2009 box with slanted faces, whose
+- [x] **54. Perfect parallelepipeds.** Sawyer and Reiter's 2009 box with slanted faces, whose
   edges, face diagonals and body diagonals are all whole, checked exactly, and a small search.
 - [ ] **55. More families.** Parametric families of Euler bricks from the literature, generated,
   checked, and measured against the 10⁹ catalogue.

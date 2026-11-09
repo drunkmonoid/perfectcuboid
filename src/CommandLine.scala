@@ -13,6 +13,7 @@ enum Report:
   case Legs(leg: Long)
   case FaceCuboids(maxSharedEdge: Long)
   case CrossCheck(maxSpaceDiagonal: Long)
+  case Parallelepipeds(maxEdge: Long)
   case EdgeCuboids(maxSquaredEdge: Long)
   case NearMisses
   case Stats(maxExponent: Int)
@@ -104,6 +105,12 @@ object CommandLine:
     ),
     report("crosscheck", "Face cuboids with space diagonal up to LIMIT (default 10000), found two ways, compared.")(
       number("LIMIT", 10_000, SquaredCuboid.MaxEdge).map(Report.CrossCheck(_))
+    ),
+    report(
+      "parallelepiped",
+      "Perfect parallelepipeds, slanted boxes with 13 whole lengths, with edges up to LIMIT (default 300)."
+    )(
+      number("LIMIT", 300, 100_000).map(Report.Parallelepipeds(_))
     ),
     report("edge", "Edge cuboids whose irrational edge is at most √LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.EdgeCuboids(_))
