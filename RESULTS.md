@@ -42,6 +42,11 @@ up to 30,500,000. It found 2,826,042 Euler bricks, 2,651 of them primitive, and 
 scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a half minutes
 ```
 
+Stopping is safe at any moment: a property test (`StopAnywhereTest`) stops a hunt after
+random delays, up to three times, resuming it each time on a random number of threads, and
+another cuts a finished file off at a random byte, as a crash while writing would. Every time,
+the resumed hunt ended in exactly the file an uninterrupted one writes, byte for byte.
+
 `verify` then checked the file without trusting the search: each of the 2,826,042 bricks again
 with BigInt arithmetic, the checkpoints in order with every brick between the right ones, and
 three blocks spread through the file searched again. It found no problem, in 23 seconds.

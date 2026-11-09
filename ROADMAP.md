@@ -165,7 +165,7 @@ buys, and make the results easier to see and to reuse.
   `derives`, in place of the hand-written `line` and `parse`.
 - [x] **59. Newer Scala 3.** Named tuples and the other recent features, where they make the
   code read better, and nowhere else.
-- [ ] **60. Stopping at any moment.** A property test that cancels a hunt at random points and
+- [x] **60. Stopping at any moment.** A property test that cancels a hunt at random points and
   checks that resuming always ends in the same file.
 - [ ] **61. One test suite, three platforms.** The tests of the shared code run on Scala.js and
   Scala Native too, in CI.
