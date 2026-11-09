@@ -47,8 +47,8 @@ class CommandLineTest extends munit.FunSuite:
   test("bad numbers are errors, not silently replaced by a default"):
     assert(errors("bricks", "lots").exists(_.contains("not a whole number")), errors("bricks", "lots"))
     assert(errors("bricks", "0").exists(_.contains("LIMIT must be at least 1")))
-    val tooFar = (Search.MaxSmallestEdge + 1).toString
-    assert(errors("hunt", "f.txt", tooFar).exists(_.contains(s"must be from 1 to ${Search.MaxSmallestEdge}")))
+    val tooFar = (FastSearch.MaxSmallestEdge + 1).toString
+    assert(errors("hunt", "f.txt", tooFar).exists(_.contains(s"must be from 1 to ${FastSearch.MaxSmallestEdge}")))
     assert(errors("stats", "12").exists(_.contains("from 3 to 9")))
     assert(errors("unbounded", "1.5").nonEmpty)
 
