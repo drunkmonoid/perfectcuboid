@@ -30,3 +30,7 @@ class EtaTest extends munit.FunSuite:
       "  searched up to 250,000 (25.0%), 12,345 Euler bricks, 5,000 per second, about 2 min 30 s left"
     )
     assertEquals(Eta.line(0, 100, 0, "face cuboids", None), "  searched up to 0 (0.0%), 0 face cuboids")
+    assertEquals(
+      Eta.line(150, 200, 0, "face cuboids", None, from = 101),
+      "  searched up to 150 (50.0%), 0 face cuboids"
+    )

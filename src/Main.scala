@@ -40,8 +40,11 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo, quarry, threads, blockSize) => Hunt.run(quarry, Path(file), upTo, blockSize, threads)
-    case Command.Pictures(directory, exponent)                =>
+    case Command.Hunt(file, upTo, quarry, threads, blockSize, from) =>
+      Hunt.run(quarry, Path(file), upTo, blockSize, threads, from)
+    case Command.Merge(out, files, quarry) =>
+      Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
+    case Command.Pictures(directory, exponent) =>
       val dir = Path(directory)
       def write(name: String, svg: String) =
         fs2.Stream.emit(svg).through(Files[IO].writeUtf8(dir / name)).compile.drain >> IO.println(

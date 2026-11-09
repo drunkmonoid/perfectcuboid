@@ -130,7 +130,7 @@ buys, and make the results easier to see and to reuse.
 
 ### Searching further
 
-- [ ] **47. Ranges and shards.** `hunt --from`, so a range can be split across runs or machines,
+- [x] **47. Ranges and shards.** `hunt --from`, so a range can be split across runs or machines,
   and `merge` to join shard files into one that `verify` accepts.
 - [ ] **48. Reading results files.** `stats`, `origins`, `closest`, `rules` and the charts run
   over a hunt's file instead of a fresh search.

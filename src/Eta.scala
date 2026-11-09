@@ -39,8 +39,8 @@ object Eta:
     else s"${s / 86400} days"
 
   /** One progress line. */
-  def line(searchedUpTo: Long, upTo: Long, found: Long, what: String, rate: Option[Double]): String =
-    val done = 100.0 * searchedUpTo / upTo
+  def line(searchedUpTo: Long, upTo: Long, found: Long, what: String, rate: Option[Double], from: Long = 1): String =
+    val done = 100.0 * (searchedUpTo - from + 1) / (upTo - from + 1)
     val speed = rate.fold("")(r => f", $r%,.0f per second")
     val left = rate.flatMap(secondsLeft(searchedUpTo, upTo, _)).fold("")(s => s", about ${duration(s)} left")
     f"  searched up to $searchedUpTo%,d ($done%.1f%%), $found%,d $what$speed$left"

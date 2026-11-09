@@ -14,25 +14,36 @@ import scala.concurrent.duration.*
   *   44 117 240
   *   85 132 720
   *   # searched smallest edges up to 100
+  *
+  * A file that covers only part of the range, a shard, begins with the key it starts from, as
+  * in `# smallest edges from 5000001`. Without that line it starts from 1.
   */
 object HuntFile:
 
   def checkpointPrefix(quarry: Quarry[?]): String = s"# searched ${quarry.key}s up to "
+
+  def startPrefix(quarry: Quarry[?]): String = s"# ${quarry.key}s from "
+
+  def startLine(quarry: Quarry[?], from: Long): String = s"${startPrefix(quarry)}$from\n"
 
   def blockText[A](quarry: Quarry[A], finds: List[A], searchedUpTo: Long): String =
     (finds.map(quarry.line) :+ s"${checkpointPrefix(quarry)}$searchedUpTo").map(_ + "\n").mkString
 
   /** What reading a results file tells us. `validBytes` is where the last complete checkpoint
     * ends: anything after it belongs to a block that was not finished, and is thrown away.
-    * `found` sums up the finds before that point, `sinceCheckpoint` those after it.
+    * `found` sums up the finds before that point, `sinceCheckpoint` those after it. `from` is
+    * the first key the file covers, and `searchedUpTo` starts just before it.
     */
   final case class Resume(
       searchedUpTo: Long,
       found: Summary,
       validBytes: Long,
       sinceCheckpoint: Summary,
-      bytesRead: Long
-  )
+      bytesRead: Long,
+      from: Long = 1
+  ):
+    /** Whether the file holds anything yet, even only its start. */
+    def isEmpty: Boolean = validBytes == 0
 
   object Resume:
     val Fresh: Resume = Resume(0, Summary.empty, 0, Summary.empty, 0)
@@ -46,8 +57,15 @@ object HuntFile:
     if !complete then state.copy(bytesRead = bytesRead)
     else if line.startsWith(prefix) then
       line.stripPrefix(prefix).toLongOption match
-        case Some(n) => Resume(n, state.found |+| state.sinceCheckpoint, bytesRead, Summary.empty, bytesRead)
-        case None    => state.copy(bytesRead = bytesRead)
+        case Some(n) =>
+          Resume(n, state.found |+| state.sinceCheckpoint, bytesRead, Summary.empty, bytesRead, state.from)
+        case None => state.copy(bytesRead = bytesRead)
+    else if line.startsWith(startPrefix(quarry)) then
+      // Only as the very first line: the start comes before anything else.
+      line.stripPrefix(startPrefix(quarry)).toLongOption match
+        case Some(n) if n >= 1 && state.bytesRead == 0 =>
+          Resume(n - 1, Summary.empty, bytesRead, Summary.empty, bytesRead, n)
+        case _ => state.copy(bytesRead = bytesRead)
     else
       quarry.parse(line) match
         case Some(find) =>
@@ -130,33 +148,52 @@ object Hunt:
   def dropUnfinishedBlock(path: Path, resume: HuntFile.Resume): IO[Unit] =
     Files[IO].open(path, Flags(Flag.Write)).use(handle => handle.truncate(resume.validBytes))
 
+  /** Searches up to `upTo`, adding to the file at `path`, or starting it. A new file starts
+    * from `from`, 1 by default, and a file that exists goes on from where it stopped, so `from`
+    * can only be given again if it is the file's own start.
+    */
   def run[A](
       quarry: Quarry[A],
       path: Path,
       upTo: Long,
       blockSize: Long = DefaultBlockSize,
-      cores: Int = Platform.defaultThreads
+      cores: Int = Platform.defaultThreads,
+      from: Option[Long] = None
   ): IO[Unit] =
-    for
-      resume <- readResume(quarry, path)
-      _ <- dropUnfinishedBlock(path, resume).whenA(resume.bytesRead > resume.validBytes)
-      _ <- IO.println(
-        if resume.searchedUpTo == 0 then s"Hunting for ${quarry.name}, writing to $path"
-        else s"Resuming after ${quarry.key} ${resume.searchedUpTo} (${resume.found.found} ${quarry.name} so far)"
-      )
-      progress <- Ref.of[IO, Progress](Progress(resume.searchedUpTo, resume.found))
-      started <- IO.monotonic
-      _ <- search(quarry, path, resume.searchedUpTo + 1, upTo, blockSize, cores, progress)
-        .concurrently(report(quarry, progress, upTo, started))
-        .compile
-        .drain
-        .guaranteeCase: outcome =>
-          for
-            p <- progress.get
-            now <- IO.monotonic
-            _ <- IO.println(summary(quarry, outcome, p, (now - started).toUnit(SECONDS)))
-          yield ()
-    yield ()
+    readResume(quarry, path).flatMap: found =>
+      val start = if found.isEmpty then from.getOrElse(1L) else found.from
+      if !found.isEmpty && from.exists(_ != found.from) then
+        IO.println(s"$path covers ${quarry.key}s from ${found.from}, not ${from.getOrElse(1L)}: use another file")
+      else if upTo < start then IO.println(s"Nothing to search: $upTo is before ${quarry.key} $start")
+      else
+        val resume = if found.isEmpty then found.copy(searchedUpTo = start - 1, from = start) else found
+        for
+          _ <- dropUnfinishedBlock(path, found).whenA(found.bytesRead > found.validBytes)
+          _ <- Stream
+            .emit(HuntFile.startLine(quarry, start))
+            .through(Files[IO].writeUtf8(path, Flags.Append))
+            .compile
+            .drain
+            .whenA(found.isEmpty && start > 1)
+          _ <- IO.println(
+            if !found.isEmpty && resume.searchedUpTo >= start then
+              s"Resuming after ${quarry.key} ${resume.searchedUpTo} (${resume.found.found} ${quarry.name} so far)"
+            else if start > 1 then s"Hunting for ${quarry.name} from ${quarry.key} $start, writing to $path"
+            else s"Hunting for ${quarry.name}, writing to $path"
+          )
+          progress <- Ref.of[IO, Progress](Progress(resume.searchedUpTo, resume.found))
+          started <- IO.monotonic
+          _ <- search(quarry, path, resume.searchedUpTo + 1, upTo, blockSize, cores, progress)
+            .concurrently(report(quarry, progress, start, upTo, started))
+            .compile
+            .drain
+            .guaranteeCase: outcome =>
+              for
+                p <- progress.get
+                now <- IO.monotonic
+                _ <- IO.println(summary(quarry, outcome, p, (now - started).toUnit(SECONDS)))
+              yield ()
+        yield ()
 
   /** The blocks come in order, so each is written after the one before it. Their summaries,
     * made on the cores that searched them, are combined with `|+|` as they are written.
@@ -187,7 +224,6 @@ object Hunt:
           yield moved
       .void
 
-  /** Every few seconds, says how far the search has got. Runs alongside the search. */
   /** Every few seconds, says how far the search has got, how fast it is going over the last
     * minute, and how long it may take yet. Runs alongside the search. The recent samples are
     * carried from one report to the next by `evalScan`.
@@ -195,6 +231,7 @@ object Hunt:
   private def report(
       quarry: Quarry[?],
       progress: Ref[IO, Progress],
+      from: Long,
       upTo: Long,
       started: FiniteDuration
   ): Stream[IO, Unit] =
@@ -209,7 +246,7 @@ object Hunt:
               p <- progress.get
               now <- IO.monotonic
               recent = Eta.window(samples, Eta.Sample((now - started).toUnit(SECONDS), p.searchedUpTo))
-              _ <- IO.println(Eta.line(p.searchedUpTo, upTo, p.found.found, quarry.name, Eta.rate(recent)))
+              _ <- IO.println(Eta.line(p.searchedUpTo, upTo, p.found.found, quarry.name, Eta.rate(recent), from))
             yield recent
       .void
 

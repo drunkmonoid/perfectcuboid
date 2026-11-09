@@ -133,3 +133,41 @@ class HuntTest extends munit.CatsEffectSuite:
           FastSearch.eulerBricksBetween(1, 20_000).filter(_.isPrimitive)
         )
         assertEquals(report.last, "OK", report)
+
+  test("a hunt can start later, and a later run resumes it from its own start"):
+    withTempFile: path =>
+      for
+        _ <- Hunt.run(Quarry.eulerBricks, path, 2000, blockSize = 100, cores = 4, from = Some(1001))
+        _ <- Hunt.run(Quarry.eulerBricks, path, 3000, blockSize = 100, cores = 4)
+        _ <- Hunt.run(Quarry.eulerBricks, path, 4000, blockSize = 100, cores = 4, from = Some(5)) // refused
+        lines <- Files[IO].readUtf8Lines(path).compile.toList
+        resume <- Hunt.readResume(Quarry.eulerBricks, path)
+        report <- Verify.run(Quarry.eulerBricks, path, blocks = 3)
+      yield
+        assertEquals(lines.head, "# smallest edges from 1001")
+        assertEquals(HuntFile.parse(Quarry.eulerBricks, lines), FastSearch.eulerBricksBetween(1001, 3000))
+        assertEquals((resume.from, resume.searchedUpTo), (1001L, 3000L))
+        assertEquals(report.last, "OK", report)
+
+  test("shards merge into the bricks of one hunt, in a file that verify accepts"):
+    Files[IO].tempDirectory.use: dir =>
+      val (low, high, all) = (dir / "low.txt", dir / "high.txt", dir / "all.txt")
+      for
+        _ <- Hunt.run(Quarry.eulerBricks, high, 3000, blockSize = 100, cores = 4, from = Some(1501))
+        _ <- Hunt.run(Quarry.eulerBricks, low, 1500, blockSize = 100, cores = 4)
+        merged <- Merge.run(Quarry.eulerBricks, all, List(high, low))
+        again <- Merge.run(Quarry.eulerBricks, all, List(low, high))
+        bricks <- bricksIn(all)
+        report <- Verify.run(Quarry.eulerBricks, all, blocks = 3)
+      yield
+        assert(merged.head.startsWith("Merged 2 files"), merged)
+        assert(again.head.contains("exists already"), again)
+        assertEquals(bricks, expected(3000))
+        assertEquals(report.last, "OK", report)
+
+  test("shards with a gap, an overlap or no checkpoint cannot be merged"):
+    import Merge.Shard
+    assertEquals(Merge.problems(List(Shard("b", 101, 200), Shard("a", 1, 100))), Nil)
+    assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 102, 200))).head.contains("leaves a gap"))
+    assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 90, 200))).head.contains("overlaps"))
+    assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 101, 100))).head.contains("no checkpoint"))

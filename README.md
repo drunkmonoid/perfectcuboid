@@ -31,6 +31,8 @@ scala-cli run . -- bricks 100000         # ... or up to another limit
 scala-cli run . -- unbounded 1e7         # by smallest edge, other edges unbounded, flat memory
 scala-cli run . -- hunt hunt-primitive.txt 1e9 --kind primitive  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- hunt hunt-face.txt 1e6 --kind face            # ... of face cuboids (or bricks, or edge)
+scala-cli run . -- hunt part2.txt 2e9 --from 1000000001          # one range of a longer search, a shard
+scala-cli run . -- merge all.txt part1.txt part2.txt              # join shards that follow on from each other
 scala-cli run . -- verify hunt-primitive.txt --kind primitive    # check a hunt's file without trusting the search
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
@@ -41,7 +43,8 @@ scala-cli --power run bench              # microbenchmarks of the kernels, by JM
 ```
 
 A hunt writes each block of edges followed by a checkpoint line, so stopping it at any
-moment loses nothing; just don't run two hunts on the same file at once.
+moment loses nothing; just don't run two hunts on the same file at once. To search one range
+on several machines or processes at once, give each its own file and `--from`, then `merge`.
 
 **Mathematics**
 
@@ -108,6 +111,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
 | `src/Verify.scala` | checking a results file without trusting the code that wrote it |
+| `src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

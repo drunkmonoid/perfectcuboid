@@ -21,9 +21,10 @@ object Verify:
       lastKey: Long,
       sinceCheckpoint: Long,
       problems: Vector[String],
-      problemCount: Long
+      problemCount: Long,
+      start: Long = 1
   ):
-    def lastCheckpoint: Long = checkpoints.lastOption.getOrElse(0L)
+    def lastCheckpoint: Long = checkpoints.lastOption.getOrElse(start - 1)
 
     def problem(text: String): State =
       copy(problems = if problems.size < 10 then problems :+ text else problems, problemCount = problemCount + 1)
@@ -38,6 +39,10 @@ object Verify:
     val next = state.copy(lines = state.lines + 1)
     val prefix = HuntFile.checkpointPrefix(quarry)
     if !complete || line.isEmpty then next
+    else if line.startsWith(HuntFile.startPrefix(quarry)) then
+      line.stripPrefix(HuntFile.startPrefix(quarry)).toLongOption match
+        case Some(n) if n >= 1 && state.lines == 0 => next.copy(start = n)
+        case _ => next.problem(s"line ${next.lines}: a start can only be the first line, and at least 1")
     else if line.startsWith(prefix) then
       line.stripPrefix(prefix).toLongOption match
         case Some(n) if n > state.lastCheckpoint && state.lastKey <= n =>
@@ -56,9 +61,11 @@ object Verify:
           else if key < state.lastKey then counted.problem(s"line ${next.lines}: out of order")
           else counted
 
-  /** Up to `count` blocks between consecutive checkpoints, spread evenly through the file. */
-  def blocksToSearch(checkpoints: Vector[Long], count: Int): List[(Long, Long)] =
-    val blocks = (0L +: checkpoints).zip(checkpoints).map((before, at) => (before + 1, at))
+  /** Up to `count` blocks between consecutive checkpoints, spread evenly through the file, which
+    * starts at `start`.
+    */
+  def blocksToSearch(checkpoints: Vector[Long], count: Int, start: Long = 1): List[(Long, Long)] =
+    val blocks = ((start - 1) +: checkpoints).zip(checkpoints).map((before, at) => (before + 1, at))
     if blocks.isEmpty || count <= 0 then Nil
     else (0 until count).map(i => blocks(i * blocks.size / count)).distinct.toList
 
@@ -84,13 +91,15 @@ object Verify:
   def run[A](quarry: Quarry[A], path: Path, blocks: Int): IO[List[String]] =
     for
       state <- read(quarry, path)
-      spotChecks <- blocksToSearch(state.checkpoints, blocks).traverse: (first, last) =>
+      spotChecks <- blocksToSearch(state.checkpoints, blocks, state.start).traverse: (first, last) =>
         recorded(quarry, path, first, last).map(found => (first, last, found == quarry.search(first, last).toList))
     yield
       val missing = spotChecks.filterNot(_._3)
       List(
         s"Verifying $path as ${quarry.name}",
-        f"  ${state.lines}%,d lines: ${state.finds}%,d ${quarry.name}, ${state.checkpoints.size}%,d checkpoints, up to ${quarry.key} ${state.lastCheckpoint}%,d",
+        f"  ${state.lines}%,d lines: ${state.finds}%,d ${quarry.name}, ${state.checkpoints.size}%,d checkpoints, " +
+          (if state.start > 1 then f"${quarry.key}s from ${state.start}%,d to ${state.lastCheckpoint}%,d"
+           else f"up to ${quarry.key} ${state.lastCheckpoint}%,d"),
         s"  every one re-checked with BigInt, and the checkpoints checked: ${state.problemCount} problems",
         s"  ${spotChecks.size} blocks searched again: " +
           (if missing.isEmpty then "the file has everything they hold" else s"${missing.size} differ")

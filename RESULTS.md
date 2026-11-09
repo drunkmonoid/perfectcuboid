@@ -593,3 +593,22 @@ several single-threaded processes on separate ranges of edges (phase 47).
 
 All three wrote the same files. The JVM is faster even on one thread, and the native build
 uses a third of the memory.
+
+### Every core, as separate processes
+
+Since phase 47 a hunt can cover one range of edges, a shard: `hunt FILE UPTO --from FIRST`
+starts a new file at FIRST, with a first line that says so, and `merge` joins shards whose
+ranges follow on from each other into one file, refusing any gap or overlap. So the native
+build can use several cores after all, as several processes:
+
+```sh
+for k in 0 1 2 3; do
+  from=$((999000001 + k * 75000))
+  GC_MAXIMUM_HEAP_SIZE=512m ./perfectcuboid hunt part$k.txt $((from + 74999)) --from $from &
+done; wait
+./perfectcuboid merge near1e9.txt part0.txt part1.txt part2.txt part3.txt
+./perfectcuboid verify near1e9.txt
+```
+
+Four native processes searched the 300,000 edges near 10⁹ in 5.9 s, where one took 15 s. The
+merged file passed `verify`, and held every primitive brick the 10⁹ hunt had found there.

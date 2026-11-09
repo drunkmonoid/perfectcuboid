@@ -34,8 +34,10 @@ enum Command:
       upTo: Long,
       quarry: Quarry[?],
       threads: Int,
-      blockSize: Long = perfectcuboid.Hunt.DefaultBlockSize
+      blockSize: Long = perfectcuboid.Hunt.DefaultBlockSize,
+      from: Option[Long] = None
   )
+  case Merge(out: String, files: List[String], quarry: Quarry[?])
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
@@ -193,8 +195,19 @@ object CommandLine:
         number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
         kind,
         threads,
-        blockSize
-      ).mapN(Command.Hunt(_, _, _, _, _))
+        blockSize,
+        Opts
+          .option[Long]("from", "Start a new FILE at this edge instead of 1, to search one range of several.")(using
+            wholeNumber
+          )
+          .validate(s"--from must be from 1 to ${Search.MaxSmallestEdge}")(n => n >= 1 && n <= Search.MaxSmallestEdge)
+          .orNone
+      ).mapN(Command.Hunt(_, _, _, _, _, _))
+    )
+
+  private val merge: Opts[Command] =
+    Opts.subcommand("merge", "Join hunts' FILEs over ranges that follow on from each other into a new file OUT.")(
+      (Opts.argument[String]("OUT"), Opts.arguments[String]("FILE").map(_.toList), kind).mapN(Command.Merge(_, _, _))
     )
 
   private val scaling: Opts[Command] =
@@ -229,7 +242,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ verify :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
+    (reports :+ hunt :+ merge :+ verify :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )
 
