@@ -161,7 +161,7 @@ buys, and make the results easier to see and to reuse.
 
 ### Scala
 
-- [ ] **58. Derived formats.** Each hunt kind's line format derived from its type with
+- [x] **58. Derived formats.** Each hunt kind's line format derived from its type with
   `derives`, in place of the hand-written `line` and `parse`.
 - [ ] **59. Newer Scala 3.** Named tuples and the other recent features, where they make the
   code read better, and nowhere else.

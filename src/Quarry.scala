@@ -30,21 +30,42 @@ final case class Quarry[A](
     maxKey: Long = Search.MaxSmallestEdge
 )
 
+/** A cuboid's line in a results file: its three edges, "44 117 240". The format is derived
+  * from the fields; the cuboid is built from them by `Cuboid.of`, which checks them.
+  */
+final case class EdgesLine(a: Long, b: Long, c: Long) derives LineFormat
+
+/** One edge of a `SquaredCuboid`: a whole number n, or the square root of one, √n. */
+enum Length:
+  case Whole(n: Long)
+  case Root(n: Long)
+
+  def square: Long = this match
+    case Whole(n) => n * n
+    case Root(n)  => n
+
+object Length:
+  def of(square: Long): Length = Arith.exactSqrt(square).fold(Root(square))(Whole(_))
+
+  given LineFormat[Length] = LineFormat.word(
+    {
+      case Whole(n) => n.toString
+      case Root(n)  => s"√$n"
+    },
+    word => if word.startsWith("√") then word.drop(1).toLongOption.map(Root(_)) else word.toLongOption.map(Whole(_))
+  )
+
+/** An edge cuboid's line: "√461776 1443 1800". */
+final case class SquaredLine(a: Length, b: Length, c: Length) derives LineFormat
+
 object Quarry:
 
-  private def cuboidLine(c: Cuboid): String = s"${c.a} ${c.b} ${c.c}" + (if c.isPerfect then "  PERFECT" else "")
+  /** "44 117 240", followed by "  PERFECT" for a perfect cuboid. */
+  private def cuboidLine(c: Cuboid): String =
+    LineFormat.write(EdgesLine(c.a, c.b, c.c)) + (if c.isPerfect then "  PERFECT" else "")
 
-  /** A line "44 117 240", possibly followed by "  PERFECT". */
   private def parseCuboid(line: String): Option[Cuboid] =
-    line.split(" +").toList match
-      case a :: b :: c :: _ =>
-        for
-          x <- a.toLongOption
-          y <- b.toLongOption
-          z <- c.toLongOption
-          cuboid <- Cuboid.of(x, y, z)
-        yield cuboid
-      case _ => None
+    LineFormat.parse[EdgesLine](line).flatMap(edges => Cuboid.of(edges.a, edges.b, edges.c))
 
   val eulerBricks: Quarry[Cuboid] =
     Quarry(
@@ -91,22 +112,13 @@ object Quarry:
       cuboid => Set(Kind.Face, Kind.Perfect)(BigCuboid.from(cuboid).kind)
     )
 
-  /** An edge cuboid's lengths, the irrational one as √n: "√461776 1443 1800". */
   private def squaredLine(c: SquaredCuboid): String =
-    List(c.a2, c.b2, c.c2).map(n => Arith.exactSqrt(n).fold(s"√$n")(_.toString)).mkString(" ")
+    LineFormat.write(SquaredLine(Length.of(c.a2), Length.of(c.b2), Length.of(c.c2)))
 
   private def parseSquared(line: String): Option[SquaredCuboid] =
-    def square(token: String): Option[Long] =
-      if token.startsWith("√") then token.drop(1).toLongOption else token.toLongOption.map(n => n * n)
-    line.split(" +").toList match
-      case a :: b :: c :: _ =>
-        for
-          x <- square(a)
-          y <- square(b)
-          z <- square(c)
-          cuboid <- SquaredCuboid.of(x, y, z)
-        yield cuboid
-      case _ => None
+    LineFormat
+      .parse[SquaredLine](line)
+      .flatMap(edges => SquaredCuboid.of(edges.a.square, edges.b.square, edges.c.square))
 
   /** An edge cuboid is primitive when no square k² > 1 divides all three of its squared edges. */
   private def summarizeSquared(c: SquaredCuboid): Summary =

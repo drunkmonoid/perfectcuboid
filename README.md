@@ -116,6 +116,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Pictures.scala` | the charts in `docs/`, from search results |
 | `src/Stats.scala` | counts and growth rates for the write-up |
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
+| `src/LineFormat.scala` | a type class for lines of results files, derived for any case class with `derives` |
 | `src/Verify.scala` | checking a results file without trusting the code that wrote it |
 | `src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
 | `src/Analysis.scala` | the reports that need only a list of bricks, for a fresh search or a hunt's file |
