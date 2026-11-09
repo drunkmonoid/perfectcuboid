@@ -54,6 +54,11 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
           else
             val catalogue = bricks.filter(_.isPrimitive).map(BigCuboid.from).toSet
             IO.blocking(Coverage.lines(catalogue, resume.searchedUpTo, maxHypotenuse)).flatMap(_.traverse_(IO.println))
+    case Command.Densities(file) =>
+      Analysis
+        .read(Quarry.eulerBricks, Path(file))
+        .flatMap((bricks, _) => IO.blocking(Local.densityLines(bricks)))
+        .flatMap(_.traverse_(IO.println))
     case Command.Merge(out, files, quarry) =>
       Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Pictures(directory, exponent) =>

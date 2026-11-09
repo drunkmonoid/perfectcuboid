@@ -36,6 +36,7 @@ scala-cli run . -- merge all.txt part1.txt part2.txt              # join shards 
 scala-cli run . -- verify hunt-primitive.txt --kind primitive    # check a hunt's file without trusting the search
 scala-cli run . -- analyse hunt-primitive.txt --kind primitive   # counts, rules, origins and closest calls of its bricks
 scala-cli run . -- families hunt-primitive.txt                   # Saunderson's family and its offspring, against the file
+scala-cli run . -- densities hunt-primitive.txt                  # how often small primes divide the edges, against prediction
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- crosscheck 1e5        # face cuboids found two independent ways, compared

@@ -54,6 +54,70 @@ object Local:
       yield Pattern(List(va, vb, vc).sorted.reverse, faces.map(diagonal).sorted.reverse, diagonal(space))
     found.toSet
 
+  /** How often each pattern of edge valuations should occur among primitive bricks, if they
+    * were spread like the solutions mod pᵏ: the local density.
+    *
+    * Mod m = pᵏ, the edges a, b, c have N(a² + b²) · N(a² + c²) · N(b² + c²) solutions for their
+    * face diagonals, N(r) being the number of square roots of r. Adding that up over every
+    * triple of remainders, not all divisible by p, sorted by how often p divides each edge
+    * (largest first, and at most `cap`), and dividing by the total, gives each pattern's share.
+    *
+    * k must be well above `cap`: whether a sum of two squares divisible by p²ᵛ is a square shows
+    * only in its digits beyond that. (Mod 2⁸, 2⁶ · 5 = 320 ≡ 64 looks like a square, but 5 is
+    * not a square mod 8, so 2⁶ · 5 is not one.) So, as in `patterns`, the remainders are
+    * grouped into classes with the same square and valuation, which keeps large k affordable.
+    * A heuristic: nothing says the bricks found must follow it.
+    */
+  def densities(p: Int, k: Int, cap: Int): Map[List[Int], Double] =
+    val m = BigInt(p).pow(k).toInt
+    val roots = new Array[Long](m)
+    for x <- 0 until m do roots((x.toLong * x % m).toInt) += 1
+    // (x² mod m, capped valuation of x) -> how many remainders x have them.
+    val classes = (0 until m)
+      .groupMapReduce(x => ((x.toLong * x % m).toInt, valuation(x, p, k) min cap))(_ => 1L)(_ + _)
+      .toVector
+    val n = classes.size
+    val (squares, capped, sizes) =
+      (classes.map(_._1._1).toArray, classes.map(_._1._2).toArray, classes.map(_._2).toArray)
+    val weights = scala.collection.mutable.Map.empty[List[Int], Double].withDefaultValue(0.0)
+    for i <- 0 until n; j <- i until n do
+      val ij = roots((squares(i) + squares(j)) % m)
+      if ij > 0 then
+        var l = j
+        while l < n do
+          if capped(i) == 0 || capped(j) == 0 || capped(l) == 0 then
+            val faces = ij * roots((squares(i) + squares(l)) % m) * roots((squares(j) + squares(l)) % m)
+            if faces > 0 then
+              // The ordered triples of remainders that this unordered triple of classes stands for.
+              val orders = if i == j && j == l then 1 else if i == j || j == l then 3 else 6
+              val pattern = List(capped(i), capped(j), capped(l)).sorted.reverse
+              weights(pattern) = weights(pattern) + orders.toDouble * sizes(i) * sizes(j) * sizes(l) * faces
+          l += 1
+    val total = weights.values.sum
+    weights.view.mapValues(_ / total).toMap
+
+  /** The same pattern for an actual brick: how often p divides each edge, at most `cap`. */
+  def patternOf(brick: Cuboid, p: Int, cap: Int): List[Int] =
+    def times(x: Long): Int = if x % p == 0 && cap > 0 then 1 + (times(x / p) min (cap - 1)) else 0
+    List(brick.a: Long, brick.b, brick.c).map(times).sorted.reverse
+
+  /** For each prime, its patterns' predicted and observed shares among these primitive bricks. */
+  def densityLines(bricks: Seq[Cuboid]): List[String] =
+    val primitive = bricks.filter(_.isPrimitive)
+    val cases = List((2, 13, 5), (3, 7, 2), (5, 5, 2), (7, 4, 1), (11, 3, 1), (13, 3, 1))
+    s"How often p divides each edge, among ${primitive.size} primitive bricks, against the local densities:" ::
+      cases.flatMap: (p, k, cap) =>
+        val predicted = densities(p, k, cap)
+        val observed = primitive.groupBy(patternOf(_, p, cap)).view.mapValues(_.size).toMap
+        def show(pattern: List[Int]) =
+          pattern.map(v => if v == cap then s"$v+" else v.toString).mkString("(", ", ", ")")
+        val patterns =
+          (predicted.keySet ++ observed.keySet).toList.sortBy(pattern => -predicted.getOrElse(pattern, 0.0))
+        s"p = $p, from the solutions mod $p^$k:" ::
+          patterns.map: pattern =>
+            val share = observed.getOrElse(pattern, 0).toDouble / primitive.size
+            f"  ${show(pattern)}%-14s predicted ${100 * predicted.getOrElse(pattern, 0.0)}%5.1f%%   found ${100 * share}%5.1f%%  (${observed.getOrElse(pattern, 0)}%,d)"
+
   /** Which lengths a rule talks about. */
   enum Lengths(val name: String, val of: Pattern => List[Int]):
     case Edges extends Lengths("edge", _.edges)

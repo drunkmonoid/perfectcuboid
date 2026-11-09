@@ -35,3 +35,23 @@ class LocalTest extends munit.FunSuite:
       Local.rules(q, k, perfect = false)
     val bricks = FastSearch.eulerBricksBetween(1, 20_000)
     for brick <- bricks do assertEquals(Theory.violations(rules, brick), Nil, brick)
+
+  test("local densities add up to 1, and every pattern a brick shows is predicted"):
+    val bricks = FastSearch.eulerBricksBetween(1, 30_000).filter(_.isPrimitive)
+    for (p, k, cap) <- List((2, 11, 4), (3, 5, 1), (5, 3, 1), (7, 3, 1)) do
+      val predicted = Local.densities(p, k, cap)
+      assertEqualsDouble(predicted.values.sum, 1.0, 1e-9)
+      bricks.foreach(brick => assert(predicted.getOrElse(Local.patternOf(brick, p, cap), 0.0) > 0, (p, brick)))
+
+  test("too small a modulus predicts patterns that cannot happen"):
+    // Mod 2⁸, edges divisible by exactly 2⁴ and 2³ look possible; mod 2¹¹ they are not,
+    // though 2⁵ and 2³ are.
+    assert(Local.densities(2, 8, 5).contains(List(4, 3, 0)))
+    val sharper = Local.densities(2, 11, 5)
+    assert(!sharper.contains(List(4, 3, 0)) && sharper.contains(List(5, 3, 0)))
+
+  test("a brick's pattern counts how often p divides each edge, up to the cap"):
+    val brick = Cuboid.of(44, 117, 240).get // 44 = 2²·11, 117 = 3²·13, 240 = 2⁴·3·5
+    assertEquals(Local.patternOf(brick, 2, 5), List(4, 2, 0))
+    assertEquals(Local.patternOf(brick, 3, 1), List(1, 1, 0))
+    assertEquals(Local.patternOf(brick, 3, 5), List(2, 1, 0))

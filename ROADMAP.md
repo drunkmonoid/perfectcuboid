@@ -154,7 +154,7 @@ buys, and make the results easier to see and to reuse.
 - [x] **55. More families.** Parametric families of Euler bricks from the literature, generated,
   checked, and measured against the 10⁹ catalogue. (The sources give formulas for
   Saunderson's family only, so: his, its derived bricks and its curve multiples.)
-- [ ] **56. Local densities.** How often each residue pattern occurs among the primitive bricks
+- [x] **56. Local densities.** How often each residue pattern occurs among the primitive bricks
   found, against the shares `Local` predicts.
 - [ ] **57. Records.** The edges with the most bricks, the longest and flattest bricks, and how
   the number of bricks on an edge follows from its number of legs.

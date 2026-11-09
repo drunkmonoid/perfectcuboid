@@ -411,6 +411,56 @@ listed on Wikipedia. The computation also shows that the rules for 16, 9 and 5 h
 Euler brick, not only for perfect ones. Lower powers are not enough: mod 2⁷ shows only "8 and
 4", and mod 17 nothing at all.
 
+### How often, not only whether
+
+```sh
+scala-cli run . -J -Xmx2g -- densities hunt-primitive.txt   # 15 seconds
+```
+
+The rules say which patterns of divisibility a primitive brick can have. How often should
+each one occur? The usual guess is the local density: mod m = pᵏ, the edges a, b, c have
+N(a² + b²) · N(a² + c²) · N(b² + c²) solutions for their face diagonals, N(r) being the
+number of square roots of r, and each pattern's share of all those solutions is its
+predicted share of the bricks. Against the 10,220 primitive bricks of the 10⁹ hunt, with
+patterns written as how often p divides each edge, largest first:
+
+| p | pattern | predicted | found |
+| ---: | --- | ---: | ---: |
+| 2 | (4, 2, 0) | 25.8% | 32.9% |
+| 2 | (5+, 2, 0) | 25.8% | 25.3% |
+| 2 | (5+, 3, 0) | 25.8% | 24.4% |
+| 2 | (5+, 4, 0) | 12.9% | 10.8% |
+| 2 | (5+, 5+, 0) | 9.7% | 6.6% |
+| 3 | (2+, 1, 0) | 68.6% | 76.1% |
+| 3 | (2+, 2+, 0) | 31.4% | 23.9% |
+| 5 | (2+, 1, 0) | 41.0% | 34.2% |
+| 5 | (1, 0, 0) | 20.5% | 28.9% |
+| 5 | (1, 1, 0) | 20.5% | 24.9% |
+| 5 | (2+, 2+, 0) | 12.8% | 7.7% |
+| 5 | (2+, 0, 0) | 5.1% | 4.4% |
+| 7 | two edges | 54.1% | 41.2% |
+| 7 | one edge | 27.5% | 31.6% |
+| 7 | none | 18.4% | 27.2% |
+| 11 | two edges | 57.9% | 47.8% |
+| 11 | one edge | 42.1% | 52.2% |
+| 13 | two edges | 45.9% | 32.5% |
+| 13 | one edge | 35.3% | 37.9% |
+| 13 | none | 18.4% | 29.6% |
+
+- **The modulus has to be large.** A first try mod 2⁸ predicted 14% of bricks with edges
+  divisible by exactly 2⁴ and 2³, and the hunt had none. Mod 2⁸, 2⁶ · 5 = 320 ≡ 64 = 8², so it
+  looks like a square, but 5 is not a square mod 8, so 2⁶ · 5 is not one. Whether a sum of
+  squares divisible by p²ᵛ is a square shows only in its digits beyond that, so the table uses
+  2¹³, 3⁷, 5⁵, 7⁴, 11³ and 13³, and counts classes of remainders rather than remainders to keep
+  that affordable. Then no pattern is predicted that never occurs, and every pattern that
+  occurs is predicted: a check on the rules from the other side.
+- **The shares are roughly right, and off in one direction.** The bricks found are less
+  divisible than predicted, by up to 13 points: fewer have two edges divisible by 7, 11 or
+  13, and more have none. Nothing promises that local densities predict this. They are
+  justified by the circle method for equations in many variables, and three equations in six
+  variables are too few; they also count every solution mod pᵏ alike, while these bricks
+  were chosen by their smallest edge.
+
 ## Near misses
 
 Each kind has exactly one irrational length out of seven.
