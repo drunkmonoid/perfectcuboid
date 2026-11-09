@@ -59,6 +59,16 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
         .read(Quarry.eulerBricks, Path(file))
         .flatMap((bricks, _) => IO.blocking(Local.densityLines(bricks)))
         .flatMap(_.traverse_(IO.println))
+    case Command.Records(file, legsUpTo) =>
+      for
+        (bricks, resume) <- Analysis.read(Quarry.eulerBricks, Path(file))
+        _ <- Records
+          .lines(bricks, f"with smallest edge from ${resume.from}%,d to ${resume.searchedUpTo}%,d")
+          .traverse_(IO.println)
+        all <- Blocks.finds(Quarry.eulerBricks, 1, legsUpTo).compile.toVector
+        _ <- IO.println("")
+        _ <- IO.blocking(Records.legsLines(all, legsUpTo)).flatMap(_.traverse_(IO.println))
+      yield ()
     case Command.Merge(out, files, quarry) =>
       Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Pictures(directory, exponent) =>

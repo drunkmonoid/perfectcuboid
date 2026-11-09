@@ -43,6 +43,7 @@ enum Command:
   case Analyse(file: String, primitiveOnly: Boolean, charts: Option[String])
   case Families(file: String, maxHypotenuse: Long)
   case Densities(file: String)
+  case Records(file: String, legsUpTo: Long)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
@@ -255,6 +256,19 @@ object CommandLine:
       Opts.argument[String]("FILE").map(Command.Densities(_))
     )
 
+  private val records: Opts[Command] =
+    Opts.subcommand("records", "Records among the bricks in a hunt's FILE, and bricks per edge against its legs.")(
+      (
+        Opts.argument[String]("FILE"),
+        Opts
+          .option[Long]("legs", "Count bricks and legs on every smallest edge up to this (default 1e6).")(using
+            wholeNumber
+          )
+          .withDefault(1_000_000L)
+          .validate("--legs must be from 1 to 1e8")(n => n >= 1 && n <= 100_000_000)
+      ).mapN(Command.Records(_, _))
+    )
+
   private val merge: Opts[Command] =
     Opts.subcommand("merge", "Join hunts' FILEs over ranges that follow on from each other into a new file OUT.")(
       (Opts.argument[String]("OUT"), Opts.arguments[String]("FILE").map(_.toList), kind).mapN(Command.Merge(_, _, _))
@@ -292,7 +306,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )

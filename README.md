@@ -37,6 +37,7 @@ scala-cli run . -- verify hunt-primitive.txt --kind primitive    # check a hunt'
 scala-cli run . -- analyse hunt-primitive.txt --kind primitive   # counts, rules, origins and closest calls of its bricks
 scala-cli run . -- families hunt-primitive.txt                   # Saunderson's family and its offspring, against the file
 scala-cli run . -- densities hunt-primitive.txt                  # how often small primes divide the edges, against prediction
+scala-cli run . -- records hunt-primitive.txt                    # the edges with most bricks, flattest and squarest bricks
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- crosscheck 1e5        # face cuboids found two independent ways, compared
@@ -121,6 +122,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Chance.scala` | how many perfect cuboids chance alone would put among the bricks found |
 | `src/Parallelepiped.scala` | slanted boxes, and the perfect ones among them |
 | `src/Coverage.scala` | families of bricks built from Pythagorean triples, against the bricks a search found |
+| `src/Records.scala` | records among the bricks found, and how bricks per edge follow its legs |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

@@ -305,6 +305,43 @@ Spread evenly, 10,220 misses would put the smallest around ½ / 10,221 ≈ 4.9·
 closest is 4.2·10⁻⁵. Nothing here suggests the space diagonals are drawn towards whole numbers.
 They miss about as chance would have them miss.
 
+## Records
+
+```sh
+scala-cli run . -J -Xmx2g -- records hunt-primitive.txt   # 45 seconds
+```
+
+Among the 10,220 primitive bricks with smallest edge up to 10⁹:
+
+- **Most bricks on one edge:** 23,760 is an edge of four primitive bricks: 4599 × 18368 ×
+  23760, 4599 × 23760 × 144832, 4900 × 17157 × 23760 and 23760 × 35075 × 35604. Four other
+  edges, the smallest 700,128, are shared by three.
+- **Longest:** 825973020 × 74800516901 × 37650741152640.
+- **Flattest:** 61427951 × 12916225080 × 3375128053440, its longest edge 54,944 times its
+  smallest.
+- **Most like a cube:** 108192528 × 109141700 × 110562771, its longest edge only 2.2% longer
+  than its smallest.
+
+**Bricks and legs.** Every brick on a smallest edge a is a pair of the legs above a that pair
+with it. So the more legs, the more bricks; but how much more? All the bricks with smallest
+edge up to 10⁶, primitive or not, sorted by how many legs their edge has:
+
+| legs above the edge | edges | pairs of legs, on average | bricks, on average | bricks per 1,000 pairs |
+| --- | ---: | ---: | ---: | ---: |
+| 0–1 | 120,038 | 0 | 0 | – |
+| 2–3 | 38,414 | 3.0 | 0.0001 | 0.03 |
+| 4–7 | 283,706 | 8.1 | 0.0001 | 0.01 |
+| 8–15 | 247,458 | 67 | 0.024 | 0.35 |
+| 16–31 | 104,807 | 243 | 0.039 | 0.16 |
+| 32–63 | 145,648 | 994 | 0.17 | 0.17 |
+| 64–127 | 37,588 | 4,627 | 0.52 | 0.11 |
+| 128 or more | 22,341 | 27,112 | 1.7 | 0.06 |
+
+The bricks follow the pairs, but less and less: an edge with many legs pairs with legs far
+longer than itself, up to a²/2, and a sum of two long squares is a square less often. The
+record is 720,720 = 2⁴ · 3² · 5 · 7 · 11 · 13, the least common multiple of 1 to 16, with 1,184
+legs above it and 25 bricks on it.
+
 ## How unlucky are we?
 
 ```sh
