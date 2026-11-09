@@ -42,7 +42,7 @@ big runs, cap the memory with `-J -Xmx2g` after `run .`.
 scala-cli run .                          # Euler bricks with every edge up to 1000
 scala-cli run . -- bricks 100000         # ... or up to another limit
 scala-cli run . -- unbounded 1e7         # by smallest edge, other edges unbounded, flat memory
-scala-cli run . -- hunt hunt-primitive.txt 1e9 --kind primitive  # long search to a file: Ctrl+C stops, rerun resumes
+scala-cli run . -- hunt hunt-primitive.txt 3e9 --kind primitive  # long search to a file: Ctrl+C stops, rerun resumes
 scala-cli run . -- hunt hunt-face.txt 1e6 --kind face            # ... of face cuboids (or bricks, or edge)
 scala-cli run . -- hunt part2.txt 2e9 --from 1000000001          # one range of a longer search, a shard
 scala-cli run . -- merge all.txt part1.txt part2.txt              # join shards that follow on from each other
@@ -143,7 +143,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
-| `src/Platform.scala` | what differs on Scala Native: one search thread by default |
+| `src/Platform.scala` | what differs on Scala Native: one search thread, and no more |
 | `src/Bench.scala` | timing the searches: warm-up, repeated runs, median and range |
 | `src/Scaling.scala` | how the search's speed grows with the number of threads, as a table and a chart |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |

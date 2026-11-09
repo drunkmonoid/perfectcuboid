@@ -1,7 +1,7 @@
 # Roadmap
 
-Ten phases. Each one adds a piece of mathematics and a piece of Scala, and ends in a
-tested state.
+Seventy phases: 1 to 40 up to version 1.0, and 41 to 70 towards 2.0. Each one adds a piece
+of mathematics or of Scala, and ends in a tested state, in one commit.
 
 - [x] **1. Property-based testing.** State the facts the code relies on (`isqrt` brackets
   the square root, edge order doesn't matter, scaling keeps the kind) and check them on
@@ -186,4 +186,4 @@ buys, and make the results easier to see and to reuse.
   charts, for readers who know neither the problem nor Scala.
 - [x] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
   run a shard and check it.
-- [ ] **70. Version 2.0.** A final pass over every document, the changelog, and a `v2.0` tag.
+- [x] **70. Version 2.0.** A final pass over every document, the changelog, and a `v2.0` tag.
