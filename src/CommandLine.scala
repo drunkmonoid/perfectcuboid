@@ -38,6 +38,7 @@ enum Command:
       from: Option[Long] = None
   )
   case Merge(out: String, files: List[String], quarry: Quarry[?])
+  case Analyse(file: String, primitiveOnly: Boolean, charts: Option[String])
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
@@ -205,6 +206,19 @@ object CommandLine:
       ).mapN(Command.Hunt(_, _, _, _, _, _))
     )
 
+  private val analyse: Opts[Command] =
+    Opts.subcommand("analyse", "Counts, rules, origins and closest calls of the Euler bricks in a hunt's FILE.")(
+      (
+        Opts.argument[String]("FILE"),
+        Opts
+          .option[String]("kind", "bricks (the default) or primitive, as the hunt was run.")
+          .withDefault("bricks")
+          .validate("--kind must be bricks or primitive")(Set("bricks", "primitive"))
+          .map(_ == "primitive"),
+        Opts.option[String]("charts", "Also draw the growth and the bricks as SVG charts in this directory.").orNone
+      ).mapN(Command.Analyse(_, _, _))
+    )
+
   private val merge: Opts[Command] =
     Opts.subcommand("merge", "Join hunts' FILEs over ranges that follow on from each other into a new file OUT.")(
       (Opts.argument[String]("OUT"), Opts.arguments[String]("FILE").map(_.toList), kind).mapN(Command.Merge(_, _, _))
@@ -242,7 +256,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )
 

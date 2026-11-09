@@ -32,6 +32,7 @@ object Charts:
       |  .s2 { stroke: var(--series-2); fill: var(--series-2); }
       |  .line { fill: none; stroke-width: 2; }
       |  .dot { stroke: var(--surface); stroke-width: 1; }
+      |  .dense { stroke: none; fill-opacity: 0.4; }
       |</style>""".stripMargin
 
   /** Where values fall along one side of a chart, and the grid lines drawn across it. */
@@ -138,12 +139,18 @@ object Charts:
       val (lastX, lastY) = s.points.last
       val label = f"""<text class="label" x="${x(lastX) + 10}%.1f" y="${y(lastY) + 4}%.1f">$name</text>"""
       (s"""<path class="s${s.slot} line" d="$path"/>""" :: dots) :+ label
-    frame(title, xLabel, yLabel, x, y, legend(series) ++ marks)
+    // One series needs no legend: the title names it, and so does the label at its end.
+    frame(title, xLabel, yLabel, x, y, (if series.size > 1 then legend(series) else Nil) ++ marks)
 
-  /** One dot per point, each titled with its own text. */
+  /** One dot per point, each titled with its own text. Thousands of dots would hide each other,
+    * so then they are smaller and partly transparent, and where they crowd the colour deepens.
+    */
   def scatter(title: String, xLabel: String, yLabel: String, points: List[(Double, Double, String)]): String =
     val x = LogAxis.around(points.map(_._1), left, Width - right)
     val y = LogAxis.around(points.map(_._2), Height - bottom, top)
+    val (kind, radius) = if points.size > 2000 then ("dense", 2.0) else ("dot", 3.5)
     val marks = points.map: (a, b, text) =>
-      f"""<circle class="s1 dot" cx="${x(a)}%.1f" cy="${y(b)}%.1f" r="3.5"><title>${escape(text)}</title></circle>"""
+      f"""<circle class="s1 $kind" cx="${x(a)}%.1f" cy="${y(b)}%.1f" r="$radius"><title>${escape(
+          text
+        )}</title></circle>"""
     frame(title, xLabel, yLabel, x, y, marks)

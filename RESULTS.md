@@ -102,6 +102,22 @@ Every one of the 925,637 Euler bricks with smallest edge ≤ 10⁷ obeys every r
 - so the product of the edges is divisible by 95,040 = 2⁶·3³·5·11;
 - in a primitive brick, exactly one edge and exactly two face diagonals are odd.
 
+So does every one of the 10,220 primitive bricks with smallest edge ≤ 10⁹ (see the next
+section).
+
+## Reading the big hunt's file
+
+```sh
+scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive --charts charts   # 25 seconds
+```
+
+`analyse` runs the reports that need only a list of bricks, growth, rules, derived pairs,
+origins and closest calls, over the bricks in a hunt's file instead of a fresh search, and can
+draw the charts from them too. On the 10⁹ hunt it takes 25 seconds where searching again would
+take hours. The figures for 10⁹ in the tables of this file come from it.
+
+![The primitive bricks of the 10⁹ hunt, by smallest and longest edge](docs/bricks-1e9.svg)
+
 ## Derived bricks come in pairs
 
 ```sh
@@ -117,8 +133,10 @@ gives back the same shape. So the primitive Euler bricks pair up. The first pair
 | --- | ---: | ---: |
 | 10⁶ | 608 | 153 |
 | 10⁷ | 1,647 | 390 |
+| 10⁹ | 10,220 | 2,316 |
 
-So about half of the primitive bricks found have their partner among them as well. No brick is its own
+So up to 10⁷ about half of the primitive bricks found have their partner among them as well,
+and up to 10⁹ 45%. No brick is its own
 partner, which would need b² = ac.
 
 ## New bricks from elliptic curves
@@ -156,14 +174,15 @@ starting from something smaller?
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | 10⁶ | 608 | 23 | 153 | 1 | 177 | 431 |
 | 10⁷ | 1,647 | 53 | 390 | 7 | 449 | 1,198 |
+| 10⁹ | 10,220 | 259 | 2,316 | 20 | 2,594 | 7,626 |
 
 - **Saunderson:** his brick from (u, v, w) has a face diagonal of exactly w³, which is how
   `Origins.isSaunderson` spots one.
 - **Curves:** the first curve multiple is 412425 × 4267872 × 4657400, the double of a point
   of 240 × 252 × 275 and also of its derived partner 1008 × 1100 × 1155.
 
-So nearly three quarters of the primitive bricks come from none of these: they are only found
-by searching.
+So nearly three quarters of the primitive bricks come from none of these, at 10⁹ as at 10⁷:
+they are only found by searching.
 
 ## The Pythagorean graph
 
@@ -223,9 +242,21 @@ bricks count: scaling a brick by k scales the miss by k too.
 | 241604 × 2965395 × 34911360 | 35,037,908 | 4.6·10⁻⁴ |
 
 If the 1,647 misses were spread evenly between 0 and ½, the smallest would be expected around
-½ / 1,648 ≈ 3·10⁻⁴, and the three closest calls are a few times nearer than that. Nothing
-here suggests the space diagonals are drawn towards whole numbers. They miss about as chance
-would have them miss.
+½ / 1,648 ≈ 3·10⁻⁴, and the three closest calls are a few times nearer than that.
+
+The 10⁹ hunt holds 10,220 primitive bricks, and a closer call than any above:
+
+| primitive brick, smallest edge ≤ 10⁹ | space diagonal | off by |
+| --- | ---: | ---: |
+| 640347864 × 1045085760 × 1939671305 | 2,294,466,039 | 4.2·10⁻⁵ |
+| 37835 × 269280 × 1244484 | 1,273,846 | 6.5·10⁻⁵ |
+| 280415119 × 720177120 × 5609322840 | 5,662,313,171 | 7.7·10⁻⁵ |
+| 318175 × 3357792 × 6431880 | 7,262,581 | 8.8·10⁻⁵ |
+| 330165 × 672220 × 3502992 | 3,582,156 | 9.0·10⁻⁵ |
+
+Spread evenly, 10,220 misses would put the smallest around ½ / 10,221 ≈ 4.9·10⁻⁵, and the
+closest is 4.2·10⁻⁵. Nothing here suggests the space diagonals are drawn towards whole numbers.
+They miss about as chance would have them miss.
 
 ## Rules proved by computer
 

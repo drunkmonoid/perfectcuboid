@@ -132,7 +132,7 @@ buys, and make the results easier to see and to reuse.
 
 - [x] **47. Ranges and shards.** `hunt --from`, so a range can be split across runs or machines,
   and `merge` to join shard files into one that `verify` accepts.
-- [ ] **48. Reading results files.** `stats`, `origins`, `closest`, `rules` and the charts run
+- [x] **48. Reading results files.** `stats`, `origins`, `closest`, `rules` and the charts run
   over a hunt's file instead of a fresh search.
 - [ ] **49. Past the `Long`.** Smallest edges above 3,037,000,499, whose squares overflow a
   `Long`, with `Wide` all the way through, so the search has no limit left.

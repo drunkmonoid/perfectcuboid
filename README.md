@@ -34,6 +34,7 @@ scala-cli run . -- hunt hunt-face.txt 1e6 --kind face            # ... of face c
 scala-cli run . -- hunt part2.txt 2e9 --from 1000000001          # one range of a longer search, a shard
 scala-cli run . -- merge all.txt part1.txt part2.txt              # join shards that follow on from each other
 scala-cli run . -- verify hunt-primitive.txt --kind primitive    # check a hunt's file without trusting the search
+scala-cli run . -- analyse hunt-primitive.txt --kind primitive   # counts, rules, origins and closest calls of its bricks
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- nearmisses            # the first body, face and edge cuboid
@@ -112,6 +113,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
 | `src/Verify.scala` | checking a results file without trusting the code that wrote it |
 | `src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
+| `src/Analysis.scala` | the reports that need only a list of bricks, for a fresh search or a hunt's file |
 | `src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
 | `src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |

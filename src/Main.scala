@@ -42,6 +42,9 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def execute(command: Command): IO[Unit] = command match
     case Command.Hunt(file, upTo, quarry, threads, blockSize, from) =>
       Hunt.run(quarry, Path(file), upTo, blockSize, threads, from)
+    case Command.Analyse(file, primitiveOnly, charts) =>
+      val quarry = if primitiveOnly then Quarry.primitiveBricks else Quarry.eulerBricks
+      Analysis.ofFile(quarry, Path(file), primitiveOnly, charts.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Merge(out, files, quarry) =>
       Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Pictures(directory, exponent) =>
@@ -108,17 +111,7 @@ object Cli:
     Unbounded.header(maxSmallestEdge) #:: bricks.map(Unbounded.line) :+ Unbounded.footer(maxSmallestEdge)
 
   def rulesReport(limit: Long): LazyList[String] =
-    val bricks = Search.eulerBricks(limit)
-    val broken =
-      for
-        brick <- bricks
-        rule <- Theory.violations(Theory.rulesFor(brick), brick)
-      yield s"  ${describe(brick)} breaks: ${rule.name}"
-    val ruleNames = (Theory.eulerBrickRules ++ Theory.primitiveEulerBrickRules).map(r => s"  - ${r.name}")
-    val summary =
-      if broken.isEmpty then s"All rules hold for all ${bricks.size} Euler bricks with every edge <= $limit."
-      else s"${broken.size} violations:"
-    ("Rules checked:" +: ruleNames :+ summary :++ broken).to(LazyList)
+    Analysis.rules(Search.eulerBricks(limit), s"with every edge <= $limit").to(LazyList)
 
   def saundersonReport(limit: Long): LazyList[String] =
     val bricks = Families.saundersonBricksUpTo(limit)
@@ -189,14 +182,8 @@ object Cli:
     )
 
   def closestReport(maxSmallestEdge: Long): LazyList[String] =
-    val ranked = ClosestCalls.ranked(FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector)
-    s"The primitive Euler bricks with smallest edge <= $maxSmallestEdge whose space diagonal is nearest a whole number:" #::
-      ranked
-        .take(12)
-        .to(LazyList)
-        .map: (brick, miss) =>
-          val diagonal = math.sqrt(brick.a.toDouble * brick.a + brick.b.toDouble * brick.b + brick.c.toDouble * brick.c)
-          f"  ${s"${brick.a} × ${brick.b} × ${brick.c}"}%-42s space diagonal ${math.round(diagonal)}%,d off by $miss%.2e"
+    val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector
+    Analysis.closest(bricks, s"with smallest edge <= $maxSmallestEdge").to(LazyList)
 
   def fourDReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector
@@ -228,23 +215,7 @@ object Cli:
     )
 
   def originsReport(maxSmallestEdge: Long): LazyList[String] =
-    val primitive = FastSearch
-      .allEulerBricksParallel()
-      .takeWhile(_.a <= maxSmallestEdge)
-      .filter(_.isPrimitive)
-      .map(BigCuboid.from)
-      .toVector
-    val origins = Origins.classify(primitive)
-    def count(of: Origins.Origin => Boolean) = origins.count((_, origin) => of(origin))
-    def show(box: BigCuboid) = s"${box.a} × ${box.b} × ${box.c}"
-    LazyList(
-      s"Primitive Euler bricks with smallest edge <= $maxSmallestEdge: ${primitive.size}",
-      s"  Saunderson bricks:                      ${count(_.saunderson)}",
-      s"  derived bricks of smaller bricks:       ${count(_.derivedFromSmaller)}",
-      s"  2P, 3P or 4P on another brick's curve:  ${count(_.curveMultiple)}",
-      s"  at least one of these:                  ${count(_.any)}",
-      s"  none of these, found only by searching: ${count(!_.any)}"
-    ) ++ origins.collect { case (brick, origin) if origin.curveMultiple => s"  curve multiple: ${show(brick)}" }
+    Analysis.origins(primitiveUpTo(maxSmallestEdge), s"with smallest edge <= $maxSmallestEdge").to(LazyList)
 
   /** For each pair of edges of the brick, the bricks from the multiples of its point. */
   def curveReport(a: BigInt, b: BigInt, c: BigInt, multiples: Int): LazyList[String] =
@@ -267,20 +238,15 @@ object Cli:
 
   /** Each primitive brick in range with its derived partner, each pair once. */
   def derivedReport(maxSmallestEdge: Long): LazyList[String] =
-    val primitive = FastSearch
+    Analysis.derived(primitiveUpTo(maxSmallestEdge), s"with smallest edge <= $maxSmallestEdge").to(LazyList)
+
+  private def primitiveUpTo(maxSmallestEdge: Long): Vector[BigCuboid] =
+    FastSearch
       .allEulerBricksParallel()
       .takeWhile(_.a <= maxSmallestEdge)
       .filter(_.isPrimitive)
       .map(BigCuboid.from)
       .toVector
-    val inRange = primitive.toSet
-    def show(box: BigCuboid) = s"${box.a} × ${box.b} × ${box.c}"
-    val partners = primitive.map(box => box -> Derived.derived(box))
-    val bothInRange = partners.filter((box, partner) => inRange(partner) && Ordering[BigCuboid].lt(box, partner))
-    LazyList(
-      s"${primitive.size} primitive Euler bricks with smallest edge <= $maxSmallestEdge.",
-      s"${bothInRange.size} pairs have both partners among them, ${partners.count((box, _) => Derived.isSelfDerived(box))} bricks are their own partner:"
-    ) ++ bothInRange.map((box, partner) => f"  ${show(box)}%-34s ↔  ${show(partner)}")
 
   /** Each prime's rules are only worked out when its line is about to be printed. */
   def localReport(maxPrime: Int): LazyList[String] =

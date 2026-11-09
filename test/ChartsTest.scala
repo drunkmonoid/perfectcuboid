@@ -44,6 +44,16 @@ class ChartsTest extends munit.FunSuite:
     assert(svg.contains("a &lt; b &amp; c"))
     assert(svg.split("primitive</text>").length - 1 == 2) // once in the legend, once at the line's end
 
+  test("a single series has no legend, only the label at its end"):
+    val svg = Charts.lines("t", "x", "y", series.take(1))
+    assertEquals(svg.split("all</text>").length - 1, 1)
+    assert(!svg.contains("<rect class=\"s1\""))
+
+  test("thousands of dots are drawn smaller and see-through"):
+    val many = (1 to 3000).toList.map(i => (i.toDouble, i.toDouble * 2, s"$i"))
+    assert(Charts.scatter("t", "x", "y", many).contains("class=\"s1 dense\""))
+    assert(!Charts.scatter("t", "x", "y", many.take(10)).contains("dense\""))
+
   test("a scatter has a titled dot per point"):
     val svg = Charts.scatter("t", "x", "y", List((44.0, 240.0, "44 × 117 × 240"), (85.0, 720.0, "85 × 132 × 720")))
     assertEquals(coordinates(svg, "cx").size, 2)
