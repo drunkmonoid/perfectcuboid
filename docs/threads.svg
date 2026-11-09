@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" role="img">
+<title>Search speed near 10⁹ by number of threads</title>
+<style>
+  svg { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e6e5e0;
+        --series-1: #2a78d6; --series-2: #eb6834; font-family: system-ui, sans-serif; }
+  @media (prefers-color-scheme: dark) {
+    svg { --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --grid: #383835;
+          --series-1: #3987e5; --series-2: #d95926; }
+  }
+  .surface { fill: var(--surface); }
+  .title { fill: var(--ink); font-size: 16px; font-weight: 600; }
+  .label { fill: var(--ink-2); font-size: 12px; }
+  .grid { stroke: var(--grid); stroke-width: 1; }
+  .s1 { stroke: var(--series-1); fill: var(--series-1); }
+  .s2 { stroke: var(--series-2); fill: var(--series-2); }
+  .line { fill: none; stroke-width: 2; }
+  .dot { stroke: var(--surface); stroke-width: 1; }
+</style>
+<rect class="surface" width="720" height="440" rx="8"/>
+<text class="title" x="72" y="30">Search speed near 10⁹ by number of threads</text>
+<text class="label" x="321" y="424" text-anchor="middle">threads</text>
+<text class="label" transform="translate(18 227) rotate(-90)" text-anchor="middle">edges per second</text>
+<line class="grid" x1="72.0" y1="70" x2="72.0" y2="384"/><text class="label" x="72.0" y="402" text-anchor="middle">0</text>
+<line class="grid" x1="238.0" y1="70" x2="238.0" y2="384"/><text class="label" x="238.0" y="402" text-anchor="middle">5</text>
+<line class="grid" x1="404.0" y1="70" x2="404.0" y2="384"/><text class="label" x="404.0" y="402" text-anchor="middle">10</text>
+<line class="grid" x1="570.0" y1="70" x2="570.0" y2="384"/><text class="label" x="570.0" y="402" text-anchor="middle">15</text>
+<line class="grid" x1="72" y1="384.0" x2="570" y2="384.0"/><text class="label" x="64" y="388.0" text-anchor="end">0</text>
+<line class="grid" x1="72" y1="305.5" x2="570" y2="305.5"/><text class="label" x="64" y="309.5" text-anchor="end">100,000</text>
+<line class="grid" x1="72" y1="227.0" x2="570" y2="227.0"/><text class="label" x="64" y="231.0" text-anchor="end">200,000</text>
+<line class="grid" x1="72" y1="148.5" x2="570" y2="148.5"/><text class="label" x="64" y="152.5" text-anchor="end">300,000</text>
+<line class="grid" x1="72" y1="70.0" x2="570" y2="70.0"/><text class="label" x="64" y="74.0" text-anchor="end">400,000</text>
+<rect class="s1" x="72" y="40" width="12" height="12" rx="3"/>
+<text class="label" x="90" y="50">measured</text>
+<rect class="s2" x="252" y="40" width="12" height="12" rx="3"/>
+<text class="label" x="270" y="50">perfect scaling</text>
+<path class="s1 line" d="M105.2,360.0 L138.4,337.7 L171.6,324.2 L204.8,314.0 L238.0,306.1 L271.2,302.4 L304.4,288.1 L337.6,282.3 L370.8,280.4 L404.0,274.9 L437.2,271.7 L470.4,270.2"/>
+<circle class="s1 dot" cx="105.2" cy="360.0" r="4"><title>measured: 30,516 edges per second on 1 threads</title></circle>
+<circle class="s1 dot" cx="138.4" cy="337.7" r="4"><title>measured: 59,031 edges per second on 2 threads</title></circle>
+<circle class="s1 dot" cx="171.6" cy="324.2" r="4"><title>measured: 76,191 edges per second on 3 threads</title></circle>
+<circle class="s1 dot" cx="204.8" cy="314.0" r="4"><title>measured: 89,197 edges per second on 4 threads</title></circle>
+<circle class="s1 dot" cx="238.0" cy="306.1" r="4"><title>measured: 99,299 edges per second on 5 threads</title></circle>
+<circle class="s1 dot" cx="271.2" cy="302.4" r="4"><title>measured: 103,951 edges per second on 6 threads</title></circle>
+<circle class="s1 dot" cx="304.4" cy="288.1" r="4"><title>measured: 122,118 edges per second on 7 threads</title></circle>
+<circle class="s1 dot" cx="337.6" cy="282.3" r="4"><title>measured: 129,528 edges per second on 8 threads</title></circle>
+<circle class="s1 dot" cx="370.8" cy="280.4" r="4"><title>measured: 131,980 edges per second on 9 threads</title></circle>
+<circle class="s1 dot" cx="404.0" cy="274.9" r="4"><title>measured: 138,971 edges per second on 10 threads</title></circle>
+<circle class="s1 dot" cx="437.2" cy="271.7" r="4"><title>measured: 143,013 edges per second on 11 threads</title></circle>
+<circle class="s1 dot" cx="470.4" cy="270.2" r="4"><title>measured: 144,961 edges per second on 12 threads</title></circle>
+<text class="label" x="480.4" y="274.2">measured</text>
+<path class="s2 line" d="M105.2,360.0 L138.4,336.1 L171.6,312.1 L204.8,288.2 L238.0,264.2 L271.2,240.3 L304.4,216.3 L337.6,192.4 L370.8,168.4 L404.0,144.5 L437.2,120.5 L470.4,96.5"/>
+<circle class="s2 dot" cx="105.2" cy="360.0" r="4"><title>perfect scaling: 30,516 edges per second on 1 threads</title></circle>
+<circle class="s2 dot" cx="138.4" cy="336.1" r="4"><title>perfect scaling: 61,031 edges per second on 2 threads</title></circle>
+<circle class="s2 dot" cx="171.6" cy="312.1" r="4"><title>perfect scaling: 91,547 edges per second on 3 threads</title></circle>
+<circle class="s2 dot" cx="204.8" cy="288.2" r="4"><title>perfect scaling: 122,062 edges per second on 4 threads</title></circle>
+<circle class="s2 dot" cx="238.0" cy="264.2" r="4"><title>perfect scaling: 152,578 edges per second on 5 threads</title></circle>
+<circle class="s2 dot" cx="271.2" cy="240.3" r="4"><title>perfect scaling: 183,093 edges per second on 6 threads</title></circle>
+<circle class="s2 dot" cx="304.4" cy="216.3" r="4"><title>perfect scaling: 213,609 edges per second on 7 threads</title></circle>
+<circle class="s2 dot" cx="337.6" cy="192.4" r="4"><title>perfect scaling: 244,124 edges per second on 8 threads</title></circle>
+<circle class="s2 dot" cx="370.8" cy="168.4" r="4"><title>perfect scaling: 274,640 edges per second on 9 threads</title></circle>
+<circle class="s2 dot" cx="404.0" cy="144.5" r="4"><title>perfect scaling: 305,155 edges per second on 10 threads</title></circle>
+<circle class="s2 dot" cx="437.2" cy="120.5" r="4"><title>perfect scaling: 335,671 edges per second on 11 threads</title></circle>
+<circle class="s2 dot" cx="470.4" cy="96.5" r="4"><title>perfect scaling: 366,186 edges per second on 12 threads</title></circle>
+<text class="label" x="480.4" y="100.5">perfect scaling</text>
+</svg>

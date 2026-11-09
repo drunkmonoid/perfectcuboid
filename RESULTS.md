@@ -456,6 +456,51 @@ Three times as fast near 10⁹. The hunts found the same primitive bricks as the
 in the same ranges, and every Euler brick with smallest edge from 5,000,001 to 5,300,000,
 27,813 of them, came out byte for byte the same as before.
 
+### Threads
+
+```sh
+scala-cli run . -J -Xmx1g -- scaling --chart docs/threads.svg   # about two minutes
+```
+
+`scaling` searches the same million edges just below 10⁹ on 1 thread, then 2, and so on up to
+every core, after a warm-up.
+
+![Search speed by number of threads](docs/threads.svg)
+
+| threads | time | edges per second | speed-up |
+| ---: | ---: | ---: | ---: |
+| 1 | 32.8 s | 30,516 | 1.00 |
+| 2 | 16.9 s | 59,031 | 1.93 |
+| 4 | 11.2 s | 89,197 | 2.92 |
+| 6 | 9.6 s | 103,951 | 3.41 |
+| 8 | 7.7 s | 129,528 | 4.24 |
+| 10 | 7.2 s | 138,971 | 4.55 |
+| 12 | 6.9 s | 144,961 | 4.75 |
+
+Twelve threads are not twelve times as fast, and this processor (an Intel Core i5-13420H)
+explains most of it. It has 4 performance cores that each run two threads, sharing one core's
+units between them, and 4 slower efficiency cores. A lone thread also runs at a higher clock
+than a dozen do, and the laptop has to stay cool. Every thread still adds something, so the
+default stays at every core.
+
+These numbers move. While they were measured, other programs (an editor or two and a browser)
+kept a load of 6 to 10 on the machine, and repeating the run with 12 threads gave anything
+from 6.9 to 11.2 s. One thread is steadier, which is why the earlier comparisons use one.
+
+**Block size.** A hunt hands each thread a block of edges at a time and writes a checkpoint
+after each. Timed in one JVM, three rounds in turn so that changes in the load fall on every
+size alike, with 12 threads on the same million edges:
+
+| block size | three runs | median |
+| ---: | --- | ---: |
+| 2,000 | 9.36, 9.18, 9.67 s | 9.36 s |
+| 10,000 | 8.49, 8.78, 8.58 s | 8.58 s |
+| 100,000 | 8.83, 9.41, 8.80 s | 8.83 s |
+
+Small blocks pay a little more for starting each block and for keeping them in order, large
+ones leave threads idle at the end, and 10,000, the size the hunt already used, is best. It
+can be changed with `hunt --block-size`.
+
 ## Scala Native: long runs work, on one thread
 
 The same code builds to a native executable, about 10 MB, with Scala Native 0.5.12. That

@@ -40,8 +40,8 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo, quarry, threads) => Hunt.run(quarry, Path(file), upTo, cores = threads)
-    case Command.Pictures(directory, exponent)     =>
+    case Command.Hunt(file, upTo, quarry, threads, blockSize) => Hunt.run(quarry, Path(file), upTo, blockSize, threads)
+    case Command.Pictures(directory, exponent)                =>
       val dir = Path(directory)
       def write(name: String, svg: String) =
         fs2.Stream.emit(svg).through(Files[IO].writeUtf8(dir / name)).compile.drain >> IO.println(
@@ -52,6 +52,13 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
         IO.blocking(Pictures.bricks(exponent)).flatMap(write("bricks.svg", _))
     case Command.Verify(file, quarry, blocks) => Verify.run(quarry, Path(file), blocks).flatMap(_.traverse_(IO.println))
     case Command.Bench(limit, runs)           => IO.blocking(Bench.run(limit, runs))
+    case Command.Scaling(first, edges, blockSize, threads, chart) =>
+      Scaling
+        .run(first, edges, blockSize, threads)
+        .flatMap: rows =>
+          chart.traverse_ : file =>
+            Stream.emit(Scaling.chart(rows)).through(Files[IO].writeUtf8(Path(file))).compile.drain >>
+              IO.println(s"Wrote $file")
     // Each line is computed and printed in turn, so long outputs are never held in memory,
     // and Ctrl+C can stop between any two lines.
     case Command.Print(Report.Unbounded(limit, threads)) =>

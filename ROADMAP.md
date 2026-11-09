@@ -121,7 +121,7 @@ buys, and make the results easier to see and to reuse.
   floating-point square root and one exact check, with no correcting loops or boxing.
 - [x] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square
   root, each kept only if a count of the pairs it rejects says it pays.
-- [ ] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
+- [x] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
   tuned, and charted in `docs/`.
 - [ ] **46. Native threads.** Find why native hunts crash on several threads, fix it, and
   compare native with the JVM at full thread count.

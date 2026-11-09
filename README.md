@@ -36,6 +36,7 @@ scala-cli run . -- face 1000             # face cuboids: one face diagonal irrat
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
 scala-cli run . -- nearmisses            # the first body, face and edge cuboid
 scala-cli run . -- bench 1e6 --runs 3    # time the readable, fast and parallel searches
+scala-cli run . -- scaling --chart t.svg # search speed on 1 thread, 2, ... every core
 scala-cli --power run bench              # microbenchmarks of the kernels, by JMH
 ```
 
@@ -112,6 +113,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `src/CommandLine.scala` | the commands, and how the command line is parsed into one |
 | `src/Platform.scala` | what differs on Scala Native: one search thread by default |
 | `src/Bench.scala` | timing the searches: warm-up, repeated runs, median and range |
+| `src/Scaling.scala` | how the search's speed grows with the number of threads, as a table and a chart |
 | `src/Main.scala` | the entry point, an `IOApp`, and the pure `Cli.run` it prints |
 | `bench/Kernels.scala` | JMH microbenchmarks of the search's kernels, on inputs from near 10⁹ |
 

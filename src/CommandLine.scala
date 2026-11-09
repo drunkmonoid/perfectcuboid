@@ -29,10 +29,17 @@ enum Report:
   */
 enum Command:
   case Print(report: Report)
-  case Hunt(file: String, upTo: Long, quarry: Quarry[?], threads: Int)
+  case Hunt(
+      file: String,
+      upTo: Long,
+      quarry: Quarry[?],
+      threads: Int,
+      blockSize: Long = perfectcuboid.Hunt.DefaultBlockSize
+  )
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
+  case Scaling(first: Long, edges: Long, blockSize: Long, threads: List[Int], chart: Option[String])
 
 /** The command line, described with the decline library: every subcommand, its arguments,
   * their defaults and their help. Parsing turns a list of words into a `Command`, or into
@@ -170,14 +177,41 @@ object CommandLine:
       ).mapN(Command.Pictures(_, _))
     )
 
+  private val blockSize: Opts[Long] =
+    Opts
+      .option[Long]("block-size", s"How many edges each thread searches at a time (default ${Hunt.DefaultBlockSize}).")(
+        using wholeNumber
+      )
+      .withDefault(Hunt.DefaultBlockSize)
+      .validate("--block-size must be at least 1")(_ >= 1)
+
   private val hunt: Opts[Command] =
     Opts.subcommand("hunt", "Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.")(
       (
         Opts.argument[String]("FILE"),
         number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
         kind,
-        threads
-      ).mapN(Command.Hunt(_, _, _, _))
+        threads,
+        blockSize
+      ).mapN(Command.Hunt(_, _, _, _, _))
+    )
+
+  private val scaling: Opts[Command] =
+    Opts.subcommand(
+      "scaling",
+      "Time the search of EDGES edges (default 1e6) from FIRST (default 999000001) on 1 thread, 2, and so on."
+    )(
+      (
+        number("FIRST", 999_000_001L, Search.MaxSmallestEdge),
+        number("EDGES", 1_000_000L, Search.MaxSmallestEdge),
+        blockSize,
+        Opts
+          .options[Int]("threads", "A number of threads to time; repeat it for more (default: 1 to every core).")
+          .map(_.toList)
+          .withDefault((1 to Runtime.getRuntime.availableProcessors).toList)
+          .validate("--threads must be at least 1")(_.forall(_ >= 1)),
+        Opts.option[String]("chart", "Also draw the speeds as an SVG chart in this file.").orNone
+      ).mapN(Command.Scaling(_, _, _, _, _))
     )
 
   private val bench: Opts[Command] =
@@ -193,7 +227,9 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ verify :+ pictures :+ bench).reduce(_ orElse _) orElse Opts(Command.Print(Report.Bricks(1000)))
+    (reports :+ hunt :+ verify :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
+      Command.Print(Report.Bricks(1000))
+    )
 
   def parse(args: List[String]): Either[decline.Help, Command] =
     decline.Command("perfectcuboid", header)(opts).parse(args)

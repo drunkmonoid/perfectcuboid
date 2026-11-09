@@ -18,3 +18,16 @@ class BenchTest extends munit.FunSuite:
   test("every search in the benchmark finds the same bricks"):
     val expected = Bench.baseline._2(2000)
     Bench.others.foreach((name, search) => assertEquals(search(2000), expected, name))
+
+  test("a scaling row compares its speed with the fewest threads, and perfect scaling"):
+    val one = Scaling.Row(1, 1_000_000, 32.0)
+    val twelve = Scaling.Row(12, 1_000_000, 8.0)
+    assertEquals(Scaling.line(one, one), "   1 thread     32.00 s     31,250 edges/s   1.00x  (100% of perfect)")
+    assertEquals(Scaling.line(twelve, one), "  12 threads     8.00 s    125,000 edges/s   4.00x  ( 33% of perfect)")
+    assertEquals(Scaling.chart(List(one, twelve)).split("<circle").length - 1, 4)
+
+  test("a scaling run times every thread count it is given"):
+    import cats.effect.unsafe.implicits.global
+    val rows = Scaling.run(1, 2000, 500, List(2, 1)).unsafeRunSync()
+    assertEquals(rows.map(_.threads), List(1, 2))
+    assert(rows.forall(_.seconds > 0))

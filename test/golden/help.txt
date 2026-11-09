@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | verify | pictures | bench]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | verify | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -49,3 +49,5 @@ Subcommands:
         Write SVG charts to DIRECTORY, from the bricks up to 10^EXPONENT (default 6).
     bench
         Time the readable, fast and parallel searches up to LIMIT (default 100000).
+    scaling
+        Time the search of EDGES edges (default 1e6) from FIRST (default 999000001) on 1 thread, 2, and so on.

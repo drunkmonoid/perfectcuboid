@@ -21,6 +21,17 @@ class CommandLineTest extends munit.FunSuite:
     assertEquals(parse("unbounded", "100", "--threads", "1"), Right(Command.Print(Report.Unbounded(100, 1))))
     assert(errors("unbounded", "100", "--threads", "0").nonEmpty)
 
+  test("a hunt's block size, and the thread counts a scaling run tries, can be chosen"):
+    assertEquals(
+      parse("hunt", "bricks.txt", "1e6", "--block-size", "2e3"),
+      Right(Command.Hunt("bricks.txt", 1_000_000, Quarry.eulerBricks, Platform.defaultThreads, 2000))
+    )
+    assert(errors("hunt", "bricks.txt", "--block-size", "0").nonEmpty)
+    assertEquals(
+      parse("scaling", "1e6", "1e5", "--threads", "1", "--threads", "4", "--chart", "t.svg"),
+      Right(Command.Scaling(1_000_000, 100_000, Hunt.DefaultBlockSize, List(1, 4), Some("t.svg")))
+    )
+
   test("left-out numbers take their defaults"):
     assertEquals(parse("stats"), Right(Command.Print(Report.Stats(6))))
     assertEquals(

@@ -1,8 +1,8 @@
 package perfectcuboid
 
 /** Charts as SVG text, written by hand: an SVG file is a list of shapes with coordinates, so a
-  * chart is a pure function from data to a string. Both axes are logarithmic, since the
-  * numbers here span many powers of ten.
+  * chart is a pure function from data to a string. Axes are logarithmic by default, since
+  * most numbers here span many powers of ten.
   *
   * Colours come from a validated palette, with a darker set for dark mode chosen by the
   * viewer's system setting; each mark carries a `<title>` that browsers show on hover.
@@ -34,9 +34,17 @@ object Charts:
       |  .dot { stroke: var(--surface); stroke-width: 1; }
       |</style>""".stripMargin
 
+  /** Where values fall along one side of a chart, and the grid lines drawn across it. */
+  sealed trait Axis:
+    def apply(value: Double): Double
+
+    /** A grid line for each of these values, with its label. */
+    def ticks: List[(Double, String)]
+
   /** Powers of ten from 10^lo to 10^hi, and where a value falls between them on the page. */
-  final case class LogAxis(lo: Int, hi: Int, from: Double, to: Double):
+  final case class LogAxis(lo: Int, hi: Int, from: Double, to: Double) extends Axis:
     def apply(value: Double): Double = from + (math.log10(value) - lo) / (hi - lo) * (to - from)
+    def ticks: List[(Double, String)] = (lo to hi).map(k => (math.pow(10, k), power(k))).toList
 
   object LogAxis:
     /** The decades that hold every value, with a little room. */
@@ -45,28 +53,42 @@ object Charts:
       val hi = math.max(math.ceil(math.log10(values.max)).toInt, lo + 1)
       LogAxis(lo, hi, from, to)
 
+  /** From 0 to `hi` in equal steps, for values that span less than a power of ten or two. */
+  final case class LinearAxis(hi: Double, step: Double, from: Double, to: Double) extends Axis:
+    def apply(value: Double): Double = from + value / hi * (to - from)
+    def ticks: List[(Double, String)] =
+      (0 to math.round(hi / step).toInt).map(i => i * step).map(v => (v, f"${v.round}%,d")).toList
+
+  object LinearAxis:
+    /** From 0 to just above the largest value, in about five steps of 1, 2 or 5 times a power of ten. */
+    def around(values: Iterable[Double], from: Double, to: Double): LinearAxis =
+      val rough = values.max / 5
+      val unit = math.pow(10, math.floor(math.log10(rough)))
+      val step = List(1.0, 2.0, 5.0, 10.0).map(_ * unit).find(_ >= rough).getOrElse(10 * unit)
+      LinearAxis(math.ceil(values.max / step) * step, step, from, to)
+
   private def power(k: Int): String =
     if k == 0 then "1" else if k == 1 then "10" else s"10<tspan dy=\"-6\" font-size=\"9\">$k</tspan>"
 
   private def escape(text: String): String = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
-  /** The frame every chart shares: surface, title, axis labels, a grid line per power of ten. */
+  /** The frame every chart shares: surface, title, axis labels, a grid line per tick. */
   private def frame(
       title: String,
       xLabel: String,
       yLabel: String,
-      x: LogAxis,
-      y: LogAxis,
+      x: Axis,
+      y: Axis,
       marks: List[String]
   ): String =
-    val verticals = (x.lo to x.hi).map: k =>
-      val px = x(math.pow(10, k))
+    val verticals = x.ticks.map: (value, label) =>
+      val px = x(value)
       s"""<line class="grid" x1="$px" y1="$top" x2="$px" y2="${Height - bottom}"/>""" +
-        s"""<text class="label" x="$px" y="${Height - bottom + 18}" text-anchor="middle">${power(k)}</text>"""
-    val horizontals = (y.lo to y.hi).map: k =>
-      val py = y(math.pow(10, k))
+        s"""<text class="label" x="$px" y="${Height - bottom + 18}" text-anchor="middle">$label</text>"""
+    val horizontals = y.ticks.map: (value, label) =>
+      val py = y(value)
       s"""<line class="grid" x1="$left" y1="$py" x2="${Width - right}" y2="$py"/>""" +
-        s"""<text class="label" x="${left - 8}" y="${py + 4}" text-anchor="end">${power(k)}</text>"""
+        s"""<text class="label" x="${left - 8}" y="${py + 4}" text-anchor="end">$label</text>"""
     (List(
       s"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 $Width $Height" width="$Width" height="$Height" role="img">""",
       s"<title>${escape(title)}</title>",
@@ -90,17 +112,29 @@ object Charts:
         s"""<text class="label" x="${x + 18}" y="50">${escape(s.name)}</text>"""
       )
 
-  /** Lines through each series' points, with a dot at each point and the series named at its end. */
-  def lines(title: String, xLabel: String, yLabel: String, series: List[Series]): String =
+  /** Lines through each series' points, with a dot at each point and the series named at its
+    * end. Both axes are logarithmic, unless `linear`; `tip` is the text shown on hovering a dot.
+    */
+  def lines(
+      title: String,
+      xLabel: String,
+      yLabel: String,
+      series: List[Series],
+      linear: Boolean = false,
+      tip: (String, Double, Double) => String = (name, x, y) => f"$name: ${y.toLong}%,d up to ${x.toLong}%,d"
+  ): String =
     val all = series.flatMap(_.points)
-    val x = LogAxis.around(all.map(_._1), left, Width - right)
-    val y = LogAxis.around(all.map(_._2), Height - bottom, top)
+    val (x, y) =
+      if linear then
+        (LinearAxis.around(all.map(_._1), left, Width - right), LinearAxis.around(all.map(_._2), Height - bottom, top))
+      else (LogAxis.around(all.map(_._1), left, Width - right), LogAxis.around(all.map(_._2), Height - bottom, top))
     val marks = series.flatMap: s =>
       val path = s.points.map((a, b) => f"${x(a)}%.1f,${y(b)}%.1f").mkString("M", " L", "")
       val name = escape(s.name)
       val dots = s.points.map: (a, b) =>
-        val tip = f"$name: ${b.toLong}%,d up to ${a.toLong}%,d"
-        f"""<circle class="s${s.slot} dot" cx="${x(a)}%.1f" cy="${y(b)}%.1f" r="4"><title>$tip</title></circle>"""
+        f"""<circle class="s${s.slot} dot" cx="${x(a)}%.1f" cy="${y(b)}%.1f" r="4"><title>${escape(
+            tip(s.name, a, b)
+          )}</title></circle>"""
       val (lastX, lastY) = s.points.last
       val label = f"""<text class="label" x="${x(lastX) + 10}%.1f" y="${y(lastY) + 4}%.1f">$name</text>"""
       (s"""<path class="s${s.slot} line" d="$path"/>""" :: dots) :+ label

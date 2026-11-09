@@ -104,6 +104,9 @@ object Blocks:
   */
 object Hunt:
 
+  /** Each block of edges is searched on one thread and followed by a checkpoint in the file. */
+  val DefaultBlockSize: Long = 10_000
+
   final case class Progress(searchedUpTo: Long, found: Summary)
 
   /** Reads an existing results file, line by line in constant memory, to find where to resume. */
@@ -131,7 +134,7 @@ object Hunt:
       quarry: Quarry[A],
       path: Path,
       upTo: Long,
-      blockSize: Long = 10_000,
+      blockSize: Long = DefaultBlockSize,
       cores: Int = Platform.defaultThreads
   ): IO[Unit] =
     for

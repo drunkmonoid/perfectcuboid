@@ -20,6 +20,18 @@ class ChartsTest extends munit.FunSuite:
     assertEqualsDouble(axis(100), 300, 1e-9)
     assertEqualsDouble(axis(1e4), 500, 1e-9)
 
+  test("a linear axis starts at 0 and steps by 1, 2 or 5 times a power of ten"):
+    val axis = Charts.LinearAxis.around(List(3.0, 144_961.0), 100, 500)
+    assertEquals(axis.ticks.map(_._1), List(0.0, 50_000.0, 100_000.0, 150_000.0))
+    assertEqualsDouble(axis(0), 100, 1e-9)
+    assertEqualsDouble(axis(150_000), 500, 1e-9)
+    assertEquals(axis.ticks.last._2, "150,000")
+
+  test("a linear line chart keeps its dots inside the picture"):
+    val svg = Charts.lines("t", "x", "y", series, linear = true)
+    assert(coordinates(svg, "cx").forall(x => x >= 72 && x <= 720 - 150))
+    assert(coordinates(svg, "cy").forall(y => y >= 70 && y <= 440 - 56))
+
   test("a line chart has a dot for every point, all inside the picture"):
     val svg = Charts.lines("t", "x", "y", series)
     assertEquals(coordinates(svg, "cx").size, 6)
