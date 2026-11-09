@@ -29,6 +29,9 @@ workflow on every version tag, once GitHub Pages is switched on for the reposito
 Pages > Source: GitHub Actions); it then lives at https://drunkmonoid.github.io/perfectcuboid/.
 
 Needs only [scala-cli](https://scala-cli.virtuslab.org) (the `scala` command since Scala 3.5).
+Or take a ready-made program from the [releases](https://github.com/drunkmonoid/perfectcuboid/releases),
+from 2.0 on: a native executable for Linux or macOS, or `perfectcuboid.jar` for any Java from 17
+(`java -jar perfectcuboid.jar check 44 117 240`).
 `scala-cli run . -- --help` lists every command with its arguments and defaults. For the
 big runs, cap the memory with `-J -Xmx2g` after `run .`.
 

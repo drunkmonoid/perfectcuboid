@@ -178,7 +178,7 @@ buys, and make the results easier to see and to reuse.
   with progress, and stopped at any time.
 - [x] **65. The catalogue online.** A page listing the primitive bricks found, sortable and
   filterable, each one opening in the checker.
-- [ ] **66. Releases.** On a tag, CI builds native binaries for Linux and macOS and a runnable
+- [x] **66. Releases.** On a tag, CI builds native binaries for Linux and macOS and a runnable
   jar, and attaches them to a GitHub release.
 - [ ] **67. Tour, part two.** Worksheets for what came after 1.0: `Wide`, the hunt's effects,
   the browser build.

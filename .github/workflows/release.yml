@@ -1,0 +1,76 @@
+# On every version tag (v2.0, …): native executables for Linux and macOS and a jar that runs on
+# any Java from 17, attached to a GitHub release whose notes are that version's section of
+# CHANGELOG.md.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  native:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: perfectcuboid-linux-x86_64
+          - os: macos-latest
+            name: perfectcuboid-macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          scala-cli-version: 1.18.0
+          jvm: temurin:17
+      - name: Build the native executable
+        run: scala-cli --power package . --native --native-mode release-fast -o ${{ matrix.name }} -f --server=false
+      - name: Check that it runs
+        run: ./${{ matrix.name }} check 44 117 240
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: ${{ matrix.name }}
+
+  jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: VirtusLab/scala-cli-setup@v1
+        with:
+          scala-cli-version: 1.18.0
+          jvm: temurin:17
+      - name: Build the jar
+        run: scala-cli --power package . --assembly -o perfectcuboid.jar -f --server=false
+      - name: Check that it runs
+        run: java -jar perfectcuboid.jar check 44 117 240
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perfectcuboid.jar
+          path: perfectcuboid.jar
+
+  release:
+    needs: [native, jar]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: built
+          merge-multiple: true
+      - name: The notes, from CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v heading="## $version" '$0 == heading { on = 1; next } /^## / { on = 0 } on' CHANGELOG.md > notes.md
+          test -s notes.md || echo "See CHANGELOG.md." > notes.md
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          chmod +x built/perfectcuboid-*
+          gh release create "$GITHUB_REF_NAME" built/* --title "perfectcuboid ${GITHUB_REF_NAME#v}" --notes-file notes.md
