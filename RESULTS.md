@@ -304,7 +304,51 @@ time goes into listing the legs and testing pairs of them, not into factorising.
 Since the cap on the other edges was lifted, every search is about 50% slower: it now tests
 every pair of legs, including the long ones it used to skip. Before that, with the cap, the
 fast search took 4.05 s and the parallel one 0.71 s. A filter by remainders mod 45,045
-keeps the extra cost down: it rules out 95.5% of the pairs with an addition and a table lookup.
+keeps the extra cost down, by ruling out most pairs with an addition and a table lookup.
+
+### Where the time goes
+
+Java Flight Recorder, built into the JDK, samples what each thread is running about every
+10 ms. Two slices of the primitive hunt on one thread, recorded with it: smallest edges from
+1 to 2 million, and the 300,000 just below 10⁹, each resumed from a results file holding only
+a checkpoint.
+
+```sh
+printf '# searched smallest edges up to 999000000\n' > hunt-slice.txt
+scala-cli run . -J -XX:StartFlightRecording=filename=slice.jfr,settings=profile -- \
+  hunt hunt-slice.txt 999300000 --kind primitive --threads 1
+jfr view hot-methods slice.jfr
+```
+
+| share of the samples | edges 1–2 million | edges near 10⁹ |
+| --- | ---: | ---: |
+| the exact test whether b² + c² is a square | 86% | 93% |
+| the pair loop and its remainder filter | 3% | 5% |
+| listing and sorting the legs | 9% | 2% |
+| factorising by the sieve, the stream, writing the file | under 2% | under 1% |
+| edges per second, one thread | 83,000 | 8,500 |
+
+So almost all the time is the square root, and nearly none is factorising: sieving the edges
+costs less than the sort that puts their legs in order. Allocation doesn't matter either: the
+JVM allocates about 200 MB a second, mostly boxed `Long`s from `Option[Long]` results, but the
+garbage collector paused for 0.07 s in all of the first slice's 13 s.
+
+Why so many square roots? Counting the pairs answers it:
+
+| per smallest edge | edges 1–2 million | edges near 10⁹ |
+| --- | ---: | ---: |
+| legs above the edge | 24.7 | 51.5 |
+| pairs of legs | 1,358 | 12,272 |
+| pairs passing the filter mod 45,045 | 14.6% | 16.3% |
+| … and then mod 64, so on to the exact test | 8.4% | 9.9% |
+
+For random numbers, only 0.84% would get through both. These are not random. Every
+Pythagorean triple has a leg divisible by 3 and one divisible by 4, so if the edge is not a
+multiple of 3, every leg paired with it is, and b² + c² is a multiple of 9, which passes the
+test mod 9 every time. In the same way, an odd edge makes every leg a multiple of 4, and the
+test mod 64 then passes far more often than for random sums; 5 does something similar. Near 10⁹ that leaves about 1,200
+exact square roots per edge, almost all of them on 128-bit numbers. Two things should help:
+a cheaper exact test, and remainder tests mod primes that Pythagorean triples don't favour.
 
 ## Scala Native: long runs work, on one thread
 

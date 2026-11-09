@@ -66,7 +66,8 @@ object FastSearch:
   def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] = eulerBricksWithLegs(a, legsAbove(a))
 
   /** 63 · 65 · 11. Only 4.5% of remainders mod this number are remainders of squares, and the
-    * remainder mod 64 then rules out most of those: together, 0.84% of sums get through.
+    * remainder mod 64 then rules out most of those: together, 0.84% of random sums get through.
+    * Sums of squared legs are not random, though, and about 9% of them get through (RESULTS.md).
     */
   private val Modulus = 45_045
 

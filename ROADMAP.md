@@ -112,12 +112,13 @@ buys, and make the results easier to see and to reuse.
 
 ### Measuring first
 
-- [ ] **41. Profiles.** JFR profiles of `unbounded` and `hunt` on an idle machine: how the time
+- [x] **41. Profiles.** JFR profiles of `unbounded` and `hunt` on an idle machine: how the time
   splits between sieving, generating legs, pairing them and the 128-bit square checks.
 - [ ] **42. Microbenchmarks.** JMH benchmarks (`scala-cli --power --jmh`) of the kernels: `isqrt`,
   `Wide` square roots, Montgomery multiplication, a sieve block, the legs of one edge.
-- [ ] **43. An allocation-free inner loop.** Legs written into reused primitive arrays, no boxing
-  in the pair loop, checked with JFR's allocation profile.
+- [ ] **43. A cheaper square test.** The profile (phase 41) puts 86–93% of the time in the
+  exact test whether b² + c² is a square, and almost none in allocation: so one rounded
+  floating-point square root and one exact check, with no correcting loops or boxing.
 - [ ] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square
   root, each kept only if a count of the pairs it rejects says it pays.
 - [ ] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
