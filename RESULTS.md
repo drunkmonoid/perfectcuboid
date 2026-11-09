@@ -328,8 +328,9 @@ jfr view hot-methods slice.jfr
 | factorising by the sieve, the stream, writing the file | under 2% | under 1% |
 | edges per second, one thread | 83,000 | 8,500 |
 
-So almost all the time is the square root, and nearly none is factorising: sieving the edges
-costs less than the sort that puts their legs in order. Allocation doesn't matter either: the
+Taken at its word, the profile says almost all the time is the square root, and nearly none
+is factorising: sieving the edges costs less than the sort that puts their legs in order. The
+second half is right; the first is not, as the microbenchmarks below show. Allocation doesn't matter either: the
 JVM allocates about 200 MB a second, mostly boxed `Long`s from `Option[Long]` results, but the
 garbage collector paused for 0.07 s in all of the first slice's 13 s.
 
@@ -347,8 +348,44 @@ Pythagorean triple has a leg divisible by 3 and one divisible by 4, so if the ed
 multiple of 3, every leg paired with it is, and b² + c² is a multiple of 9, which passes the
 test mod 9 every time. In the same way, an odd edge makes every leg a multiple of 4, and the
 test mod 64 then passes far more often than for random sums; 5 does something similar. Near 10⁹ that leaves about 1,200
-exact square roots per edge, almost all of them on 128-bit numbers. Two things should help:
-a cheaper exact test, and remainder tests mod primes that Pythagorean triples don't favour.
+exact square roots per edge, almost all of them on 128-bit numbers.
+
+### Microbenchmarks
+
+```sh
+scala-cli --power run bench   # about a minute
+```
+
+[JMH](https://github.com/openjdk/jmh), the JDK's benchmark harness, times small pieces of code
+in a fresh JVM after warming it up. The inputs in `bench/` are those of the search near 10⁹:
+the 100 edges up to 10⁹, their legs, and the pairs of legs that pass the filter mod 45,045.
+Each kernel runs over many inputs, since a single one can be unusually easy or hard.
+
+| kernel, near 10⁹ | time per call |
+| --- | ---: |
+| `Arith.isqrt`, a 62-bit number | 6.3 ns |
+| `Wide.isqrt`, a 128-bit sum of two squared legs | 18 ns |
+| the exact test on a pair that passed the filter mod 45,045 | 17 ns |
+| `Montgomery.mulMod`, 64-bit numbers | 16 ns |
+
+| step of the search, near 10⁹ | time per edge |
+| --- | ---: |
+| factorising, by the sieve | 0.24 µs |
+| listing the legs | 1.9 µs |
+| the whole search | 97 µs |
+| … the same pair loop and filters, with no exact test | 47 µs |
+
+The last row is a control: the search's own loop with the exact test left out. It takes half
+the time. So the exact tests take the other half, about 50 µs per edge, not the 93% the
+profile reported. JFR can only say where a thread was at its last debug point, and with the
+square root inlined into the pair loop by the JIT compiler, the loop's samples were charged to
+the square root.
+
+That makes the filter as costly as the tests it saves: 3.8 ns a pair, though it is only an
+addition, a comparison and a table lookup. The likely reason is the table: 45,045 `Boolean`s
+take 44 KB, about all of a core's fastest cache on this processor (32 or 48 KB), and pairs look
+it up at random.
+So there are two targets, a cheaper exact test and a cheaper, sharper filter.
 
 ## Scala Native: long runs work, on one thread
 

@@ -1,9 +1,10 @@
 // Build configuration for scala-cli. These `//> using` lines are the whole build.
 // `::` before a version picks the library built for the current platform (JVM or Native).
 //> using scala 3.9.0
-// web/ is a separate project, the page compiled to JavaScript (see web/project.scala), and
+// web/ is a separate project, the page compiled to JavaScript (see web/project.scala), bench/
+// holds JMH microbenchmarks (see bench/project.scala), and
 // docs/ holds worksheets that each run on their own.
-//> using exclude web docs
+//> using exclude web docs bench
 // Compiler options: every warning is an error (-Werror); unused code, discarded values and
 // ignored results are warnings; reading a field before it is set is caught (-Wsafe-init);
 // and `null` is not a value of every type, only of `T | Null` (-Yexplicit-nulls).

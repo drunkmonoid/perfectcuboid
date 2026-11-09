@@ -114,7 +114,7 @@ buys, and make the results easier to see and to reuse.
 
 - [x] **41. Profiles.** JFR profiles of `unbounded` and `hunt` on an idle machine: how the time
   splits between sieving, generating legs, pairing them and the 128-bit square checks.
-- [ ] **42. Microbenchmarks.** JMH benchmarks (`scala-cli --power --jmh`) of the kernels: `isqrt`,
+- [x] **42. Microbenchmarks.** JMH benchmarks (`scala-cli --power --jmh`) of the kernels: `isqrt`,
   `Wide` square roots, Montgomery multiplication, a sieve block, the legs of one edge.
 - [ ] **43. A cheaper square test.** The profile (phase 41) puts 86–93% of the time in the
   exact test whether b² + c² is a square, and almost none in allocation: so one rounded
