@@ -127,8 +127,11 @@ object Page:
     }: js.Function1[js.Dynamic, Unit]
 
   private def page(): Unit =
-    checker()
-    searcher()
+    Option(dom.document.getElementById("catalogue")) match
+      case Some(table) => Catalogue.show(table.asInstanceOf[dom.html.Element])
+      case None        =>
+        checker()
+        searcher()
 
   /** The search section: Start runs a worker up to the edge typed, Stop ends it. */
   private def searcher(): Unit =
@@ -179,6 +182,11 @@ object Page:
     val output = dom.document.getElementById("result")
     def update(): Unit = output.innerHTML = render(Check(inputs.map(_.value)))
     inputs.foreach(_.addEventListener("input", (_: dom.Event) => update()))
+    // A box given in the address, as in ?box=44,117,240, from the catalogue.
+    Option(dom.URLSearchParams(dom.window.location.search).get("box"))
+      .map(_.split(","))
+      .filter(_.length == 3)
+      .foreach(edges => inputs.zip(edges).foreach((input, edge) => input.value = edge))
     dom.document
       .querySelectorAll("[data-box]")
       .foreach: button =>

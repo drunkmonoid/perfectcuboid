@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brick Catalogue</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb; --raised: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --line: #e6e5e0;
+    --accent: #2a78d6; --problem: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface: #1a1a19; --raised: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --line: #383835;
+      --accent: #3987e5; --problem: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface); color: var(--ink);
+    font: 16px/1.5 system-ui, sans-serif;
+  }
+  main { max-width: 44rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1rem; margin: 1.5rem 0 .5rem; }
+  .lede { color: var(--ink-2); margin: 0 0 1.5rem; }
+  .edges { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  label { display: block; font-size: .85rem; color: var(--ink-2); }
+  input {
+    width: 100%; margin-top: .25rem; padding: .5rem .6rem; font: inherit;
+    font-variant-numeric: tabular-nums; color: var(--ink); background: var(--raised);
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .examples { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 1.5rem; }
+  button {
+    font: inherit; font-size: .85rem; padding: .3rem .7rem; cursor: pointer;
+    color: var(--ink); background: var(--raised); border: 1px solid var(--line); border-radius: 999px;
+  }
+  button:hover { border-color: var(--accent); }
+  #result { background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.25rem; }
+  .verdict { font-weight: 600; margin: 0 0 .75rem; }
+  .problem { color: var(--problem); margin: 0; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1rem; margin: 0; }
+  dt { color: var(--ink-2); }
+  dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  ul { margin: 0; padding-left: 1.25rem; overflow-wrap: anywhere; }
+  .search { display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; margin-bottom: .75rem; }
+  .search label { flex: 1 1 12rem; }
+  .search button { font-size: .95rem; padding: .5rem 1rem; border-radius: 8px; }
+  .search button:disabled { opacity: .45; cursor: default; }
+  #search-status { color: var(--ink-2); font-variant-numeric: tabular-nums; min-height: 1.5em; }
+  #search-bricks { columns: 2 16rem; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .5rem; margin-bottom: 1rem; }
+  select { width: 100%; margin-top: .25rem; padding: .5rem .6rem; font: inherit; color: var(--ink);
+    background: var(--raised); border: 1px solid var(--line); border-radius: 8px; }
+  .table-wrap { overflow-x: auto; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  th, td { padding: .45rem .75rem; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+  th { color: var(--ink-2); font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+  .pager { display: flex; gap: .5rem; align-items: center; justify-content: space-between; margin: .75rem 0; color: var(--ink-2); }
+  .pager button { font-size: .9rem; padding: .35rem .9rem; border-radius: 8px; }
+  .pager button:disabled { opacity: .45; cursor: default; }
+  footer { margin-top: 2rem; color: var(--ink-2); font-size: .85rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>The primitive Euler bricks</h1>
+  <p class="lede">Every primitive Euler brick with smallest edge up to 10⁹, as the big hunt found them.
+    Sort them, look for an edge, and open any one in the <a href="../check/">checker</a>.</p>
+  <div class="controls">
+    <label>order <select id="order"></select></label>
+    <label>an edge equal to <input id="edge" inputmode="numeric" placeholder="e.g. 23760"></label>
+    <label>smallest edge from <input id="from" inputmode="numeric"></label>
+    <label>smallest edge to <input id="to" inputmode="numeric"></label>
+  </div>
+  <div class="pager">
+    <span id="catalogue-status" aria-live="polite"></span>
+    <span><button id="previous">Previous</button> <button id="next">Next</button></span>
+  </div>
+  <div class="table-wrap">
+    <table id="catalogue" data-file="bricks.txt">
+      <thead><tr><th>smallest edge</th><th>middle edge</th><th>longest edge</th><th>longest ÷ smallest</th><th>space diagonal off by</th></tr></thead>
+      <tbody id="catalogue-rows"></tbody>
+    </table>
+  </div>
+  <footer>The same Scala as the command line, compiled to JavaScript by Scala.js, from
+    <a href="https://github.com/drunkmonoid/perfectcuboid">perfectcuboid</a>. The list is
+    <a href="bricks.txt">bricks.txt</a>, one brick to a line.</footer>
+</main>
+<script src="../check/main.js"></script>
+</body>
+</html>

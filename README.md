@@ -16,6 +16,10 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 
 ![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
 
+[`docs/catalogue`](docs/catalogue/index.html) lists every primitive brick of the 10⁹ hunt, sortable and
+filterable, each one opening in the checker; its data is [`bricks.txt`](docs/catalogue/bricks.txt),
+the hunt's file without its checkpoints (`grep -v '^#' hunt-primitive.txt`).
+
 [`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser: the
 same Scala, compiled to JavaScript by Scala.js, and it can also run the search itself, in a
 background thread of the browser (about 35,000 edges a second). Open it from a clone of the

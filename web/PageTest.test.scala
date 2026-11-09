@@ -2,6 +2,11 @@ package perfectcuboid.web
 
 class PageTest extends munit.FunSuite:
 
+  val catalogue: Vector[Catalogue.Row] =
+    Catalogue.rows(
+      "44 117 240\n85 132 720\n# searched smallest edges up to 100\n140 480 693\n160 231 792\n240 252 275\n"
+    )
+
   test("an Euler brick, its derived brick and the bricks on its curves"):
     val r = Check(List("240", "117", "44")).toOption.get
     assertEquals(r.box, "44 × 117 × 240")
@@ -33,3 +38,17 @@ class PageTest extends munit.FunSuite:
       "Searched up to 5,000 of 20,000: 69 Euler bricks, 14 primitive, 2,500 edges a second, about 6 s left."
     )
     assert(!Hunting.progress(20000, 20000, 1, 1, 1.0).contains("left"))
+
+  test("the catalogue reads a hunt's file, skipping its checkpoints"):
+    assertEquals(catalogue.map(_.brick.a: Long), Vector(44L, 85, 140, 160, 240))
+
+  test("the catalogue sorts and filters"):
+    import Catalogue.Order
+    assertEquals(Catalogue.page(catalogue, Order.Squarest, 0).rows.head.brick.a: Long, 240L)
+    assertEquals(Catalogue.page(catalogue, Order.Flattest, 0).rows.head.brick.a: Long, 85L)
+    assertEquals(Catalogue.filter(catalogue, Some(240), None, None).map(_.brick.a: Long), Vector(44L, 240))
+    assertEquals(Catalogue.filter(catalogue, None, Some(100), Some(200)).size, 2)
+    assertEquals(Catalogue.page(catalogue, Order.Smallest, 0).pages, 1)
+
+  test("each row links to the checker with its box"):
+    assert(Catalogue.tableRow(catalogue.head).contains("""href="../check/?box=44,117,240""""))

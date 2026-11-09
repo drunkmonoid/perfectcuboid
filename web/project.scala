@@ -13,4 +13,5 @@
 //> using file ../src/NearMisses.scala ../src/Pythagorean.scala ../src/NumberTheory.scala ../src/Montgomery.scala
 //> using file ../src/PollardRho.scala ../src/Elliptic.scala
 //> using file ../src/Search.scala ../src/Sieve.scala ../src/FastSearch.scala ../src/Platform.scala
+//> using file ../src/ClosestCalls.scala ../src/LineFormat.scala
 //> using test.dep org.scalameta::munit::1.3.6

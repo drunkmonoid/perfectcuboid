@@ -34,6 +34,7 @@ jobs:
           mkdir -p _site/charts
           cp site/index.html _site/
           cp -r docs/check _site/check
+          cp -r docs/catalogue _site/catalogue
           cp docs/*.svg _site/charts/
           scala-cli doc . -o _site/api --server=false -O -project:perfectcuboid
       - uses: actions/upload-pages-artifact@v3
