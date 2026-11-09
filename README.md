@@ -7,7 +7,7 @@ problem in plain, purely functional Scala 3: is there a box whose edges, face di
 space diagonal are all whole numbers? Nobody knows.
 
 The biggest search here went through every primitive Euler brick with smallest edge up to 10⁹:
-10,220 of them, and no perfect cuboid. See [RESULTS.md](RESULTS.md) for that and the rest of
+10,220 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md). See [RESULTS.md](RESULTS.md) for that and the rest of
 what the searches have found, [ROADMAP.md](ROADMAP.md) for how the project was built up, and
 [CHANGELOG.md](CHANGELOG.md) for what each version holds.
 New to Scala? Start with the [guided tour](docs/tour/README.md).

@@ -182,7 +182,7 @@ buys, and make the results easier to see and to reuse.
   attaches them to a GitHub release.
 - [x] **67. Tour, part two.** Worksheets for what came after 1.0: `Wide`, the hunt's effects,
   the browser build.
-- [ ] **68. An essay.** What looking for a perfect cuboid taught us, in plain words, with the
+- [x] **68. An essay.** What looking for a perfect cuboid taught us, in plain words, with the
   charts, for readers who know neither the problem nor Scala.
 - [ ] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
   run a shard and check it.
