@@ -184,6 +184,6 @@ buys, and make the results easier to see and to reuse.
   the browser build.
 - [x] **68. An essay.** What looking for a perfect cuboid taught us, in plain words, with the
   charts, for readers who know neither the problem nor Scala.
-- [ ] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
+- [x] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
   run a shard and check it.
 - [ ] **70. Version 2.0.** A final pass over every document, the changelog, and a `v2.0` tag.
