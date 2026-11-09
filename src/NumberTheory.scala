@@ -83,6 +83,7 @@ object NumberTheory:
         i <- (0 to k).toList
       yield d * power(p, i)
 
+  /** Every divisor of n, smallest first. */
   def divisors(n: Long): List[Long] = divisors(factorize(n)).sorted
 
   /** The same divisors as BigInts, for factorisations of numbers too big for a Long, like a². */

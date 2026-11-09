@@ -2,6 +2,7 @@ package perfectcuboid
 
 import Arith.*
 
+/** The readable Euler brick searches, written for clarity rather than speed. */
 object Search:
 
   /** The readable searches by smallest edge go up to here: the largest a whose square fits in
@@ -53,6 +54,7 @@ object Search:
   def allEulerBricks: LazyList[Cuboid] =
     LazyList.iterate(1L)(_ + 1).takeWhile(_ <= MaxSmallestEdge).flatMap(eulerBricksWithSmallestEdge)
 
+  /** The perfect cuboids with every edge up to `limit`: none, as far as anyone knows. */
   def perfectCuboids(limit: Long): Vector[Cuboid] =
     eulerBricks(limit).filter(_.isPerfect)
 

@@ -3,11 +3,22 @@ package perfectcuboid
 /** A fraction n/d in lowest terms, with d > 0. Exact, of any size. */
 final case class Rational private (num: BigInt, den: BigInt):
 
+  /** The sum. */
   def +(that: Rational): Rational = Rational(num * that.den + that.num * den, den * that.den)
+
+  /** The difference. */
   def -(that: Rational): Rational = Rational(num * that.den - that.num * den, den * that.den)
+
+  /** The product. */
   def *(that: Rational): Rational = Rational(num * that.num, den * that.den)
+
+  /** The quotient; `that` must not be 0. */
   def /(that: Rational): Rational = Rational(num * that.den, den * that.num)
+
+  /** The negative. */
   def unary_- : Rational = Rational(-num, den)
+
+  /** Whether this is 0. */
   def isZero: Boolean = num == 0
 
   /** The square root, if it is a fraction: a fraction in lowest terms is the square of a
@@ -19,10 +30,12 @@ final case class Rational private (num: BigInt, den: BigInt):
       d <- summon[WholeNumber[BigInt]].exactSqrt(den)
     yield Rational(n, d)
 
+  /** "3/4", or "3" for a whole number. */
   override def toString: String = if den == 1 then num.toString else s"$num/$den"
 
 object Rational:
 
+  /** The fraction num/den, reduced to lowest terms with a positive denominator. */
   def apply(num: BigInt, den: BigInt = 1): Rational =
     require(den != 0, "a fraction with denominator 0")
     val g = num.gcd(den) * den.signum
@@ -53,6 +66,7 @@ final case class EulerCurve(a: BigInt, b: BigInt):
   private val a2 = Rational(a * a + b * b)
   private val a4 = Rational(a * a * b * b)
 
+  /** Whether p is on the curve. */
   def contains(p: Point): Boolean = p match
     case Point.Infinity => true
     case Point.At(x, y) => y * y == x * x * x + a2 * x * x + a4 * x
@@ -65,6 +79,7 @@ final case class EulerCurve(a: BigInt, b: BigInt):
       f <- (x + Rational(b * b)).sqrt
     yield Point.At(x, Rational(c) * e * f)
 
+  /** p + q, by the chord and tangent rule: the line through p and q meets the curve in a third point, reflected in the x-axis. */
   def add(p: Point, q: Point): Point = (p, q) match
     case (Point.Infinity, _)                  => q
     case (_, Point.Infinity)                  => p

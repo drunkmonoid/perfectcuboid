@@ -5,6 +5,7 @@ enum CuboidError:
   case NonPositiveEdge(edge: BigInt)
   case EdgeTooLarge(edge: BigInt)
 
+  /** The error in words. */
   def message: String = this match
     case NonPositiveEdge(edge) => s"edge $edge is not positive"
     case EdgeTooLarge(edge)    => s"edge $edge is above ${Edge.Max}, where diagonals would overflow"
@@ -24,11 +25,13 @@ object Edge:
     */
   val Max: Long = Arith.isqrtBig(BigInt(Long.MaxValue).pow(2) / 3).toLong
 
+  /** The edge of length n, if n is from 1 to `Max`. */
   def from(n: Long): Either[CuboidError, Edge] =
     if n <= 0 then Left(CuboidError.NonPositiveEdge(n))
     else if n > Max then Left(CuboidError.EdgeTooLarge(n))
     else Right(n)
 
+  /** The same, for a length given as a BigInt. */
   def fromBigInt(n: BigInt): Either[CuboidError, Edge] =
     if n.isValidLong then from(n.toLong)
     else if n <= 0 then Left(CuboidError.NonPositiveEdge(n))
@@ -42,6 +45,7 @@ object Diagonal:
   /** The diagonal whose square is `n`, if that is a whole number. */
   def fromSquare(n: Long): Option[Diagonal] = Arith.exactSqrt(n)
 
+  /** The diagonal whose square is n, if n is a square. */
   def fromSquare(n: Wide): Option[Diagonal] = Wide.exactSqrt(n)
 
 /** Extension methods add methods to a type from the outside, here to every Long. */

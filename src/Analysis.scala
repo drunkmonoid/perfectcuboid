@@ -11,6 +11,7 @@ import fs2.io.file.{Files, Path}
   */
 object Analysis:
 
+  /** Every known rule checked on every brick, with any that break one. */
   def rules(bricks: Seq[Cuboid], which: String): List[String] =
     val broken =
       for
@@ -36,6 +37,7 @@ object Analysis:
 
   private def show(box: BigCuboid) = s"${box.a} × ${box.b} × ${box.c}"
 
+  /** How many of these primitive bricks a formula or a map explains, and which are curve multiples. */
   def origins(primitive: Vector[BigCuboid], which: String): List[String] =
     val origins = Origins.classify(primitive)
     def count(of: Origins.Origin => Boolean) = origins.count((_, origin) => of(origin))
@@ -48,6 +50,7 @@ object Analysis:
       s"  none of these, found only by searching: ${count(!_.any)}"
     ) ++ origins.collect { case (brick, origin) if origin.curveMultiple => s"  curve multiple: ${show(brick)}" }
 
+  /** The pairs of these primitive bricks that are each other's derived brick. */
   def derived(primitive: Vector[BigCuboid], which: String): List[String] =
     val inRange = primitive.toSet
     val partners = primitive.map(box => box -> Derived.derived(box))

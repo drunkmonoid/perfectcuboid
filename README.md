@@ -77,6 +77,7 @@ scala-cli run . -- pictures docs 7       # the two charts above, as SVG files
 scala-cli test .                         # the tests
 UPDATE_GOLDEN=1 scala-cli test .         # accept changed command output into test/golden
 scala-cli fmt .                          # format the code (CI checks it)
+scala-cli doc . -o api -O -project:perfectcuboid   # the API docs, every public definition described, in api/
 scala-cli repl .                         # a REPL with the project loaded
 scala-cli setup-ide .                    # set up Metals / VS Code
 scala-cli test web                       # the web page's tests, on Node

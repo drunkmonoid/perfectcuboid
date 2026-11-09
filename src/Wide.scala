@@ -10,8 +10,10 @@ package perfectcuboid
 final case class Wide(hi: Long, lo: Long):
   require(hi >= 0 && Wide.notAboveMax(hi, lo), s"$this is outside the range of Wide")
 
+  /** The same number as a BigInt. */
   def toBigInt: BigInt = (BigInt(hi) << 64) + BigInt(java.lang.Long.toUnsignedString(lo))
 
+  /** The sum, which must not pass the largest Wide. */
   def +(that: Wide): Wide =
     val sum = lo + that.lo
     val carry = if java.lang.Long.compareUnsigned(sum, lo) < 0 then 1L else 0L
@@ -26,6 +28,7 @@ object Wide:
   private def notAboveMax(hi: Long, lo: Long): Boolean =
     hi < MaxHi || (hi == MaxHi && java.lang.Long.compareUnsigned(lo, MaxLo) <= 0)
 
+  /** A non-negative Long as a Wide. */
   def apply(x: Long): Wide =
     require(x >= 0, s"Wide numbers are not negative: $x")
     Wide(0, x)
@@ -68,6 +71,7 @@ object Wide:
       while r < Long.MaxValue && squareAtMost(r + 1, hi, lo) do r += 1
       r
 
+  /** The square root of n, if n is a square. */
   def exactSqrt(n: Wide): Option[Long] =
     val r = isqrt(n.hi, n.lo)
     Option.when(Wide.square(r) == n)(r)

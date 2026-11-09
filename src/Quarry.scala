@@ -39,6 +39,7 @@ object Quarry:
   private def parseCuboid(line: String): Option[Cuboid] =
     LineFormat.parse[EdgesLine](line).flatMap(edges => Cuboid.of(edges.a, edges.b, edges.c))
 
+  /** Euler bricks, by smallest edge, found by `FastSearch` and checked again by `BigCuboid`. */
   val eulerBricks: Quarry[Cuboid] =
     Quarry(
       "Euler bricks",

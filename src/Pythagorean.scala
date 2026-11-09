@@ -2,6 +2,7 @@ package perfectcuboid
 
 import Arith.*
 
+/** Pythagorean triples: legs, hypotenuses, and the legs that pair with a number. */
 object Pythagorean:
 
   /** Every pair of legs (x, y) with x < y <= limit and x² + y² a perfect square.

@@ -55,6 +55,7 @@ enum Command:
   */
 object CommandLine:
 
+  /** The first line of `--help`. */
   val header: String = "Search for perfect cuboids, Euler bricks and their near misses."
 
   /** "1000000", "1_000_000" or "1e6". */
@@ -311,5 +312,6 @@ object CommandLine:
       Command.Print(Report.Bricks(1000))
     )
 
+  /** The command these words ask for, or the help with the reasons they don't make one. */
   def parse(args: List[String]): Either[decline.Help, Command] =
     decline.Command("perfectcuboid", header)(opts).parse(args)

@@ -19,8 +19,10 @@ final case class Cuboid private (a: Edge, b: Edge, c: Edge):
   /** The diagonal through the inside of the box, from one corner to the opposite one. */
   def spaceDiagonal: Option[Diagonal] = Diagonal.fromSquare(Box.spaceDiagonalSquare(Wide(a), Wide(b), Wide(c)))
 
+  /** Whether all three face diagonals are whole. */
   def isEuler: Boolean = Box.isEuler(Wide(a), Wide(b), Wide(c))
 
+  /** Whether the face diagonals and the space diagonal are all whole. */
   def isPerfect: Boolean = Box.isPerfect(Wide(a), Wide(b), Wide(c))
 
   /** True when the edges share no common factor, i.e. this is not a scaled-up copy of a smaller box. */
@@ -34,6 +36,7 @@ final case class Cuboid private (a: Edge, b: Edge, c: Edge):
   def squared: Option[SquaredCuboid] =
     Option.when(c <= SquaredCuboid.MaxEdge)(SquaredCuboid.of(a * a, b * b, c * c)).flatten
 
+  /** Which of the seven lengths are whole: a perfect cuboid, an Euler brick, or another kind. */
   def kind: Kind = Box.kind(Wide(a), Wide(b), Wide(c))
 
 object Cuboid:
@@ -50,6 +53,7 @@ object Cuboid:
       c <- Edge.from(z)
     yield sorted(a, b, c)
 
+  /** Like `from`, for edges given as BigInts. */
   def fromBigInt(x: BigInt, y: BigInt, z: BigInt): Either[CuboidError, Cuboid] =
     for
       a <- Edge.fromBigInt(x)

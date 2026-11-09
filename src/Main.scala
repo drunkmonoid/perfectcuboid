@@ -12,12 +12,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /** The lines of the `unbounded` report, shared by its two versions. */
 object Unbounded:
 
+  /** The report's first line. */
   def header(maxSmallestEdge: Long): String =
     s"Euler bricks with smallest edge <= $maxSmallestEdge, other edges unbounded (* = primitive)"
 
+  /** One brick's line, marked if it is perfect. */
   def line(brick: Cuboid): String =
     if brick.isPerfect then s"${Cli.describe(brick)}  PERFECT!" else Cli.describe(brick)
 
+  /** The report's last line. */
   def footer(maxSmallestEdge: Long): String = s"Done: every smallest edge up to $maxSmallestEdge searched."
 
   /** The report as an fs2 stream: the blocks of edges are searched on every core, and each
@@ -37,8 +40,10 @@ object Unbounded:
   */
 object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
 
+  /** What `CommandIOApp` runs: the parsed command, carried out. */
   def main: Opts[IO[ExitCode]] = CommandLine.opts.map(execute(_).as(ExitCode.Success))
 
+  /** The program for one command, as an `IO` that does nothing until it is run. */
   def execute(command: Command): IO[Unit] = command match
     case Command.Hunt(file, upTo, quarry, threads, blockSize, from) =>
       Hunt.run(quarry, Path(file), upTo, blockSize, threads, from)
@@ -95,6 +100,7 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
       Unbounded.stream(limit, threads).foreach(IO.println).compile.drain
     case Command.Print(report) => Stream.fromIterator[IO](Cli.run(report).iterator, 1).foreach(IO.println).compile.drain
 
+/** The reports that only print lines, and the descriptions they share. */
 object Cli:
 
   /** Turns a report into the lines to print. Pure, so it can be tested.
@@ -123,6 +129,7 @@ object Cli:
     case Report.FourDimensions(limit)       => fourDReport(limit)
     case Report.Closest(limit)              => closestReport(limit)
 
+  /** Every Euler brick with every edge up to `limit`. */
   def bricksReport(limit: Long): LazyList[String] =
     val bricks = Search.eulerBricks(limit)
     s"Euler bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
@@ -136,9 +143,11 @@ object Cli:
     val bricks = FastSearch.allEulerBricksParallel(cores = threads).takeWhile(_.a <= maxSmallestEdge)
     Unbounded.header(maxSmallestEdge) #:: bricks.map(Unbounded.line) :+ Unbounded.footer(maxSmallestEdge)
 
+  /** The known rules, checked on every Euler brick with every edge up to `limit`. */
   def rulesReport(limit: Long): LazyList[String] =
     Analysis.rules(Search.eulerBricks(limit), s"with every edge <= $limit").to(LazyList)
 
+  /** Saunderson's bricks with every edge up to `limit`. */
   def saundersonReport(limit: Long): LazyList[String] =
     val bricks = Families.saundersonBricksUpTo(limit)
     s"Saunderson bricks with every edge <= $limit: ${bricks.size} (* = primitive)"
@@ -148,6 +157,7 @@ object Cli:
   /** Beyond this many divisors of a², the legs are counted but not listed. */
   val MaxDivisorsToList: BigInt = 2_000_000
 
+  /** The factorisation of a, and every leg it pairs with. */
   def legsReport(a: Long): LazyList[String] =
     val factors = NumberTheory.factorize(a)
     val shown = factors.map((p, k) => if k == 1 then s"$p" else s"$p^$k").mkString(" · ")
@@ -163,6 +173,7 @@ object Cli:
       def hypotenuse(y: BigInt) = Arith.isqrtBig(BigInt(a).pow(2) + y.pow(2))
       s"$a = $shown" #:: counts #:: legs.map(y => s"  $a² + $y² = ${hypotenuse(y)}²").to(LazyList)
 
+  /** The face cuboids, by the edge their whole face diagonals share. */
   def faceReport(maxSharedEdge: Long): LazyList[String] =
     val cuboids =
       LazyList.iterate(1L)(_ + 1).takeWhile(_ <= maxSharedEdge).flatMap(NearMisses.faceCuboidsWithSharedEdge)
@@ -170,6 +181,7 @@ object Cli:
       #:: cuboids.map(c => describeSquared(c.squared.get)) // face cuboids keep to SquaredCuboid.MaxEdge
       :+ "Done."
 
+  /** The face cuboids found two independent ways, compared. */
   def crossCheckReport(limit: Long): LazyList[String] =
     val (fromDiagonals, fromSharedEdges) = NearMisses.bothWays(limit)
     val missing = fromSharedEdges.diff(fromDiagonals) ++ fromDiagonals.diff(fromSharedEdges)
@@ -181,6 +193,7 @@ object Cli:
     ) ++ missing.map(c => "    " + describeSquared(c.squared.get)) ++
       LazyList("The first few:") ++ fromDiagonals.take(5).map(c => "  " + describeSquared(c.squared.get))
 
+  /** Sawyer and Reiter's perfect parallelepiped checked, and a search for more. */
   def parallelepipedReport(maxEdge: Long): LazyList[String] =
     val example = Parallelepiped.sawyerReiter
     val found = Parallelepiped.search(maxEdge)
@@ -195,6 +208,7 @@ object Cli:
         s"  ($k × the one with edges ${from.a}, ${from.b}, ${from.c})"
       )
 
+  /** The edge cuboids, by the square of their irrational edge. */
   def edgeReport(maxSquaredEdge: Long): LazyList[String] =
     val cuboids =
       LazyList.iterate(2L)(_ + 1).takeWhile(_ <= maxSquaredEdge).flatMap(NearMisses.edgeCuboidsWithSquaredEdge)
@@ -202,6 +216,7 @@ object Cli:
       #:: cuboids.map(describeSquared)
       :+ "Done."
 
+  /** The first cuboid of each kind with exactly one irrational length. */
   def nearMissesReport: LazyList[String] =
     LazyList(
       "The first cuboid of each kind, in the order each search finds them:",
@@ -211,6 +226,7 @@ object Cli:
       s"  Edge      ${describeSquared(NearMisses.allEdgeCuboids.head)}"
     )
 
+  /** How the number of Euler bricks grows, up to 10^maxExponent. */
   def statsReport(maxExponent: Int): LazyList[String] =
     val rows = Stats.growth(maxExponent, FastSearch.allEulerBricksParallel())
     def growth(counts: Counts => Long) =
@@ -232,10 +248,12 @@ object Cli:
       s"Saunderson's formula gives $saunderson of the $primitive primitive bricks with every edge <= ${rows.last.limit min 1_000_000L}."
     )
 
+  /** The primitive bricks whose space diagonal is nearest a whole number. */
   def closestReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector
     Analysis.closest(bricks, s"with smallest edge <= $maxSmallestEdge").to(LazyList)
 
+  /** Four edges with all six pairs whole, or five of six. */
   def fourDReport(maxSmallestEdge: Long): LazyList[String] =
     val bricks = FastSearch.allEulerBricksParallel().takeWhile(_.a <= maxSmallestEdge).toVector
     val found = FourD.search(bricks)
@@ -248,6 +266,7 @@ object Cli:
       "The first primitive ones, by longest edge:"
     ) ++ (full ++ primitive.sortBy(_.edges.last)).take(10).map(q => s"  ${q.edges.mkString(" × ")}")
 
+  /** The Pythagorean graph: degrees, pieces and triangles. */
   def graphReport(limit: Long): LazyList[String] =
     val graph = PythagoreanGraph.upTo(limit)
     val pieces = graph.components
@@ -265,6 +284,7 @@ object Cli:
       s"  numbers in a triangle:    ${triangles.flatMap((x, y, z) => List(x, y, z)).distinct.size}"
     )
 
+  /** Which primitive bricks a formula or a map explains. */
   def originsReport(maxSmallestEdge: Long): LazyList[String] =
     Analysis.origins(primitiveUpTo(maxSmallestEdge), s"with smallest edge <= $maxSmallestEdge").to(LazyList)
 
@@ -319,6 +339,7 @@ object Cli:
               }"
           )
 
+  /** All seven lengths of one box of any size, and what kind it is. */
   def checkReport(a: BigInt, b: BigInt, c: BigInt): LazyList[String] =
     val box = BigCuboid.of(a, b, c).get // the command line only lets positive edges through
     def length(square: BigInt) = summon[WholeNumber[BigInt]].exactSqrt(square).fold(s"√$square")(_.toString)
@@ -348,12 +369,14 @@ object Cli:
     val faces = List(c.a2 + c.b2, c.a2 + c.c2, c.b2 + c.c2).map(length).mkString(", ")
     s"$edges   face diagonals $faces   space diagonal ${length(c.a2 + c.b2 + c.c2)}"
 
+  /** A brick's edges and face diagonals, starred if it is primitive. */
   def describe(cuboid: Cuboid): String =
     val edges = s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}"
     val faces = cuboid.faceDiagonals.flatten.mkString(", ")
     val mark = if cuboid.isPrimitive then "*" else " "
     f"$mark $edges%-20s face diagonals $faces"
 
+  /** The last line of a search: whether it found a perfect cuboid. */
   def verdict(perfect: Vector[Cuboid]): String =
     if perfect.isEmpty then "No perfect cuboid (as expected)."
     else s"PERFECT CUBOID FOUND: ${perfect.mkString(", ")}"

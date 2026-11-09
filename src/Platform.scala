@@ -16,5 +16,6 @@ object Platform:
   /** Whether a search may run on this many threads here. */
   def threadsAllowed(threads: Int, native: Boolean = isNative): Boolean = threads == 1 || (threads > 1 && !native)
 
+  /** Why a native run refuses more than one thread. */
   val tooManyThreads: String =
     "--threads must be 1 on Scala Native, where several threads can corrupt memory; run several processes instead"

@@ -9,6 +9,7 @@ import cats.syntax.all.*
 final case class Specimen(longestSquared: BigInt, text: String)
 
 object Specimen:
+  /** Specimens are compared by their longest edge, then by their text. */
   given Ordering[Specimen] = Ordering.by(s => (s.longestSquared, s.text))
 
 /** What a search found, boiled down to a few numbers.
@@ -45,6 +46,7 @@ final case class Summary(
 
 object Summary:
 
+  /** Nothing found: the summary that adds nothing. */
   val empty: Summary = Summary(0, 0, 0, None, Map.empty)
 
   /** The summary of a single find. */
@@ -53,6 +55,7 @@ object Summary:
     val digits = Arith.isqrtBig(specimen.longestSquared).toString.length
     Summary(1, count(primitive), count(perfect), Some(specimen), Map(digits -> 1L))
 
+  /** The summary of a single cuboid. */
   def of(cuboid: Cuboid): Summary =
     one(
       cuboid.isPrimitive,
@@ -60,6 +63,7 @@ object Summary:
       Specimen(BigInt(cuboid.c).pow(2), s"${cuboid.a} × ${cuboid.b} × ${cuboid.c}")
     )
 
+  /** The summary of many cuboids: the sum of their single summaries. */
   def of(cuboids: IterableOnce[Cuboid]): Summary =
     cuboids.iterator.foldLeft(empty)((summary, cuboid) => summary |+| of(cuboid))
 

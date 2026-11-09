@@ -7,9 +7,16 @@ package perfectcuboid
   * instance, and the compiler picks the instance from the types at each call.
   */
 trait WholeNumber[N]:
+  /** The whole number n. */
   def fromInt(n: Int): N
+
+  /** x + y, exactly. */
   def plus(x: N, y: N): N
+
+  /** x · y, exactly. */
   def times(x: N, y: N): N
+
+  /** The greatest common divisor of x and y. */
   def gcd(x: N, y: N): N
 
   /** The square root of n if it is a whole number. */
@@ -46,24 +53,31 @@ object WholeNumber:
   */
 object Box:
 
+  /** a² + b², a² + c² and b² + c²: the squares of the face diagonals. */
   def faceDiagonalSquares[N: WholeNumber](a: N, b: N, c: N): List[N] =
     List(a.squared + b.squared, a.squared + c.squared, b.squared + c.squared)
 
+  /** a² + b² + c²: the square of the space diagonal. */
   def spaceDiagonalSquare[N: WholeNumber](a: N, b: N, c: N): N =
     a.squared + b.squared + c.squared
 
+  /** The face diagonals, each `None` when it is not whole. */
   def faceDiagonals[N: WholeNumber](a: N, b: N, c: N): List[Option[N]] =
     faceDiagonalSquares(a, b, c).map(summon[WholeNumber[N]].exactSqrt)
 
+  /** The space diagonal, `None` when it is not whole. */
   def spaceDiagonal[N: WholeNumber](a: N, b: N, c: N): Option[N] =
     summon[WholeNumber[N]].exactSqrt(spaceDiagonalSquare(a, b, c))
 
+  /** Whether all three face diagonals are whole. */
   def isEuler[N: WholeNumber](a: N, b: N, c: N): Boolean =
     faceDiagonals(a, b, c).forall(_.isDefined)
 
+  /** Whether the space diagonal is whole too. */
   def isPerfect[N: WholeNumber](a: N, b: N, c: N): Boolean =
     isEuler(a, b, c) && spaceDiagonal(a, b, c).isDefined
 
+  /** Whether the edges have no common factor above 1. */
   def isPrimitive[N: WholeNumber](a: N, b: N, c: N): Boolean =
     val whole = summon[WholeNumber[N]]
     whole.gcd(whole.gcd(a, b), c) == whole.fromInt(1)
@@ -82,11 +96,22 @@ object Box:
   */
 final case class BigCuboid private (a: BigInt, b: BigInt, c: BigInt):
 
+  /** The face diagonals, each `None` when it is not whole. */
   def faceDiagonals: List[Option[BigInt]] = Box.faceDiagonals(a, b, c)
+
+  /** The space diagonal, `None` when it is not whole. */
   def spaceDiagonal: Option[BigInt] = Box.spaceDiagonal(a, b, c)
+
+  /** Whether all three face diagonals are whole. */
   def isEuler: Boolean = Box.isEuler(a, b, c)
+
+  /** Whether the space diagonal is whole too. */
   def isPerfect: Boolean = Box.isPerfect(a, b, c)
+
+  /** Whether the edges have no common factor above 1. */
   def isPrimitive: Boolean = Box.isPrimitive(a, b, c)
+
+  /** Which of the seven lengths are whole. */
   def kind: Kind = Box.kind(a, b, c)
 
   /** The smallest box of the same shape: every edge divided by their greatest common divisor. */
@@ -104,10 +129,13 @@ object BigCuboid:
     val List(a, b, c) = List(x, y, z).sorted: @unchecked // three in, three out
     Option.when(a > 0)(BigCuboid(a, b, c))
 
+  /** The same box, as BigInts. */
   def from(cuboid: Cuboid): BigCuboid = BigCuboid(cuboid.a, cuboid.b, cuboid.c)
 
+  /** Boxes in order of their longest edge, then the middle one, then the smallest. */
   given Ordering[BigCuboid] = Ordering.by(box => (box.c, box.b, box.a))
 
+/** Derived bricks: from a × b × c, the brick ab × ac × bc. */
 object Derived:
 
   /** The derived brick of a × b × c: the primitive brick of shape ab × ac × bc.

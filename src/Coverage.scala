@@ -11,6 +11,7 @@ package perfectcuboid
   */
 object Coverage:
 
+  /** A family of bricks: its name, and its members in primitive form. */
   final case class Family(name: String, members: Set[BigCuboid])
 
   /** Every member is reduced to its primitive form. `maxHypotenuse` bounds the triples used. */
@@ -28,6 +29,7 @@ object Coverage:
   /** One family against the primitive bricks found with every edge up to `maxEdge`. */
   final case class Row(name: String, inRange: Int, found: Int)
 
+  /** For each family, and all of them together: its members in range, and how many the search found. */
   def rows(families: List[Family], catalogue: Set[BigCuboid], maxEdge: BigInt): List[Row] =
     def inRange(members: Set[BigCuboid]) = members.filter(_.c <= maxEdge)
     val all = Family("any of these", families.flatMap(_.members).toSet)

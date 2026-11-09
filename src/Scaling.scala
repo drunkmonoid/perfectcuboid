@@ -14,6 +14,7 @@ object Scaling:
   final case class Row(threads: Int, edges: Long, seconds: Double):
     def perSecond: Double = edges / seconds
 
+  /** The line before the table: which edges, how many, in what blocks. */
   def header(first: Long, edges: Long, blockSize: Long): String =
     f"Euler bricks with smallest edge from $first%,d, $edges%,d edges, in blocks of $blockSize%,d"
 

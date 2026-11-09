@@ -20,12 +20,16 @@ import scala.concurrent.duration.*
   */
 object HuntFile:
 
+  /** How a checkpoint line starts; the number after it is how far the search has got. */
   def checkpointPrefix(quarry: Quarry[?]): String = s"# searched ${quarry.key}s up to "
 
+  /** How a shard's first line starts; the number after it is its first key. */
   def startPrefix(quarry: Quarry[?]): String = s"# ${quarry.key}s from "
 
+  /** A shard's first line, with its newline. */
   def startLine(quarry: Quarry[?], from: Long): String = s"${startPrefix(quarry)}$from\n"
 
+  /** What one block adds to the file: its finds, one per line, then its checkpoint. */
   def blockText[A](quarry: Quarry[A], finds: List[A], searchedUpTo: Long): String =
     (finds.map(quarry.line) :+ s"${checkpointPrefix(quarry)}$searchedUpTo").map(_ + "\n").mkString
 
@@ -45,6 +49,7 @@ object HuntFile:
     /** Whether the file holds anything yet, even only its start. */
     def isEmpty: Boolean = validBytes == 0
 
+  /** Reading a file from its start. */
   object Resume:
     val Fresh: Resume = Resume(0, Summary.empty, 0, Summary.empty, 0)
 
@@ -79,6 +84,7 @@ object HuntFile:
 /** One block of a parallel search: the last key in it, what it found, and their summary. */
 final case class Block[A](last: Long, finds: Chunk[A], summary: Summary)
 
+/** Searching blocks of keys in parallel, as a stream. */
 object Blocks:
 
   /** The blocks of keys from `from` to `upTo`, searched on `cores` cores at once by
@@ -125,6 +131,7 @@ object Hunt:
   /** Each block of edges is searched on one thread and followed by a checkpoint in the file. */
   val DefaultBlockSize: Long = 10_000
 
+  /** How far a running hunt has got, and what it has found so far. */
   final case class Progress(searchedUpTo: Long, found: Summary)
 
   /** Reads an existing results file, line by line in constant memory, to find where to resume. */

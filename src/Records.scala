@@ -19,6 +19,7 @@ object Records:
   /** Longest edge over smallest edge: large for flat bricks, small for bricks like a cube. */
   def flatness(brick: Cuboid): Double = brick.c.toDouble / brick.a
 
+  /** The records among these bricks, as lines to print. */
   def lines(bricks: Seq[Cuboid], which: String): List[String] =
     val primitive = bricks.filter(_.isPrimitive)
     List(s"Records among the ${primitive.size} primitive Euler bricks $which:", "Edges shared by the most bricks:") ++
@@ -49,6 +50,7 @@ object Records:
         val found = edges.map((a, _) => bricksOn.getOrElse(a, 0)).sum
         LegsRow(band, edges.size, pairs.toDouble / edges.size, found.toDouble / edges.size)
 
+  /** The table of bricks against legs, and the edge with the most bricks, as lines to print. */
   def legsLines(bricks: Seq[Cuboid], limit: Long): List[String] =
     val rows = byLegs(bricks, limit)
     val bricksOn = bricks.groupMapReduce(_.a: Long)(_ => 1)(_ + _)

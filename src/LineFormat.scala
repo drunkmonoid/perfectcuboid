@@ -12,6 +12,7 @@ import scala.deriving.Mirror
   * for every case class, so no format has to be written out field by field.
   */
 trait LineFormat[A]:
+  /** The words that stand for `a`. */
   def words(a: A): List[String]
 
   /** The value at the start of `words`, and the words after it. */
@@ -19,6 +20,7 @@ trait LineFormat[A]:
 
 object LineFormat:
 
+  /** `a` as a line: its words, separated by spaces. */
   def write[A](a: A)(using format: LineFormat[A]): String = format.words(a).mkString(" ")
 
   /** The value at the start of the line; any words after it are left alone. */
@@ -32,6 +34,7 @@ object LineFormat:
       case first :: rest => readWord(first).map(_ -> rest)
       case Nil           => None
 
+  /** A Long as its digits. */
   given LineFormat[Long] = word(_.toString, _.toLongOption)
 
   /** What `derives LineFormat` calls. `inline` makes the compiler expand it where it is used,
@@ -61,13 +64,16 @@ enum Length:
   case Whole(n: Long)
   case Root(n: Long)
 
+  /** The square of the length: a whole number either way. */
   def square: Long = this match
     case Whole(n) => n * n
     case Root(n)  => n
 
 object Length:
+  /** The length whose square this is: whole if the square is a square, a root otherwise. */
   def of(square: Long): Length = Arith.exactSqrt(square).fold(Root(square))(Whole(_))
 
+  /** A length as its digits, or as √ and the digits of its square. */
   given LineFormat[Length] = LineFormat.word(
     {
       case Whole(n) => n.toString

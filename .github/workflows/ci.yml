@@ -32,3 +32,5 @@ jobs:
         run: for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
       - name: The microbenchmarks compile (running them takes a quiet machine)
         run: scala-cli --power compile bench --server=false
+      - name: The API docs build
+        run: scala-cli doc . -o api --server=false -O -project:perfectcuboid

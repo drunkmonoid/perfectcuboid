@@ -70,6 +70,7 @@ object Arith:
       r * r == n
     }
 
+  /** Whether n is a square, for a BigInt of any size. */
   def isPerfectSquareBig(n: BigInt): Boolean =
     n >= 0 && { val r = isqrtBig(n); r * r == n }
 

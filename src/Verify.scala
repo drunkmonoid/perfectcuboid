@@ -29,6 +29,7 @@ object Verify:
     def problem(text: String): State =
       copy(problems = if problems.size < 10 then problems :+ text else problems, problemCount = problemCount + 1)
 
+  /** The state before the first line. */
   object State:
     val Start: State = State(0, 0, Vector.empty, 0, 0, Vector.empty, 0)
 

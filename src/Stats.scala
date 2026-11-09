@@ -11,6 +11,7 @@ object Stats:
     */
   final case class Counts(bySmallest: Long, bySmallestPrimitive: Long, byLargest: Long, byLargestPrimitive: Long)
 
+  /** Making and adding counts. */
   object Counts:
 
     val empty: Counts = Counts(0, 0, 0, 0)
@@ -36,6 +37,7 @@ object Stats:
 
     given Eq[Counts] = Eq.fromUniversalEquals
 
+  /** The counts for one limit. */
   final case class Row(limit: Long, counts: Counts)
 
   /** Counts for every limit 10³, 10⁴, …, 10^maxExponent, in one pass over the bricks,

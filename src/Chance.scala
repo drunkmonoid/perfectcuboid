@@ -49,6 +49,7 @@ object Chance:
         Row(upTo, these.size, these.map(bySize).sum, these.map(byRemainder).sum, these.count(byRemainder(_) == 0))
       .filter(_.bricks > 0)
 
+  /** The table of expected perfect cuboids by decade, and its total, as lines to print. */
   def lines(bricks: Seq[Cuboid], searchedUpTo: Long): List[String] =
     val rows = byDecade(bricks.filter(_.isPrimitive), searchedUpTo)
     val total = rows.map(_.byRemainder).sum

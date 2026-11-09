@@ -169,7 +169,7 @@ buys, and make the results easier to see and to reuse.
   checks that resuming always ends in the same file.
 - [x] **61. One test suite, three platforms.** The tests of the shared code run on Scala.js and
   Scala Native too, in CI.
-- [ ] **62. API docs.** `scala-cli doc` for the library, with every public definition described.
+- [x] **62. API docs.** `scala-cli doc` for the library, with every public definition described.
 
 ### Sharing it
 

@@ -47,6 +47,7 @@ object Charts:
     def apply(value: Double): Double = from + (math.log10(value) - lo) / (hi - lo) * (to - from)
     def ticks: List[(Double, String)] = (lo to hi).map(k => (math.pow(10, k), power(k))).toList
 
+  /** Making a log axis to fit some values. */
   object LogAxis:
     /** The decades that hold every value, with a little room. */
     def around(values: Iterable[Double], from: Double, to: Double): LogAxis =
@@ -60,6 +61,7 @@ object Charts:
     def ticks: List[(Double, String)] =
       (0 to math.round(hi / step).toInt).map(i => i * step).map(v => (v, f"${v.round}%,d")).toList
 
+  /** Making a linear axis to fit some values. */
   object LinearAxis:
     /** From 0 to just above the largest value, in about five steps of 1, 2 or 5 times a power of ten. */
     def around(values: Iterable[Double], from: Double, to: Double): LinearAxis =

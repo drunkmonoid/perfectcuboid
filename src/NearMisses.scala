@@ -9,12 +9,16 @@ import Arith.*
   */
 final case class SquaredCuboid private (a2: Long, b2: Long, c2: Long):
 
+  /** The three edges, each `None` when it is irrational. */
   def edges: List[Option[Long]] = List(a2, b2, c2).map(exactSqrt)
 
+  /** The three face diagonals, each `None` when it is irrational. */
   def faceDiagonals: List[Option[Long]] = List(a2 + b2, a2 + c2, b2 + c2).map(exactSqrt)
 
+  /** The space diagonal, `None` when it is irrational. */
   def spaceDiagonal: Option[Long] = exactSqrt(a2 + b2 + c2)
 
+  /** Which of the seven lengths are whole. */
   def kind: Kind =
     val irrationalEdges = edges.count(_.isEmpty)
     val irrationalFaces = faceDiagonals.count(_.isEmpty)
@@ -33,6 +37,7 @@ object SquaredCuboid:
     */
   val MaxEdge: Long = isqrt(Long.MaxValue / 3)
 
+  /** The box with these squared edges, in any order, if they are positive and their sum fits in a Long. */
   def of(x2: Long, y2: Long, z2: Long): Option[SquaredCuboid] =
     val sorted = List(x2, y2, z2).sorted
     val fits = BigInt(x2) + y2 + z2 <= Long.MaxValue

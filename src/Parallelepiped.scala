@@ -15,6 +15,7 @@ final case class Parallelepiped(a: Long, b: Long, c: Long, p: Long, q: Long, r: 
 
   private val edgeSquares = a * a + b * b + c * c
 
+  /** The squares of the six face diagonals: |u + v|², |u − v|², |u + w|², and so on. */
   def faceDiagonalSquares: List[Long] =
     List(
       a * a + b * b + p,
@@ -25,6 +26,7 @@ final case class Parallelepiped(a: Long, b: Long, c: Long, p: Long, q: Long, r: 
       b * b + c * c - r
     )
 
+  /** The squares of the four body diagonals: |u + v + w|², and with each pair of signs turned. */
   def bodyDiagonalSquares: List[Long] =
     List(edgeSquares + p + q + r, edgeSquares + p - q - r, edgeSquares - p + q - r, edgeSquares - p - q + r)
 
@@ -38,8 +40,10 @@ final case class Parallelepiped(a: Long, b: Long, c: Long, p: Long, q: Long, r: 
     val det = x * (y * z - rr * rr) - pp * (pp * z - rr * qq) + qq * (pp * rr - y * qq)
     x > 0 && x * y - pp * pp > 0 && det > 0
 
+  /** Whether it is solid and all 13 lengths are whole. */
   def isPerfect: Boolean = isSolid && (faceDiagonalSquares ++ bodyDiagonalSquares).forall(isPerfectSquare)
 
+  /** Whether its edges meet at right angles. */
   def isCuboid: Boolean = p == 0 && q == 0 && r == 0
 
   /** The smaller perfect parallelepiped this one is k times, with its k, if there is one:
@@ -55,6 +59,7 @@ final case class Parallelepiped(a: Long, b: Long, c: Long, p: Long, q: Long, r: 
 
   private def lengths(squares: List[Long]) = squares.map(n => exactSqrt(n).fold(s"√$n")(_.toString))
 
+  /** Its edges, face diagonals and body diagonals, the irrational ones as square roots. */
   def describe: String =
     s"edges $a, $b, $c; face diagonals ${lengths(faceDiagonalSquares).mkString(", ")}; " +
       s"body diagonals ${lengths(bodyDiagonalSquares).mkString(", ")}"

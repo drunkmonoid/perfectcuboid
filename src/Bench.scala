@@ -16,7 +16,10 @@ final case class Timing(seconds: Vector[Double]):
     val n = seconds.size
     if n % 2 == 1 then sorted(n / 2) else (sorted(n / 2 - 1) + sorted(n / 2)) / 2
 
+  /** The fastest run. */
   def min: Double = sorted.head
+
+  /** The slowest run. */
   def max: Double = sorted.last
 
 /** Timing the searches against each other. Reading the clock is a side effect, so this lives
@@ -35,6 +38,7 @@ object Bench:
   val baseline: (name: String, search: BrickSearch) =
     (name = "readable", search = n => Search.allEulerBricks.takeWhile(_.a <= n).toVector)
 
+  /** The faster searches, each timed against the baseline. */
   val others: List[(String, BrickSearch)] = List(
     "fast, one edge at a time" -> (n => FastSearch.allEulerBricksOneByOne.takeWhile(_.a <= n).toVector),
     "fast, sieving blocks" -> (n => FastSearch.allEulerBricks.takeWhile(_.a <= n).toVector),
@@ -46,11 +50,13 @@ object Bench:
     "parallel, futures" -> (n => FastSearch.allEulerBricksParallel().takeWhile(_.a <= n).toVector)
   )
 
+  /** The result of `body` and how many seconds it took. */
   def time[A](body: => A): (result: A, seconds: Double) =
     val start = System.nanoTime
     val result = body
     (result = result, seconds = (System.nanoTime - start) / 1e9)
 
+  /** Runs `body` `warmUps` times untimed, then `runs` times timed. */
   def measure[A](warmUps: Int, runs: Int)(body: => A): (result: A, timing: Timing) =
     for _ <- 1 to warmUps do body: Unit
     val timed = Vector.fill(runs)(time(body))
@@ -64,6 +70,7 @@ object Bench:
     val platform = if Platform.isNative then "Scala Native" else s"Java ${System.getProperty("java.version")}"
     s"$platform, ${Runtime.getRuntime.availableProcessors} cores"
 
+  /** Times every search and prints a line for each. */
   def run(maxSmallestEdge: Long, runs: Int, warmUps: Int = 2): Unit =
     def line(name: String, timing: Timing, note: String) =
       println(f"  $name%-26s ${timing.median}%7.3f s  (${timing.min}%.3f to ${timing.max}%.3f)  $note")

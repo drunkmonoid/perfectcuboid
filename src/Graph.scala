@@ -10,8 +10,10 @@ import scala.annotation.tailrec
   */
 final case class PythagoreanGraph(limit: Long, neighbours: Map[Long, Set[Long]]):
 
+  /** How many numbers x is joined to. */
   def degree(x: Long): Int = neighbours.get(x).fold(0)(_.size)
 
+  /** How many pairs of numbers are joined. */
   def links: Long = neighbours.values.map(_.size.toLong).sum / 2 // each link is seen from both ends
 
   /** How many numbers have each degree, for the numbers with at least one neighbour. */
@@ -46,4 +48,5 @@ final case class PythagoreanGraph(limit: Long, neighbours: Map[Long, Set[Long]])
 
 object PythagoreanGraph:
 
+  /** The graph on the numbers from 1 to `limit`. */
   def upTo(limit: Long): PythagoreanGraph = PythagoreanGraph(limit, Pythagorean.partners(limit))
