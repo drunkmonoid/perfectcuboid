@@ -30,34 +30,6 @@ final case class Quarry[A](
     maxKey: Long = Search.MaxSmallestEdge
 )
 
-/** A cuboid's line in a results file: its three edges, "44 117 240". The format is derived
-  * from the fields; the cuboid is built from them by `Cuboid.of`, which checks them.
-  */
-final case class EdgesLine(a: Long, b: Long, c: Long) derives LineFormat
-
-/** One edge of a `SquaredCuboid`: a whole number n, or the square root of one, √n. */
-enum Length:
-  case Whole(n: Long)
-  case Root(n: Long)
-
-  def square: Long = this match
-    case Whole(n) => n * n
-    case Root(n)  => n
-
-object Length:
-  def of(square: Long): Length = Arith.exactSqrt(square).fold(Root(square))(Whole(_))
-
-  given LineFormat[Length] = LineFormat.word(
-    {
-      case Whole(n) => n.toString
-      case Root(n)  => s"√$n"
-    },
-    word => if word.startsWith("√") then word.drop(1).toLongOption.map(Root(_)) else word.toLongOption.map(Whole(_))
-  )
-
-/** An edge cuboid's line: "√461776 1443 1800". */
-final case class SquaredLine(a: Length, b: Length, c: Length) derives LineFormat
-
 object Quarry:
 
   /** "44 117 240", followed by "  PERFECT" for a perfect cuboid. */

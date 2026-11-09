@@ -80,6 +80,7 @@ scala-cli fmt .                          # format the code (CI checks it)
 scala-cli repl .                         # a REPL with the project loaded
 scala-cli setup-ide .                    # set up Metals / VS Code
 scala-cli test web                       # the web page's tests, on Node
+scala-cli test cross --js                # the core's tests on JavaScript (or --native, needs clang)
 scala-cli --power package web --js --js-mode release -o docs/check/main.js -f   # rebuild the page
 scala-cli --power package . --native --native-mode release-fast -o perfectcuboid  # a native binary (needs clang)
 ```

@@ -863,6 +863,23 @@ several single-threaded processes on separate ranges of edges (phase 47).
 All three wrote the same files. The JVM is faster even on one thread, and the native build
 uses a third of the memory.
 
+### One test suite, three platforms
+
+```sh
+scala-cli test cross            # the JVM
+scala-cli test cross --js       # JavaScript, on Node
+scala-cli test cross --native   # a native executable
+```
+
+`cross/` builds the pure core, from `Arith` and `Wide` to `FastSearch` and `Parallelepiped`,
+with the 16 test suites that need nothing else, for any of the three platforms. All 114 tests
+pass on each, CI runs them on JavaScript and Scala Native at every push, and the root project
+keeps testing everything on the JVM. The core has to be the same code everywhere: a `Long`
+on JavaScript is emulated in software, and on Scala Native it is a machine word, and the
+128-bit arithmetic of `Wide` gives the same answers on both. Native tests are built optimised:
+unoptimised, the search for perfect parallelepipeds up to 300 took longer than munit's 30
+seconds.
+
 ### Every core, as separate processes
 
 Since phase 47 a hunt can cover one range of edges, a shard: `hunt FILE UPTO --from FIRST`

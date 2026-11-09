@@ -24,6 +24,10 @@ jobs:
         run: scala-cli test . --server=false
       - name: The web page's tests, compiled to JavaScript and run on Node
         run: scala-cli test web --server=false
+      - name: The core's tests on JavaScript
+        run: scala-cli test cross --js --server=false
+      - name: The core's tests on Scala Native
+        run: scala-cli test cross --native --server=false
       - name: The guided tour's worksheets
         run: for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
       - name: The microbenchmarks compile (running them takes a quiet machine)
