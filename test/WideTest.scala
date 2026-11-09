@@ -35,6 +35,28 @@ class WideTest extends ScalaCheckSuite:
       val (b, c) = (BigInt(x) * k, BigInt(y) * k)
       c > Edge.Max || Wide.isSumOfSquaresSquare(b.toLong, c.toLong)
 
+  /** Numbers spread evenly over the powers of two from 2^lo to 2^hi, so that the two ways of
+    * testing a square, rounding below 2⁵¹ and `isqrt` above, both get tried near their border.
+    */
+  def spread(lo: Int, hi: Int): Gen[Long] =
+    for
+      bits <- Gen.chooseNum(lo, hi - 1)
+      n <- Gen.chooseNum(1L << bits, (1L << bits) * 2 - 1)
+    yield n
+
+  property("isSumOfSquaresSquare finds the squares made by Euclid's formula, and not one more"):
+    // (m² − n²)² + (2mn)² = (m² + n²)², and adding 1 to 2mn lands strictly between two squares.
+    Prop.forAll(spread(16, 31), spread(16, 31)): (x, y) =>
+      val (m, n) = (x max y, x min y)
+      val (b, c) = (m * m - n * n, 2 * m * n)
+      m == n || (Wide.isSumOfSquaresSquare(b, c) && !Wide.isSumOfSquaresSquare(b, c + 1))
+
+  property("and on both sides of 2⁵¹, where the rounded square root stops being exact"):
+    // (3k)² + (4k)² = (5k)², and (4k ± 1) in place of 4k is never a square.
+    Prop.forAll(spread(29, 60)): k =>
+      Wide.isSumOfSquaresSquare(3 * k, 4 * k) &&
+        !Wide.isSumOfSquaresSquare(3 * k, 4 * k + 1) && !Wide.isSumOfSquaresSquare(3 * k, 4 * k - 1)
+
   test("the largest Wide, and one past it"):
     val max = Wide.square(Long.MaxValue)
     assertEquals(max.toBigInt, BigInt(Long.MaxValue).pow(2))

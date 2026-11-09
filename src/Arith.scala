@@ -60,8 +60,15 @@ object Arith:
     */
   def mightBeSquare(n: Long): Boolean = ((SquareRemaindersMod64 >>> (n & 63)) & 1) == 1
 
+  /** Whether n is a square. If it is, its root r is below 2³², and the Double square root of n
+    * is within far less than ½ of r, so rounding it gives r exactly; squaring that and
+    * comparing then answers for every n, with no correcting steps and no `Option`.
+    */
   def isPerfectSquare(n: Long): Boolean =
-    n >= 0 && mightBeSquare(n) && exactSqrt(n).isDefined
+    n >= 0 && mightBeSquare(n) && {
+      val r = math.round(math.sqrt(n.toDouble))
+      r * r == n
+    }
 
   def isPerfectSquareBig(n: BigInt): Boolean =
     n >= 0 && { val r = isqrtBig(n); r * r == n }

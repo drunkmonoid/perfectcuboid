@@ -72,19 +72,33 @@ object Wide:
     val r = isqrt(n.hi, n.lo)
     Option.when(Wide.square(r) == n)(r)
 
+  /** Below hi = 2³⁸, a number is below 2¹⁰², so the root of any square among them is below
+    * 2⁵¹. For those, the Double square root is off by less than a quarter, and rounding it
+    * gives the root exactly: converting the number to a Double is off by at most n·2⁻⁵³,
+    * which moves the root by at most r·2⁻⁵⁴ < ⅛, and `math.sqrt` itself rounds to within ⅛.
+    */
+  private val RoundingLimitHi: Long = 1L << 38
+
   /** Whether b² + c² is a perfect square, for any non-negative b and c up to `Edge.Max`.
     *
-    * With both below 2³¹ the sum fits in a Long and the usual test does. Otherwise, the bottom
-    * 6 bits of the sum are correct even when the Long arithmetic overflows, so the remainder
-    * mod 64 still rules out most non-squares before any square root is taken.
+    * This is the test the search spends half its time in, so it builds no `Wide`s. With both
+    * below 2³¹ the sum fits in a Long and the usual test does. Otherwise, the bottom 6 bits of
+    * the sum are correct even when the Long arithmetic overflows, so the remainder mod 64 rules
+    * out most non-squares first. For the rest, the root is rounded from the Double square root
+    * while that is exact (any brick up to 10¹⁵), and `isqrt` takes over beyond. Either way,
+    * the candidate root is squared exactly and compared, so the answer is never a guess.
     */
   def isSumOfSquaresSquare(b: Long, c: Long): Boolean =
     if b <= Int.MaxValue && c <= Int.MaxValue then Arith.isPerfectSquare(b * b + c * c)
     else
-      Arith.mightBeSquare(b * b + c * c) && {
-        val sum = square(b) + square(c)
-        val r = isqrt(sum.hi, sum.lo)
-        square(r) == sum
+      val lo = b * b + c * c
+      Arith.mightBeSquare(lo) && {
+        val carry = if java.lang.Long.compareUnsigned(lo, b * b) < 0 then 1L else 0L
+        val hi = Math.multiplyHigh(b, b) + Math.multiplyHigh(c, c) + carry
+        val r =
+          if hi < RoundingLimitHi then Math.round(math.sqrt(hi * TwoTo64 + unsignedToDouble(lo)))
+          else isqrt(hi, lo)
+        r * r == lo && Math.multiplyHigh(r, r) == hi
       }
 
   /** Wide numbers are whole numbers, so the cuboid checks in `Box` work for them as well.

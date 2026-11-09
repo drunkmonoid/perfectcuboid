@@ -387,6 +387,27 @@ take 44 KB, about all of a core's fastest cache on this processor (32 or 48 KB),
 it up at random.
 So there are two targets, a cheaper exact test and a cheaper, sharper filter.
 
+### A cheaper square test
+
+The exact test used to find the floor of the square root, correcting a floating-point guess
+step by step, and then compare its square. But to know whether b² + c² is a square, rounding
+is enough: when the root r is below 2⁵¹, converting the sum to a `Double` and taking
+`math.sqrt` lands within a quarter of r, so rounding gives r exactly, and one exact
+multiplication confirms it or not. Above 2⁵¹ (bricks far beyond any search here) the old way
+takes over. The answer is never a guess, since the candidate is always squared and compared.
+
+Property tests try both sides of 2⁵¹, and a one-off check of 4 million Pythagorean pairs and
+their neighbours against `BigInt` found no difference.
+
+| near 10⁹, one thread | before | after |
+| --- | ---: | ---: |
+| the exact test, per pair passing the filter (JMH) | 17 ns | 9.0 ns |
+| the whole search, per edge (JMH) | 97 µs | 74 µs |
+| hunting edges 999,000,001 to 999,300,000 | 31 s | 24 s |
+| hunting edges 1,000,001 to 2,000,000 | 15 s | 12 s |
+
+Both hunts found the same bricks as before. The filter is now the larger half.
+
 ## Scala Native: long runs work, on one thread
 
 The same code builds to a native executable, about 10 MB, with Scala Native 0.5.12. That

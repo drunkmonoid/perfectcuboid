@@ -116,7 +116,7 @@ buys, and make the results easier to see and to reuse.
   splits between sieving, generating legs, pairing them and the 128-bit square checks.
 - [x] **42. Microbenchmarks.** JMH benchmarks (`scala-cli --power --jmh`) of the kernels: `isqrt`,
   `Wide` square roots, Montgomery multiplication, a sieve block, the legs of one edge.
-- [ ] **43. A cheaper square test.** The profile (phase 41) puts 86–93% of the time in the
+- [x] **43. A cheaper square test.** The profile (phase 41) puts 86–93% of the time in the
   exact test whether b² + c² is a square, and almost none in allocation: so one rounded
   floating-point square root and one exact check, with no correcting loops or boxing.
 - [ ] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square

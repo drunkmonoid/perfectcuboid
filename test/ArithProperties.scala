@@ -31,6 +31,15 @@ class ArithProperties extends munit.ScalaCheckSuite:
   property("exactSqrt rejects the number just after a square"):
     forAll(root.filter(_ > 0).filter(_ < MaxRoot))(r => exactSqrt(r * r + 1) == None)
 
+  property("isPerfectSquare recognises every square, and not the numbers either side"):
+    forAll(root): r =>
+      isPerfectSquare(r * r) && (r <= 1 || !isPerfectSquare(r * r - 1)) &&
+        (r == MaxRoot || r == 0 || !isPerfectSquare(r * r + 1))
+
+  property("isPerfectSquare agrees with isqrtBig on any Long"):
+    forAll(Gen.chooseNum(Long.MinValue, Long.MaxValue)): n =>
+      isPerfectSquare(n) == (n >= 0 && isqrtBig(BigInt(n)).pow(2) == n)
+
   property("ceilSqrt(n) is the ceiling of the square root"):
     forAll(nonNegativeLong.filter(_ <= MaxRoot * MaxRoot)): n =>
       val r = BigInt(ceilSqrt(n))
