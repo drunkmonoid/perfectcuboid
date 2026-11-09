@@ -8,25 +8,30 @@ with the command shown next to it. Timings are on a mid-range laptop (Core i5,
 
 A perfect cuboid would be an Euler brick whose space diagonal is also whole. Every perfect
 cuboid is a multiple of a primitive one, whose edges share no common factor, so it is enough
-to look at primitive bricks. The big hunt searched every primitive Euler brick with **smallest
-edge up to 1,000,000,000**, however long the other edges. It found 10,220 of them, and no
+to look at primitive bricks. The long hunt searched every primitive Euler brick with **smallest
+edge up to 3,000,000,000**, however long the other edges. It found 15,101 of them, and no
 perfect cuboid.
 
 ```sh
 scala-cli run . -J -Xmx1g -- hunt hunt-primitive.txt 1e9 --kind primitive   # 4 h 15 min on 10 threads
-scala-cli run . -J -Xmx1g -- verify hunt-primitive.txt --kind primitive     # 0 problems
+scala-cli run . -J -Xmx1g -- hunt hunt-primitive.txt 3e9 --kind primitive   # 6 h 55 min more, on 8
+scala-cli run . -J -Xmx1g -- verify hunt-primitive.txt --kind primitive     # 0 problems, in 3 s
 ```
 
-The memory stays flat: blocks of edges are searched and written as they finish, so a 1 GB heap
-is plenty. The speed fell from about 350,000 edges per second at the start to about 50,000
-near the end, since larger edges have more factors and more legs to pair.
+It ran in two parts: first to 10⁹, then, after the search was made three times as fast, the
+same file resumed to 3·10⁹. The second part shared the laptop with the face and edge cuboid
+hunts for most of its 6 h 55 min; alone, near the end, it searched about 85,000 edges per
+second. The memory stays flat: blocks of edges are searched and written as they finish, so a
+1 GB heap is plenty. `verify` re-checked all 15,101 bricks with BigInt and the 300,000
+checkpoints, searched three blocks again, and found no problem.
 
-| digits in the longest edge | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| primitive bricks | 5 | 14 | 46 | 177 | 462 | 1,180 | 2,747 | 3,930 | 1,384 | 244 | 29 | 2 |
+| digits in the longest edge | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| primitive bricks | 5 | 14 | 46 | 177 | 462 | 1,180 | 2,747 | 5,756 | 3,706 | 871 | 121 | 15 | 1 |
 
-The longest is 825973020 × 74800516901 × 37650741152640, whose longest edge is more than
-45,000 times its shortest.
+The longest is 2669972725 × 100334332878000 × 233255492180172, whose longest edge is more than
+87,000 times its shortest. Up to 10⁹ the longest had been 825973020 × 74800516901 ×
+37650741152640.
 
 **Checked against the OEIS.** A031173, A031174 and A031175 list the primitive Euler bricks with
 longest edge below 5·10⁸, each brick's edges in one of the three sequences. Any such brick has
@@ -100,8 +105,8 @@ Fitting count ≈ C·Nᵏ between successive rows gives these values of k:
 | 10⁵ and 10⁶ | 0.57 | 0.53 |
 | 10⁶ and 10⁷ | 0.46 | 0.43 |
 
-The big hunt carries the last column further: 4,271 primitive bricks with smallest edge up
-to 10⁸, and 10,220 up to 10⁹, which gives k = 0.41 and then 0.38.
+The long hunt carries the last column further: 4,271 primitive bricks with smallest edge up
+to 10⁸, 10,220 up to 10⁹ and 15,101 up to 3·10⁹, which gives k = 0.41, then 0.38, then 0.36.
 
 So primitive Euler bricks grow roughly like √N, and a little slower as N grows. The counts of all
 bricks grow almost exactly in proportion to N, because every primitive brick contributes all
@@ -124,21 +129,21 @@ Every one of the 925,637 Euler bricks with smallest edge ≤ 10⁷ obeys every r
 - so the product of the edges is divisible by 95,040 = 2⁶·3³·5·11;
 - in a primitive brick, exactly one edge and exactly two face diagonals are odd.
 
-So does every one of the 10,220 primitive bricks with smallest edge ≤ 10⁹ (see the next
+So does every one of the 15,101 primitive bricks with smallest edge ≤ 3·10⁹ (see the next
 section).
 
-## Reading the big hunt's file
+## Reading the long hunt's file
 
 ```sh
-scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive --charts charts   # 25 seconds
+scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive --charts charts   # 40 seconds
 ```
 
 `analyse` runs the reports that need only a list of bricks, growth, rules, derived pairs,
 origins and closest calls, over the bricks in a hunt's file instead of a fresh search, and can
-draw the charts from them too. On the 10⁹ hunt it takes 25 seconds where searching again would
-take hours. The figures for 10⁹ in the tables of this file come from it.
+draw the charts from them too. On the 3·10⁹ hunt it takes 40 seconds where searching again
+would take half a day. The figures for 10⁹ and 3·10⁹ in the tables of this file come from it.
 
-![The primitive bricks of the 10⁹ hunt, by smallest and longest edge](docs/bricks-1e9.svg)
+![The primitive bricks of the 3·10⁹ hunt, by smallest and longest edge](docs/bricks-3e9.svg)
 
 ## Derived bricks come in pairs
 
@@ -156,9 +161,10 @@ gives back the same shape. So the primitive Euler bricks pair up. The first pair
 | 10⁶ | 608 | 153 |
 | 10⁷ | 1,647 | 390 |
 | 10⁹ | 10,220 | 2,316 |
+| 3·10⁹ | 15,101 | 3,401 |
 
 So up to 10⁷ about half of the primitive bricks found have their partner among them as well,
-and up to 10⁹ 45%. No brick is its own
+and up to 10⁹ and 3·10⁹ 45%. No brick is its own
 partner, which would need b² = ac.
 
 ## New bricks from elliptic curves
@@ -197,13 +203,14 @@ starting from something smaller?
 | 10⁶ | 608 | 23 | 153 | 1 | 177 | 431 |
 | 10⁷ | 1,647 | 53 | 390 | 7 | 449 | 1,198 |
 | 10⁹ | 10,220 | 259 | 2,316 | 20 | 2,594 | 7,626 |
+| 3·10⁹ | 15,101 | 364 | 3,401 | 25 | 3,789 | 11,312 |
 
 - **Saunderson:** his brick from (u, v, w) has a face diagonal of exactly w³, which is how
   `Origins.isSaunderson` spots one.
 - **Curves:** the first curve multiple is 412425 × 4267872 × 4657400, the double of a point
   of 240 × 252 × 275 and also of its derived partner 1008 × 1100 × 1155.
 
-So nearly three quarters of the primitive bricks come from none of these, at 10⁹ as at 10⁷:
+So nearly three quarters of the primitive bricks come from none of these, at 3·10⁹ as at 10⁷:
 they are only found by searching.
 
 ### Families built forwards
@@ -217,7 +224,7 @@ Saunderson's of 1740, and mention Euler's two of 1770 and 1772 without formulas.
 `Coverage.scala` builds outwards from Saunderson's: his bricks from every primitive
 Pythagorean triple with hypotenuse up to 3,000, their derived bricks, and the bricks at 2P,
 3P and 4P on the curves of both, all reduced to primitive form. Of these, every one with all
-edges up to 10⁹ should be in the 10⁹ hunt's file, since its smallest edge is below 10⁹ too.
+edges up to 10⁹ should be in the hunt's file, since its smallest edge is below 10⁹ too.
 
 | family | primitive members with every edge ≤ 10⁹ | in the hunt's file |
 | --- | ---: | ---: |
@@ -232,7 +239,7 @@ adds a member in range. The search found every member: a check on it that shares
 with it but the test for an Euler brick.
 
 **Kraitchik's count.** MathWorld quotes Kraitchik (1945) as giving 257 cuboids with odd edge
-below a million. Every primitive brick has exactly one odd edge (all 10,220 in the hunt's file
+below a million. Every primitive brick has exactly one odd edge (all 15,101 in the hunt's file
 do), and 416 of them have it below a million: so his list, made without computers, was
 incomplete, unless it counted something else.
 
@@ -296,7 +303,7 @@ bricks count: scaling a brick by k scales the miss by k too.
 If the 1,647 misses were spread evenly between 0 and ½, the smallest would be expected around
 ½ / 1,648 ≈ 3·10⁻⁴, and the three closest calls are a few times nearer than that.
 
-The 10⁹ hunt holds 10,220 primitive bricks, and a closer call than any above:
+The 10⁹ hunt held 10,220 primitive bricks, and a closer call than any above:
 
 | primitive brick, smallest edge ≤ 10⁹ | space diagonal | off by |
 | --- | ---: | ---: |
@@ -307,7 +314,9 @@ The 10⁹ hunt holds 10,220 primitive bricks, and a closer call than any above:
 | 330165 × 672220 × 3502992 | 3,582,156 | 9.0·10⁻⁵ |
 
 Spread evenly, 10,220 misses would put the smallest around ½ / 10,221 ≈ 4.9·10⁻⁵, and the
-closest is 4.2·10⁻⁵. Nothing here suggests the space diagonals are drawn towards whole numbers.
+closest is 4.2·10⁻⁵. The 4,881 bricks between 10⁹ and 3·10⁹ came no closer: the nearest of
+them, 1438005600 × 4379546392 × 16868453745, misses 17,486,938,510 by 1.4·10⁻⁴, so the five
+closest up to 3·10⁹ are the five above. Nothing here suggests the space diagonals are drawn towards whole numbers.
 They miss about as chance would have them miss.
 
 ## Records
@@ -316,14 +325,14 @@ They miss about as chance would have them miss.
 scala-cli run . -J -Xmx2g -- records hunt-primitive.txt   # 45 seconds
 ```
 
-Among the 10,220 primitive bricks with smallest edge up to 10⁹:
+Among the 15,101 primitive bricks with smallest edge up to 3·10⁹:
 
 - **Most bricks on one edge:** 23,760 is an edge of four primitive bricks: 4599 × 18368 ×
-  23760, 4599 × 23760 × 144832, 4900 × 17157 × 23760 and 23760 × 35075 × 35604. Four other
+  23760, 4599 × 23760 × 144832, 4900 × 17157 × 23760 and 23760 × 35075 × 35604. Six other
   edges, the smallest 700,128, are shared by three.
-- **Longest:** 825973020 × 74800516901 × 37650741152640.
-- **Flattest:** 61427951 × 12916225080 × 3375128053440, its longest edge 54,944 times its
-  smallest.
+- **Longest and flattest:** 2669972725 × 100334332878000 × 233255492180172, its longest edge
+  87,362 times its smallest. Up to 10⁹ the flattest was 61427951 × 12916225080 ×
+  3375128053440, at 54,944.
 - **Most like a cube:** 108192528 × 109141700 × 110562771, its longest edge only 2.2% longer
   than its smallest.
 
@@ -370,18 +379,24 @@ the square of each primitive brick's space diagonal, and adds up the chances.
 | to 10⁷ | 1,039 | 2.6·10⁻⁵ | 0.0015 | 270 |
 | to 10⁸ | 2,624 | 6.5·10⁻⁶ | 4.0·10⁻⁴ | 709 |
 | to 10⁹ | 5,949 | 1.5·10⁻⁶ | 9.6·10⁻⁵ | 1,600 |
-| **in all** | **10,220** | **0.0085** | **0.21** | **2,776** |
+| to 3·10⁹ | 4,881 | 2.1·10⁻⁷ | 1.4·10⁻⁵ | 1,273 |
+| **in all** | **15,101** | **0.0074** | **0.21** | **4,049** |
 
-- **Remainders matter a great deal.** 2,776 of the 10,220 bricks, 27%, have a space diagonal
+(Until phase 50 the total by size alone here read 0.0085, and the factor below 25: the rows
+above add up to 0.0074, so that was wrong.)
+
+- **Remainders matter a great deal.** 4,049 of the 15,101 bricks, 27%, have a space diagonal
   whose square leaves a remainder no square leaves, so they could never have been perfect,
   among them the first two, 44 × 117 × 240 and 85 × 132 × 720. The rest leave remainders that
   squares leave unusually often, mostly from high powers of 2 and 3, and together that makes
-  the chance 25 times what size alone suggests.
-- **So: about one chance in five** that a perfect cuboid would have turned up below 10⁹. Not
-  finding one is no surprise.
+  the chance 28 times what size alone suggests.
+- **So: about one chance in five** that a perfect cuboid would have turned up below 3·10⁹.
+  Not finding one is no surprise.
 - **Most of that chance was spent early.** Each decade adds about a quarter of what the one
   before it added: the bricks there are 2½ times as many, but their space diagonals are ten
-  times as long. If that goes on, all the bricks beyond 10⁹ together add about 3·10⁻⁵.
+  times as long. If that goes on, all the bricks beyond 10⁹ together add about 3·10⁻⁵. The
+  long hunt tested the start of that forecast: by the same rule the decade after 10⁹ should
+  add about 2.4·10⁻⁵, and its first half, 10⁹ to 3·10⁹, added 1.4·10⁻⁵.
 
 On this reckoning a perfect cuboid, if one exists, is most likely small enough that searches
 would have found it already, and the expected number of them is finite and well below one.

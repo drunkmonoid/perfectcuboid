@@ -138,7 +138,7 @@ buys, and make the results easier to see and to reuse.
   `Long`, with `Wide` all the way through, so the search has no limit left. (In the end
   `BigInt` for the rare edges past it; the limit left is `Edge.Max`, the longest edge a
   `Cuboid` holds.)
-- [ ] **50. The long hunt.** Every primitive brick with smallest edge up to 3·10⁹, over several
+- [x] **50. The long hunt.** Every primitive brick with smallest edge up to 3·10⁹, over several
   resumable nights, verified, and recorded in RESULTS.md.
 - [x] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
   closest near misses found.

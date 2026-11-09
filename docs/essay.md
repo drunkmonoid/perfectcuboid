@@ -29,18 +29,18 @@ number a there are only a handful of such legs, and they can be listed exactly f
 of a². Then the search only has to try pairs of those legs, and ask whether b² + c² is a square
 too. If it is, that is an Euler brick, and then one more question settles whether it is perfect.
 
-Done on every shortest edge from 1 up to a billion, this found 10,220 primitive Euler bricks.
-None of them is perfect.
+Done on every shortest edge from 1 up to three billion, this found 15,101 primitive Euler
+bricks. None of them is perfect.
 
 ![How the number of Euler bricks grows](growth.svg)
 
 They thin out as the numbers grow. Up to a thousand there are 14 primitive bricks; up to a
-million, 608; up to a billion, 10,220. Ten times the range gives about two and a half times
-the bricks, and a little less each time.
+million, 608; up to a billion, 10,220; up to three billion, 15,101. Ten times the range gives
+about two and a half times the bricks, and a little less each time.
 
-![The primitive bricks up to a billion, by shortest and longest edge](bricks-1e9.svg)
+![The primitive bricks up to three billion, by shortest and longest edge](bricks-3e9.svg)
 
-Some of them are very flat: one is 54,944 times as long as it is short. One is almost a cube,
+Some of them are very flat: one is 87,362 times as long as it is short. One is almost a cube,
 its longest edge only 2.2% longer than its shortest. The nearest miss is 640347864 ×
 1045085760 × 1939671305. Its space diagonal comes within about four hundred-thousandths of the
 whole number 2,294,466,039, but is not whole.
@@ -68,13 +68,14 @@ N, whole squares are about 2√N apart, so a random number near N is a square wi
 about one in 2√N. Remainders help: some bricks have space diagonals that leave remainders no
 square can leave, and could never have been perfect (more than a quarter of them); others
 leave remainders that squares leave unusually often. Add up every brick's chance, and the
-bricks up to a billion should have held a perfect box with a chance of about one in five.
+bricks up to three billion should have held a perfect box with a chance of about one in five.
 
 So finding none is no surprise. More telling is where that chance sits. Most of it was spent
 on the small bricks. Each tenfold increase in range adds about a quarter of what the previous
 one added: there are more bricks, but their diagonals are far longer, and long numbers are
 rarely squares. If that goes on, all the bricks beyond a billion together add a chance of about
-three in a hundred thousand. On this reckoning, a perfect box, if there is one, should have been
+three in a hundred thousand; the ones from one to three billion, searched since, added a little
+over one in a hundred thousand of it. On this reckoning, a perfect box, if there is one, should have been
 small enough to find by now, and probably there is none.
 
 That is a heuristic, not a proof. Whether a diagonal is whole is not decided by chance, and a
@@ -107,7 +108,8 @@ numbers of unlimited size, sharing no code with the search. Families of bricks b
 formulas (Saunderson's, from 1740, and others made from it) were checked against the search
 too: it had found every one of them.
 
-**Long runs must survive interruption.** A search of a billion edges takes hours on a laptop.
+**Long runs must survive interruption.** A search of three billion edges takes half a day on a
+laptop.
 It writes its results in blocks, each followed by a checkpoint, so it can be stopped at any
 moment, or crash, and carry on later from the last checkpoint. Tests stop it at random moments,
 and cut its file at random bytes, and check that it always ends with exactly the same file.
@@ -119,10 +121,10 @@ threads there, and to split the work between separate programs instead.
 
 ## Where it stands
 
-The search has gone through every primitive Euler brick with shortest edge up to a billion, and
-published searches have gone much further: a perfect box would need its shortest edge above
-5·10¹¹. Nobody has found one. Nobody has proved there are none. The question is easy to
-state, easy to check for any one box, and still open.
+The search has gone through every primitive Euler brick with shortest edge up to three
+billion, and published searches have gone much further: a perfect box would need its shortest
+edge above 5·10¹¹. Nobody has found one. Nobody has proved there are none. The question is
+easy to state, easy to check for any one box, and still open.
 
 You can check a box yourself, of any size, on the project's page, or browse every brick the
 search found. The code, the results and how to repeat them are in the repository.
