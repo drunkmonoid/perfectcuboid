@@ -65,27 +65,58 @@ object FastSearch:
   /** Same result as `Search.eulerBricksWithSmallestEdge`. */
   def eulerBricksWithSmallestEdge(a: Long): List[Cuboid] = eulerBricksWithLegs(a, legsAbove(a))
 
-  /** 63 · 65 · 11. Only 4.5% of remainders mod this number are remainders of squares, and the
-    * remainder mod 64 then rules out most of those: together, 0.84% of random sums get through.
-    * Sums of squared legs are not random, though, and about 9% of them get through (RESULTS.md).
+  /** The filter's three moduli, each a product of three primes. Each prime alone lets about half
+    * of the pairs of legs through, so each modulus lets through about one in nine. The primes
+    * were chosen by measuring real legs (RESULTS.md), since legs that pair with the same edge
+    * are far from random: 7, 17 and 41, for example, let 74–89% through, and the powers of 2,
+    * 3 and 5 are not much better.
     */
-  private val Modulus = 45_045
+  private val FirstModulus = 11 * 43 * 59
+  private val SecondModulus = 19 * 53 * 37
+  private val ThirdModulus = 13 * 47 * 29
 
-  /** Which remainders mod `Modulus` squares can leave. */
-  private val isSquareRemainder: IArray[Boolean] =
-    val squares = new Array[Boolean](Modulus)
-    for r <- 0 until Modulus do squares((r.toLong * r % Modulus).toInt) = true
-    IArray.unsafeFromArray(squares)
+  /** Bit r is set when some square leaves remainder r mod m: one bit per remainder, so that
+    * each table, 2 to 5 KB, stays in the processor's fastest cache.
+    */
+  private def squareRemainderBits(m: Int): IArray[Long] =
+    val bits = new Array[Long]((m + 63) / 64)
+    for r <- 0 until m do
+      val square = (r.toLong * r % m).toInt
+      bits(square >>> 6) |= 1L << square
+    IArray.unsafeFromArray(bits)
+
+  private val FirstSquares = squareRemainderBits(FirstModulus)
+  private val SecondSquares = squareRemainderBits(SecondModulus)
+  private val ThirdSquares = squareRemainderBits(ThirdModulus)
+
+  /** The remainders of the legs' squares mod m, each computed once for all its pairs. */
+  private def squareRemainders(legs: IArray[Long], m: Int): Array[Int] =
+    val out = new Array[Int](legs.length)
+    var i = 0
+    while i < legs.length do
+      val r = legs(i) % m
+      out(i) = (r * r % m).toInt
+      i += 1
+    out
+
+  /** Whether (x + y) mod m, for x and y already below m, is a square remainder. */
+  private inline def mightBeSquareSum(x: Int, y: Int, m: Int, squares: IArray[Long]): Boolean =
+    val sum = if x + y >= m then x + y - m else x + y
+    ((squares(sum >>> 6) >>> sum) & 1) != 0
 
   /** The Euler bricks a × b × c with b and c taken from `legs`, all the legs above a.
     *
-    * Most pairs are ruled out by remainders alone: if b² + c² leaves a remainder mod 45045
-    * that no square leaves, it is not a square. The remainders of b² and c² are computed once
-    * per leg, so each pair costs an addition and a table lookup. Only the rest go on to the
-    * exact test, which needs 128-bit arithmetic once the legs pass 2³¹.
+    * Most pairs are ruled out by remainders alone: if b² + c² leaves a remainder mod 27,907
+    * that no square leaves, it is not a square. With the remainders of the squared legs
+    * computed beforehand, that costs each pair an addition and one bit looked up. The second
+    * modulus is only needed for the pairs that pass the first, and so on, and only about one
+    * pair in 300 is left for the exact test. (Benchmarks chose three moduli: with two, too
+    * many pairs reach the exact test, and a fourth costs more than it saves.)
     */
   private def eulerBricksWithLegs(a: Long, legs: IArray[Long]): List[Cuboid] =
-    val squareRemainders = legs.map(y => (y % Modulus * (y % Modulus) % Modulus).toInt)
+    val first = squareRemainders(legs, FirstModulus)
+    val second = squareRemainders(legs, SecondModulus)
+    val third = squareRemainders(legs, ThirdModulus)
     var found = List.empty[Cuboid]
     // Going backwards and prepending leaves the list in increasing order.
     var i = legs.length - 2
@@ -93,10 +124,11 @@ object FastSearch:
       val b = legs(i)
       var j = legs.length - 1
       while j > i do
-        val c = legs(j)
-        val sum = squareRemainders(i) + squareRemainders(j)
-        if isSquareRemainder(if sum >= Modulus then sum - Modulus else sum) && Wide.isSumOfSquaresSquare(b, c) then
-          found = Cuboid.of(a, b, c).toList ::: found
+        if mightBeSquareSum(first(i), first(j), FirstModulus, FirstSquares) &&
+          mightBeSquareSum(second(i), second(j), SecondModulus, SecondSquares) &&
+          mightBeSquareSum(third(i), third(j), ThirdModulus, ThirdSquares) &&
+          Wide.isSumOfSquaresSquare(b, legs(j))
+        then found = Cuboid.of(a, b, legs(j)).toList ::: found
         j -= 1
       i -= 1
     found

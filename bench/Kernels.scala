@@ -79,10 +79,11 @@ class Searching:
 
   @Benchmark @OperationsPerInvocation(100) def wholeSearch: List[Cuboid] = FastSearch.eulerBricksBetween(first, last)
 
-  /** The search's pair loop with both remainder filters but no exact test: a control, to
-    * tell how much of `wholeSearch` the exact tests take.
+  /** The search's pair loop as it was before phase 44, with its remainder filters (mod 45,045
+    * and mod 64) but no exact test: a control, which showed that these filters took half the
+    * time of the whole search.
     */
-  @Benchmark @OperationsPerInvocation(100) def filtersOnly: Int =
+  @Benchmark @OperationsPerInvocation(100) def oldFiltersOnly: Int =
     var passed = 0
     for ls <- Inputs.legs do
       val remainders = ls.map(y => (y % 45_045 * (y % 45_045) % 45_045).toInt)

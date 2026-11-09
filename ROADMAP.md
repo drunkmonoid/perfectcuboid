@@ -119,7 +119,7 @@ buys, and make the results easier to see and to reuse.
 - [x] **43. A cheaper square test.** The profile (phase 41) puts 86–93% of the time in the
   exact test whether b² + c² is a square, and almost none in allocation: so one rounded
   floating-point square root and one exact check, with no correcting loops or boxing.
-- [ ] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square
+- [x] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square
   root, each kept only if a count of the pairs it rejects says it pays.
 - [ ] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
   tuned, and charted in `docs/`.

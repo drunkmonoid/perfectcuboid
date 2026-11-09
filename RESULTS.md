@@ -408,6 +408,54 @@ their neighbours against `BigInt` found no difference.
 
 Both hunts found the same bricks as before. The filter is now the larger half.
 
+### A sharper filter, and a smaller one
+
+Which moduli are worth testing? Counting, on the 14.5 million pairs of legs of the 300 edges
+up to 10⁹, how many pass a test for squares by each modulus on its own:
+
+| modulus | real pairs passing | random sums passing |
+| --- | ---: | ---: |
+| 64 | 64.5% | 18.8% |
+| 9 | 59.3% | 44.4% |
+| 25 | 62.4% | 44.0% |
+| 7 | 89.4% | 57.1% |
+| 17, 41, 61 | 73–77% | 51–53% |
+| 11 | 40.1% | 54.5% |
+| 43, 59, 67, 83 | 48–50% | 51% |
+| other primes up to 97 | 51–60% | 51% |
+
+The powers of 2, 3 and 5, which the old modulus 45,045 = 9 · 5 · 7 · 11 · 13 and the test mod
+64 lean on, are the weakest, and so is 7. Most other primes let through about half, and
+almost independently of each other, so choosing them one at a time, each time the one that
+leaves fewest pairs, gives 11, 43, 59, 19, 53, 37, 13, 47 and 29.
+
+Each table of square remainders now holds one bit per remainder, and three primes share a
+table: mod 27,907 = 11 · 43 · 59, then 37,259 = 19 · 53 · 37, then 17,719 = 13 · 47 · 29.
+Each table takes 2 to 5 KB, so all three stay in the fastest cache, where the old 44 KB table
+did not. A pair costs an addition and a bit looked up per table, and tables after the first
+are only consulted for the pairs that pass it.
+
+| share of pairs left | edges near 10⁹ | edges near 2 million |
+| --- | ---: | ---: |
+| after the old filter (mod 45,045, then 64) | 5.43% | 8.81% |
+| after mod 27,907 | 8.96% | 11.09% |
+| … then mod 37,259 | 1.22% | 1.63% |
+| … then mod 17,719 | 0.20% | 0.29% |
+
+Benchmarks picked the number of tables: with two, the search took 41 µs per edge, with three
+35 µs, and with four 39 µs, since a fourth table costs every surviving pair more than its
+exact tests do. A first table of only 11 · 43 was slower again, at 58 µs.
+
+| one thread | before phase 43 | after phase 43 | now |
+| --- | ---: | ---: | ---: |
+| the whole search, per edge near 10⁹ (JMH) | 97 µs | 74 µs | 35 µs |
+| hunting edges 999,000,001 to 999,300,000 | 31 s | 24 s | 10 s |
+| hunting edges 1,000,001 to 2,000,000 | 15 s | 12 s | 6 s |
+
+Three times as fast near 10⁹. The hunts found the same primitive bricks as the 10⁹ hunt did
+in the same ranges, and every Euler brick with smallest edge from 5,000,001 to 5,300,000,
+27,813 of them, came out byte for byte the same as before.
+
 ## Scala Native: long runs work, on one thread
 
 The same code builds to a native executable, about 10 MB, with Scala Native 0.5.12. That
