@@ -41,6 +41,7 @@ enum Command:
   )
   case Merge(out: String, files: List[String], quarry: Quarry[?])
   case Analyse(file: String, primitiveOnly: Boolean, charts: Option[String])
+  case Families(file: String, maxHypotenuse: Long)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
   case Bench(maxSmallestEdge: Long, runs: Int)
@@ -232,6 +233,19 @@ object CommandLine:
       ).mapN(Command.Analyse(_, _, _))
     )
 
+  private val families: Opts[Command] =
+    Opts.subcommand("families", "Saunderson's family and those built from it, against the bricks in a hunt's FILE.")(
+      (
+        Opts.argument[String]("FILE"),
+        Opts
+          .option[Long]("hypotenuse", "Build from the triples with hypotenuse up to this (default 3000).")(using
+            wholeNumber
+          )
+          .withDefault(3000L)
+          .validate("--hypotenuse must be from 5 to 100000")(h => h >= 5 && h <= 100_000)
+      ).mapN(Command.Families(_, _))
+    )
+
   private val merge: Opts[Command] =
     Opts.subcommand("merge", "Join hunts' FILEs over ranges that follow on from each other into a new file OUT.")(
       (Opts.argument[String]("OUT"), Opts.arguments[String]("FILE").map(_.toList), kind).mapN(Command.Merge(_, _, _))
@@ -269,7 +283,8 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ pictures :+ bench :+ scaling).reduce(_ orElse _) orElse Opts(
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ pictures :+ bench :+ scaling)
+      .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )
 

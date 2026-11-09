@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | pictures | bench | scaling]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -53,6 +53,8 @@ Subcommands:
         Check a hunt's FILE: every find again with BigInt, the checkpoints, a few blocks.
     analyse
         Counts, rules, origins and closest calls of the Euler bricks in a hunt's FILE.
+    families
+        Saunderson's family and those built from it, against the bricks in a hunt's FILE.
     pictures
         Write SVG charts to DIRECTORY, from the bricks up to 10^EXPONENT (default 6).
     bench

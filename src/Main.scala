@@ -45,6 +45,15 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
     case Command.Analyse(file, primitiveOnly, charts) =>
       val quarry = if primitiveOnly then Quarry.primitiveBricks else Quarry.eulerBricks
       Analysis.ofFile(quarry, Path(file), primitiveOnly, charts.map(Path(_))).flatMap(_.traverse_(IO.println))
+    case Command.Families(file, maxHypotenuse) =>
+      Analysis
+        .read(Quarry.eulerBricks, Path(file))
+        .flatMap: (bricks, resume) =>
+          if resume.from != 1 || resume.searchedUpTo < 1 then
+            IO.println(s"$file must be a hunt from 1, with a checkpoint")
+          else
+            val catalogue = bricks.filter(_.isPrimitive).map(BigCuboid.from).toSet
+            IO.blocking(Coverage.lines(catalogue, resume.searchedUpTo, maxHypotenuse)).flatMap(_.traverse_(IO.println))
     case Command.Merge(out, files, quarry) =>
       Merge.run(quarry, Path(out), files.map(Path(_))).flatMap(_.traverse_(IO.println))
     case Command.Pictures(directory, exponent) =>

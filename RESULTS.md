@@ -201,6 +201,36 @@ starting from something smaller?
 So nearly three quarters of the primitive bricks come from none of these, at 10⁹ as at 10⁷:
 they are only found by searching.
 
+### Families built forwards
+
+```sh
+scala-cli run . -J -Xmx2g -- families hunt-primitive.txt   # 40 seconds
+```
+
+The usual references give formulas for one family only: Wikipedia and MathWorld both give
+Saunderson's of 1740, and mention Euler's two of 1770 and 1772 without formulas. So
+`Coverage.scala` builds outwards from Saunderson's: his bricks from every primitive
+Pythagorean triple with hypotenuse up to 3,000, their derived bricks, and the bricks at 2P,
+3P and 4P on the curves of both, all reduced to primitive form. Of these, every one with all
+edges up to 10⁹ should be in the 10⁹ hunt's file, since its smallest edge is below 10⁹ too.
+
+| family | primitive members with every edge ≤ 10⁹ | in the hunt's file |
+| --- | ---: | ---: |
+| Saunderson's bricks | 143 | 143 |
+| their derived bricks | 20 | 20 |
+| 2P–4P on the curves of both | 3 | 3 |
+| any of these | 166 | 166 |
+
+The file holds 4,631 primitive bricks with every edge up to 10⁹, so these families give 3.6%
+of them. Triples up to 1,500 or up to 6,000 give exactly the same table, so no larger triple
+adds a member in range. The search found every member: a check on it that shares nothing
+with it but the test for an Euler brick.
+
+**Kraitchik's count.** MathWorld quotes Kraitchik (1945) as giving 257 cuboids with odd edge
+below a million. Every primitive brick has exactly one odd edge (all 10,220 in the hunt's file
+do), and 416 of them have it below a million: so his list, made without computers, was
+incomplete, unless it counted something else.
+
 ## The Pythagorean graph
 
 ```sh
