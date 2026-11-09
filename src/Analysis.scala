@@ -62,10 +62,12 @@ object Analysis:
     */
   def growth(bricks: Seq[Cuboid], searchedUpTo: Long, primitiveOnly: Boolean): List[String] =
     val limits = Iterator.iterate(1000L)(_ * 10).takeWhile(_ <= searchedUpTo).toList
-    val rows = limits.map(n => (n, bricks.count(_.a <= n).toLong, bricks.count(b => b.a <= n && b.isPrimitive).toLong))
+    // A named tuple: a tuple whose parts have names, read as row.limit rather than row._1.
+    val rows = limits.map: n =>
+      (limit = n, all = bricks.count(_.a <= n).toLong, primitive = bricks.count(b => b.a <= n && b.isPrimitive).toLong)
     val exponents = rows
       .zip(rows.drop(1))
-      .map((r1, r2) => f"${Stats.exponent(r1._1, r1._3, r2._1, r2._3)}%.2f")
+      .map((r1, r2) => f"${Stats.exponent(r1.limit, r1.primitive, r2.limit, r2.primitive)}%.2f")
     if rows.isEmpty then Nil
     else
       List(

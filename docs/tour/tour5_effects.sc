@@ -5,7 +5,7 @@
 //> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
 //> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
 //> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
-//> using file ../../src/Search.scala ../../src/Sieve.scala ../../src/FastSearch.scala
+//> using file ../../src/Search.scala ../../src/Sieve.scala ../../src/FastSearch.scala ../../src/Platform.scala
 
 import cats.effect.{IO, Ref}
 import cats.effect.unsafe.implicits.global // the runtime that runs IO values, for a worksheet

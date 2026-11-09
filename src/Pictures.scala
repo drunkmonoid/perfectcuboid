@@ -9,7 +9,13 @@ object Pictures:
   def growth(maxExponent: Int): String =
     val rows = Stats.growth(maxExponent, FastSearch.allEulerBricksParallel())
     growthLines(
-      rows.map(r => (r.limit.toDouble, r.counts.bySmallest.toDouble, r.counts.bySmallestPrimitive.toDouble)),
+      rows.map(r =>
+        (
+          limit = r.limit.toDouble,
+          all = r.counts.bySmallest.toDouble,
+          primitive = r.counts.bySmallestPrimitive.toDouble
+        )
+      ),
       all = true
     )
 
@@ -17,18 +23,22 @@ object Pictures:
   def growthChart(bricks: Seq[Cuboid], searchedUpTo: Long, primitiveOnly: Boolean): String =
     val limits = Iterator.iterate(1000L)(_ * 10).takeWhile(_ <= searchedUpTo).toList
     val rows = limits.map(n =>
-      (n.toDouble, bricks.count(_.a <= n).toDouble, bricks.count(b => b.a <= n && b.isPrimitive).toDouble)
+      (
+        limit = n.toDouble,
+        all = bricks.count(_.a <= n).toDouble,
+        primitive = bricks.count(b => b.a <= n && b.isPrimitive).toDouble
+      )
     )
     growthLines(rows, all = !primitiveOnly)
 
-  /** Rows of (N, all bricks, primitive bricks) as a chart; the first series only if `all`. */
-  private def growthLines(rows: List[(Double, Double, Double)], all: Boolean): String =
+  /** Rows of counts as a chart; the series of all bricks only if `all`. */
+  private def growthLines(rows: List[(limit: Double, all: Double, primitive: Double)], all: Boolean): String =
     Charts.lines(
       if all then "Euler bricks with smallest edge up to N" else "Primitive Euler bricks with smallest edge up to N",
       "N",
       "bricks",
-      Option.when(all)(Charts.Series("all bricks", 1, rows.map(r => (r._1, r._2)))).toList :+
-        Charts.Series("primitive bricks", 2, rows.map(r => (r._1, r._3)))
+      Option.when(all)(Charts.Series("all bricks", 1, rows.map(r => (r.limit, r.all)))).toList :+
+        Charts.Series("primitive bricks", 2, rows.map(r => (r.limit, r.primitive)))
     )
 
   /** 7 as ⁷, for exponents in titles. */

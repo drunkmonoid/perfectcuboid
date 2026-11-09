@@ -26,5 +26,5 @@ class ParallelepipedTest extends munit.FunSuite:
   test("twice a perfect parallelepiped is one too, and says so"):
     val twice = Parallelepiped(542, 212, 206, 8 * 9826, 8 * 6647, 8 * 5822)
     assert(twice.isPerfect)
-    assertEquals(twice.scaledFrom, Some(2L -> Parallelepiped.sawyerReiter))
+    assertEquals(twice.scaledFrom, Some((factor = 2L, from = Parallelepiped.sawyerReiter)))
     assertEquals(Parallelepiped.sawyerReiter.scaledFrom, None)

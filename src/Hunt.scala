@@ -138,7 +138,9 @@ object Hunt:
             .readUtf8Lines(path)
             .zipWithNext
             // A line followed by another was ended by a newline; the very last one was not.
-            .fold(HuntFile.Resume.Fresh)((state, pair) => HuntFile.step(quarry)(state, pair._1, pair._2.isDefined))
+            .fold(HuntFile.Resume.Fresh)({ case (state, (line, next)) =>
+              HuntFile.step(quarry)(state, line, next.isDefined)
+            })
             .compile
             .lastOrError
 

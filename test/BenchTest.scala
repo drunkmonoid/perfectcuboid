@@ -16,7 +16,7 @@ class BenchTest extends munit.FunSuite:
     intercept[IllegalArgumentException](Timing(Vector.empty))
 
   test("every search in the benchmark finds the same bricks"):
-    val expected = Bench.baseline._2(2000)
+    val expected = Bench.baseline.search(2000)
     Bench.others.foreach((name, search) => assertEquals(search(2000), expected, name))
 
   test("a scaling row compares its speed with the fewest threads, and perfect scaling"):

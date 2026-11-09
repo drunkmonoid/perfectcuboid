@@ -25,5 +25,5 @@ class ClosestCallsTest extends ScalaCheckSuite:
 
   test("the ranking keeps only primitive bricks, closest first"):
     val ranked = ClosestCalls.ranked(FastSearch.eulerBricksBetween(1, 5000))
-    assert(ranked.forall(_._1.isPrimitive))
-    assertEquals(ranked.map(_._2), ranked.map(_._2).sorted)
+    assert(ranked.forall(_.brick.isPrimitive))
+    assertEquals(ranked.map(_.miss), ranked.map(_.miss).sorted)

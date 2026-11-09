@@ -73,7 +73,7 @@ object Verify:
     Files[IO]
       .readUtf8Lines(path)
       .zipWithNext
-      .fold(State.Start)((state, pair) => step(quarry)(state, pair._1, pair._2.isDefined))
+      .fold(State.Start) { case (state, (line, next)) => step(quarry)(state, line, next.isDefined) }
       .compile
       .lastOrError
 
@@ -92,9 +92,11 @@ object Verify:
     for
       state <- read(quarry, path)
       spotChecks <- blocksToSearch(state.checkpoints, blocks, state.start).traverse: (first, last) =>
-        recorded(quarry, path, first, last).map(found => (first, last, found == quarry.search(first, last).toList))
+        recorded(quarry, path, first, last).map(found =>
+          (first = first, last = last, same = found == quarry.search(first, last).toList)
+        )
     yield
-      val missing = spotChecks.filterNot(_._3)
+      val missing = spotChecks.filterNot(_.same)
       List(
         s"Verifying $path as ${quarry.name}",
         f"  ${state.lines}%,d lines: ${state.finds}%,d ${quarry.name}, ${state.checkpoints.size}%,d checkpoints, " +

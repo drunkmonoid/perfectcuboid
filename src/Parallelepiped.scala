@@ -45,13 +45,13 @@ final case class Parallelepiped(a: Long, b: Long, c: Long, p: Long, q: Long, r: 
   /** The smaller perfect parallelepiped this one is k times, with its k, if there is one:
     * scaling by k multiplies the edges by k and p, q and r by k².
     */
-  def scaledFrom: Option[(Long, Parallelepiped)] =
+  def scaledFrom: Option[(factor: Long, from: Parallelepiped)] =
     NumberTheory
       .divisors(gcd(gcd(a, b), c))
       .filter(_ > 1)
       .filter(k => p % (k * k) == 0 && q % (k * k) == 0 && r % (k * k) == 0)
-      .map(k => k -> Parallelepiped(a / k, b / k, c / k, p / (k * k), q / (k * k), r / (k * k)))
-      .find(_._2.isPerfect)
+      .map(k => (factor = k, from = Parallelepiped(a / k, b / k, c / k, p / (k * k), q / (k * k), r / (k * k))))
+      .find(_.from.isPerfect)
 
   private def lengths(squares: List[Long]) = squares.map(n => exactSqrt(n).fold(s"√$n")(_.toString))
 

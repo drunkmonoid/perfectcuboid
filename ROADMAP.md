@@ -163,7 +163,7 @@ buys, and make the results easier to see and to reuse.
 
 - [x] **58. Derived formats.** Each hunt kind's line format derived from its type with
   `derives`, in place of the hand-written `line` and `parse`.
-- [ ] **59. Newer Scala 3.** Named tuples and the other recent features, where they make the
+- [x] **59. Newer Scala 3.** Named tuples and the other recent features, where they make the
   code read better, and nowhere else.
 - [ ] **60. Stopping at any moment.** A property test that cancels a hunt at random points and
   checks that resuming always ends in the same file.

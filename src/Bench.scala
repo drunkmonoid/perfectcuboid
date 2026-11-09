@@ -32,7 +32,8 @@ object Bench:
   type BrickSearch = Long => Vector[Cuboid]
 
   /** The search the others are compared with: the readable one. */
-  val baseline: (String, BrickSearch) = "readable" -> (n => Search.allEulerBricks.takeWhile(_.a <= n).toVector)
+  val baseline: (name: String, search: BrickSearch) =
+    (name = "readable", search = n => Search.allEulerBricks.takeWhile(_.a <= n).toVector)
 
   val others: List[(String, BrickSearch)] = List(
     "fast, one edge at a time" -> (n => FastSearch.allEulerBricksOneByOne.takeWhile(_.a <= n).toVector),
@@ -45,15 +46,15 @@ object Bench:
     "parallel, futures" -> (n => FastSearch.allEulerBricksParallel().takeWhile(_.a <= n).toVector)
   )
 
-  def time[A](body: => A): (A, Double) =
+  def time[A](body: => A): (result: A, seconds: Double) =
     val start = System.nanoTime
     val result = body
-    (result, (System.nanoTime - start) / 1e9)
+    (result = result, seconds = (System.nanoTime - start) / 1e9)
 
-  def measure[A](warmUps: Int, runs: Int)(body: => A): (A, Timing) =
+  def measure[A](warmUps: Int, runs: Int)(body: => A): (result: A, timing: Timing) =
     for _ <- 1 to warmUps do body: Unit
     val timed = Vector.fill(runs)(time(body))
-    (timed.head._1, Timing(timed.map(_._2)))
+    (result = timed.head.result, timing = Timing(timed.map(_.seconds)))
 
   /** Where the timings were taken. The heap cap matters too, but there is no way to read it
     * that also builds for Scala Native, whose `Runtime` has no `maxMemory`: so set it in the
@@ -68,8 +69,8 @@ object Bench:
       println(f"  $name%-26s ${timing.median}%7.3f s  (${timing.min}%.3f to ${timing.max}%.3f)  $note")
     println(s"Euler bricks with smallest edge <= $maxSmallestEdge, $runs timed runs after $warmUps warm-ups")
     println(machine)
-    val (expected, base) = measure(warmUps, runs)(baseline._2(maxSmallestEdge))
-    line(baseline._1, base, s"${expected.size} bricks")
+    val (expected, base) = measure(warmUps, runs)(baseline.search(maxSmallestEdge))
+    line(baseline.name, base, s"${expected.size} bricks")
     for (name, search) <- others do
       val (bricks, timing) = measure(warmUps, runs)(search(maxSmallestEdge))
       line(name, timing, f"${base.median / timing.median}%5.1fx faster, same result: ${bricks == expected}")

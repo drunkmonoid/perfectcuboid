@@ -38,19 +38,19 @@ object Merge:
         if exists then IO.pure(List(s"$out exists already: merge only writes new files"))
         else
           inputs
-            .traverse(path => Hunt.readResume(quarry, path).map(path -> _))
+            .traverse(path => Hunt.readResume(quarry, path).map(resume => (path = path, resume = resume)))
             .flatMap: read =>
-              val shards = read.sortBy(_._2.from)
-              val found = problems(shards.map((path, r) => Shard(path.toString, r.from, r.searchedUpTo)))
+              val shards = read.sortBy(_.resume.from)
+              val found = problems(shards.map(s => Shard(s.path.toString, s.resume.from, s.resume.searchedUpTo)))
               if found.nonEmpty then IO.pure("Cannot merge:" :: found.map("  " + _))
-              else write(quarry, out, shards).as(report(quarry, out, shards.map(_._2)))
+              else write(quarry, out, shards).as(report(quarry, out, shards.map(_.resume)))
 
   /** Each shard's bytes up to its last checkpoint, without its start line; one start line, if
     * the whole range does not start at 1, goes first. Anything after a shard's last checkpoint
     * belongs to an unfinished block, and is left out.
     */
-  private def write[A](quarry: Quarry[A], out: Path, shards: List[(Path, HuntFile.Resume)]): IO[Unit] =
-    val from = shards.head._2.from
+  private def write[A](quarry: Quarry[A], out: Path, shards: List[(path: Path, resume: HuntFile.Resume)]): IO[Unit] =
+    val from = shards.head.resume.from
     val start = Stream.emit(HuntFile.startLine(quarry, from)).filter(_ => from > 1).through(fs2.text.utf8.encode)
     val bodies = Stream
       .emits(shards)

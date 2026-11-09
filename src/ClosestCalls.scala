@@ -23,5 +23,5 @@ object ClosestCalls:
     distanceToWhole(BigInt(brick.a).pow(2) + BigInt(brick.b).pow(2) + BigInt(brick.c).pow(2))
 
   /** The primitive bricks among these, closest first. */
-  def ranked(bricks: Iterable[Cuboid]): Vector[(Cuboid, Double)] =
-    bricks.iterator.filter(_.isPrimitive).map(b => b -> miss(b)).toVector.sortBy(_._2)
+  def ranked(bricks: Iterable[Cuboid]): Vector[(brick: Cuboid, miss: Double)] =
+    bricks.iterator.filter(_.isPrimitive).map(b => (brick = b, miss = miss(b))).toVector.sortBy(_.miss)
