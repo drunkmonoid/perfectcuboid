@@ -104,3 +104,80 @@ Same rules: one phase, one commit, every test passing.
   through the ideas.
 - [x] **40. Version 1.0.** A final pass over README and RESULTS, a changelog, and a
   `v1.0` tag.
+
+## Towards 2.0
+
+Thirty more, same rules. Measure before speeding anything up, search further with what that
+buys, and make the results easier to see and to reuse.
+
+### Measuring first
+
+- [ ] **41. Profiles.** JFR profiles of `unbounded` and `hunt` on an idle machine: how the time
+  splits between sieving, generating legs, pairing them and the 128-bit square checks.
+- [ ] **42. Microbenchmarks.** JMH benchmarks (`scala-cli --power --jmh`) of the kernels: `isqrt`,
+  `Wide` square roots, Montgomery multiplication, a sieve block, the legs of one edge.
+- [ ] **43. An allocation-free inner loop.** Legs written into reused primitive arrays, no boxing
+  in the pair loop, checked with JFR's allocation profile.
+- [ ] **44. Rejecting pairs sooner.** More remainder tests on b² + c² before the 128-bit square
+  root, each kept only if a count of the pairs it rejects says it pays.
+- [ ] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
+  tuned, and charted in `docs/`.
+- [ ] **46. Native threads.** Find why native hunts crash on several threads, fix it, and
+  compare native with the JVM at full thread count.
+
+### Searching further
+
+- [ ] **47. Ranges and shards.** `hunt --from`, so a range can be split across runs or machines,
+  and `merge` to join shard files into one that `verify` accepts.
+- [ ] **48. Reading results files.** `stats`, `origins`, `closest`, `rules` and the charts run
+  over a hunt's file instead of a fresh search.
+- [ ] **49. Past the `Long`.** Smallest edges above 3,037,000,499, whose squares overflow a
+  `Long`, with `Wide` all the way through, so the search has no limit left.
+- [ ] **50. The long hunt.** Every primitive brick with smallest edge up to 3·10⁹, over several
+  resumable nights, verified, and recorded in RESULTS.md.
+- [ ] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
+  closest near misses found.
+- [ ] **52. Search by space diagonal.** Face cuboids found a second way, from the sums of three
+  squares that make a square, as an independent check on the first.
+
+### More mathematics
+
+- [ ] **53. How unlucky are we?** A heuristic for the number of perfect cuboids to expect among
+  the bricks found, if each space diagonal were a square by chance, and how it grows.
+- [ ] **54. Perfect parallelepipeds.** Sawyer and Reiter's 2009 box with slanted faces, whose
+  edges, face diagonals and body diagonals are all whole, checked exactly, and a small search.
+- [ ] **55. More families.** Parametric families of Euler bricks from the literature, generated,
+  checked, and measured against the 10⁹ catalogue.
+- [ ] **56. Local densities.** How often each residue pattern occurs among the primitive bricks
+  found, against the shares `Local` predicts.
+- [ ] **57. Records.** The edges with the most bricks, the longest and flattest bricks, and how
+  the number of bricks on an edge follows from its number of legs.
+
+### Scala
+
+- [ ] **58. Derived formats.** Each hunt kind's line format derived from its type with
+  `derives`, in place of the hand-written `line` and `parse`.
+- [ ] **59. Newer Scala 3.** Named tuples and the other recent features, where they make the
+  code read better, and nowhere else.
+- [ ] **60. Stopping at any moment.** A property test that cancels a hunt at random points and
+  checks that resuming always ends in the same file.
+- [ ] **61. One test suite, three platforms.** The tests of the shared code run on Scala.js and
+  Scala Native too, in CI.
+- [ ] **62. API docs.** `scala-cli doc` for the library, with every public definition described.
+
+### Sharing it
+
+- [ ] **63. GitHub Pages.** The check page, the charts and the API docs published by CI.
+- [ ] **64. Searching in the browser.** A web worker running the unbounded search on the page,
+  with progress, and stopped at any time.
+- [ ] **65. The catalogue online.** A page listing the primitive bricks found, sortable and
+  filterable, each one opening in the checker.
+- [ ] **66. Releases.** On a tag, CI builds native binaries for Linux and macOS and a runnable
+  jar, and attaches them to a GitHub release.
+- [ ] **67. Tour, part two.** Worksheets for what came after 1.0: `Wide`, the hunt's effects,
+  the browser build.
+- [ ] **68. An essay.** What looking for a perfect cuboid taught us, in plain words, with the
+  charts, for readers who know neither the problem nor Scala.
+- [ ] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
+  run a shard and check it.
+- [ ] **70. Version 2.0.** A final pass over every document, the changelog, and a `v2.0` tag.
