@@ -20,3 +20,16 @@ class PageTest extends munit.FunSuite:
 
   test("text is escaped in the page"):
     assert(Page.render(Left("<b>")).contains("&lt;b&gt;"))
+
+  test("a block of the browser's search finds what the search finds"):
+    val block = Hunting.block(1, 1000)
+    assertEquals(block.last, 1000L)
+    assertEquals(block.bricks, 69) // every Euler brick with smallest edge up to 1000, as in RESULTS.md
+    assertEquals(block.primitive.take(2), List("44 × 117 × 240", "85 × 132 × 720"))
+
+  test("the progress line says how far, how many and how long yet"):
+    assertEquals(
+      Hunting.progress(5000, 20000, 69, 14, 2.0),
+      "Searched up to 5,000 of 20,000: 69 Euler bricks, 14 primitive, 2,500 edges a second, about 6 s left."
+    )
+    assert(!Hunting.progress(20000, 20000, 1, 1, 1.0).contains("left"))

@@ -174,7 +174,7 @@ buys, and make the results easier to see and to reuse.
 ### Sharing it
 
 - [x] **63. GitHub Pages.** The check page, the charts and the API docs published by CI.
-- [ ] **64. Searching in the browser.** A web worker running the unbounded search on the page,
+- [x] **64. Searching in the browser.** A web worker running the unbounded search on the page,
   with progress, and stopped at any time.
 - [ ] **65. The catalogue online.** A page listing the primitive bricks found, sortable and
   filterable, each one opening in the checker.

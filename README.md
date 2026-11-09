@@ -17,7 +17,9 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 ![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
 
 [`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser: the
-same Scala, compiled to JavaScript by Scala.js. Open it from a clone of the repository, or on the
+same Scala, compiled to JavaScript by Scala.js, and it can also run the search itself, in a
+background thread of the browser (about 35,000 edges a second). Open it from a clone of the
+repository through a local web server (browsers start no background threads from files), or on the
 project's site, which also has the charts and the API docs. The site is built by the `Pages`
 workflow on every version tag, once GitHub Pages is switched on for the repository (Settings >
 Pages > Source: GitHub Actions); it then lives at https://drunkmonoid.github.io/perfectcuboid/.

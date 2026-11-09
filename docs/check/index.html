@@ -47,6 +47,12 @@
   dt { color: var(--ink-2); }
   dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
   ul { margin: 0; padding-left: 1.25rem; overflow-wrap: anywhere; }
+  .search { display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; margin-bottom: .75rem; }
+  .search label { flex: 1 1 12rem; }
+  .search button { font-size: .95rem; padding: .5rem 1rem; border-radius: 8px; }
+  .search button:disabled { opacity: .45; cursor: default; }
+  #search-status { color: var(--ink-2); font-variant-numeric: tabular-nums; min-height: 1.5em; }
+  #search-bricks { columns: 2 16rem; font-variant-numeric: tabular-nums; font-size: .9rem; }
   footer { margin-top: 2rem; color: var(--ink-2); font-size: .85rem; }
   a { color: var(--accent); }
 </style>
@@ -69,6 +75,16 @@
     <button data-box="1 2 3">ordinary box</button>
   </div>
   <section id="result" aria-live="polite"></section>
+  <h2>Search in your browser</h2>
+  <p class="lede">The same search as the command line's, on every smallest edge up to a limit, run in a
+    background thread of your browser. It lists the primitive Euler bricks as it finds them.</p>
+  <div class="search">
+    <label>smallest edge up to <input id="up-to" inputmode="numeric" value="100000"></label>
+    <button id="start">Start</button>
+    <button id="stop" disabled>Stop</button>
+  </div>
+  <p id="search-status" aria-live="polite"></p>
+  <ol id="search-bricks"></ol>
   <footer>Scala 3 compiled to JavaScript with Scala.js, from
     <a href="https://github.com/drunkmonoid/perfectcuboid">perfectcuboid</a>.</footer>
 </main>

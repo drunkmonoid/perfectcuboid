@@ -880,6 +880,14 @@ on JavaScript is emulated in software, and on Scala Native it is a machine word,
 unoptimised, the search for perfect parallelepipeds up to 300 took longer than munit's 30
 seconds.
 
+### Searching in the browser
+
+The page in `docs/check` runs the search too: the same `FastSearch`, compiled to JavaScript, in a
+web worker, a background thread of the browser, so the page stays responsive. In headless
+Chrome it searched every smallest edge up to 20,000 at about 35,000 edges a second and listed
+the same 74 primitive bricks as the 10⁹ hunt holds there; Stop ended the worker at once. That is
+a tenth of the JVM's speed on one thread here, with every `Long` emulated in JavaScript.
+
 ### Every core, as separate processes
 
 Since phase 47 a hunt can cover one range of edges, a shard: `hunt FILE UPTO --from FIRST`
