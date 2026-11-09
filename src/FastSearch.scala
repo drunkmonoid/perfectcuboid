@@ -36,6 +36,13 @@ object FastSearch:
       rest = rest.tail
     out
 
+  /** The block searches go up to here: every edge of a `Cuboid` is at most `Edge.Max`. Up to
+    * `Search.MaxSmallestEdge`, a² fits in a Long and every leg that pairs with a is within
+    * `Edge.Max`, so the search finds every brick. Beyond, it finds every brick whose edges are
+    * all within `Edge.Max`, which is every brick a `Cuboid` can hold.
+    */
+  val MaxSmallestEdge: Long = Edge.Max
+
   /** The legs y > a that pair with a, sorted. Same as filtering
     * `Pythagorean.legsPairedWith(a)`, but without building any lists.
     */
@@ -43,6 +50,24 @@ object FastSearch:
 
   /** The same, given the factorisation of a. */
   def legsAbove(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
+    if a > Search.MaxSmallestEdge then legsAboveWide(a, factors) else legsAboveLong(a, factors)
+
+  /** For a above `Search.MaxSmallestEdge`, where a² overflows a Long: the same, in BigInt
+    * arithmetic, keeping only the legs up to `Edge.Max`. Slow, but these edges are rarely
+    * searched.
+    */
+  private[perfectcuboid] def legsAboveWide(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
+    val n = BigInt(a) * a
+    val legs =
+      for
+        d <- NumberTheory.divisorsBig(factors.map((p, k) => p -> 2 * k))
+        if d < a
+        difference = n / d - d
+        if !difference.testBit(0) && difference / 2 > a && difference / 2 <= Edge.Max
+      yield (difference / 2).toLong
+    IArray.from(legs.sorted)
+
+  private[perfectcuboid] def legsAboveLong(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
     val n = a * a
     val ds = divisors(factors.map((p, k) => p -> 2 * k))
     val legs = new Array[Long](ds.length)
@@ -140,7 +165,10 @@ object FastSearch:
 
   /** The same bricks, handed out one at a time, without first collecting them in a list. */
   def eulerBricksIterator(first: Long, last: Long): Iterator[Cuboid] =
-    val factors = Sieve.factorizeBlock(first, last)
+    // Beyond 10¹², the sieve's primes no longer reach the square roots of the edges.
+    val factors =
+      if last <= Sieve.MaxLast then Sieve.factorizeBlock(first, last)
+      else IArray.from((first to last).map(NumberTheory.factorize))
     (first to last).iterator.flatMap(a => eulerBricksWithLegs(a, legsAbove(a, factors((a - first).toInt))))
 
   /** Same result as `Search.allEulerBricks`, a block of edges at a time. */

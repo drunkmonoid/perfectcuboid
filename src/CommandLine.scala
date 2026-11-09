@@ -193,7 +193,7 @@ object CommandLine:
     Opts.subcommand("hunt", "Long search to FILE, up to UPTO. Ctrl+C stops, rerun resumes.")(
       (
         Opts.argument[String]("FILE"),
-        number("UPTO", Search.MaxSmallestEdge, Search.MaxSmallestEdge),
+        number("UPTO", Search.MaxSmallestEdge, FastSearch.MaxSmallestEdge),
         kind,
         threads,
         blockSize,
@@ -201,7 +201,9 @@ object CommandLine:
           .option[Long]("from", "Start a new FILE at this edge instead of 1, to search one range of several.")(using
             wholeNumber
           )
-          .validate(s"--from must be from 1 to ${Search.MaxSmallestEdge}")(n => n >= 1 && n <= Search.MaxSmallestEdge)
+          .validate(s"--from must be from 1 to ${FastSearch.MaxSmallestEdge}")(n =>
+            n >= 1 && n <= FastSearch.MaxSmallestEdge
+          )
           .orNone
       ).mapN(Command.Hunt(_, _, _, _, _, _))
     )

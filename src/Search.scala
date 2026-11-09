@@ -4,9 +4,9 @@ import Arith.*
 
 object Search:
 
-  /** The searches by smallest edge go up to here: the largest a whose square fits in a Long.
-    * Every leg that pairs with such an a is below a²/2, so within `Edge.Max`: no brick is
-    * left out for being too long.
+  /** The readable searches by smallest edge go up to here: the largest a whose square fits in
+    * a Long. Every leg that pairs with such an a is below a²/2, so within `Edge.Max`: no brick
+    * is left out for being too long. (`FastSearch` can go further.)
     */
   val MaxSmallestEdge: Long = isqrt(Long.MaxValue)
 

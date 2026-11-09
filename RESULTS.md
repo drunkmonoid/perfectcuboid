@@ -51,6 +51,23 @@ The other edges of a brick can be far longer than the smallest: the longest foun
 b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges were capped at
 1,753,413,056, and the same hunt found 11,309 fewer bricks.
 
+**No limit below `Edge.Max`.** Up to 3,037,000,499 an edge's square fits in a `Long`, and
+every leg that pairs with it stays below `Edge.Max` ≈ 5.3·10¹⁸, the longest edge whose
+diagonals fit in a `Long`. Since phase 49, the block search goes on past that edge: it works
+out a² and its divisor pairs in `BigInt` arithmetic, and keeps the legs up to `Edge.Max`. So
+from there on it finds every brick whose edges all fit, which is every brick a `Cuboid` can
+hold. Past 10¹², where the sieve's primes no longer reach the edges' square roots, each edge is
+factorised on its own, by trial division and Pollard's rho.
+
+| 100,000 smallest edges from, primitive bricks, 12 threads | time | `verify` |
+| --- | ---: | --- |
+| 3,037,000,001, across the old limit | 3 s | OK |
+| 3,037,000,500, just past it | 3 s | OK |
+| 1,000,000,000,001, past the sieve | 7 s | OK |
+
+A test scales the brick 44 × 117 × 240 up so that its smallest edge lands just past the old
+limit, and again past 10¹², and checks the search finds both.
+
 Published searches have gone far beyond this: Matson (2015) showed that a perfect cuboid's
 smallest edge would have to be above 5·10¹¹. The point here is a search that is easy to
 read, checked by tests, and safe to stop and resume.

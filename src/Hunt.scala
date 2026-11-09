@@ -162,7 +162,9 @@ object Hunt:
   ): IO[Unit] =
     readResume(quarry, path).flatMap: found =>
       val start = if found.isEmpty then from.getOrElse(1L) else found.from
-      if !found.isEmpty && from.exists(_ != found.from) then
+      if upTo > quarry.maxKey then
+        IO.println(f"${quarry.name} can only be hunted up to ${quarry.key} ${quarry.maxKey}%,d")
+      else if !found.isEmpty && from.exists(_ != found.from) then
         IO.println(s"$path covers ${quarry.key}s from ${found.from}, not ${from.getOrElse(1L)}: use another file")
       else if upTo < start then IO.println(s"Nothing to search: $upTo is before ${quarry.key} $start")
       else

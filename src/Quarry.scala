@@ -15,6 +15,8 @@ package perfectcuboid
   * @param check
   *   whether a find really is of this kind, worked out again with BigInt, independently of
   *   the search, for `verify`
+  * @param maxKey
+  *   how far the search can go
   */
 final case class Quarry[A](
     name: String,
@@ -24,7 +26,8 @@ final case class Quarry[A](
     parse: String => Option[A],
     summarize: A => Summary,
     keyOf: A => Long,
-    check: A => Boolean
+    check: A => Boolean,
+    maxKey: Long = Search.MaxSmallestEdge
 )
 
 object Quarry:
@@ -52,7 +55,8 @@ object Quarry:
       parseCuboid,
       Summary.of,
       _.a,
-      cuboid => BigCuboid.from(cuboid).isEuler
+      cuboid => BigCuboid.from(cuboid).isEuler,
+      FastSearch.MaxSmallestEdge
     )
 
   /** The primitive Euler bricks only: the same search, but only primitive bricks are kept.

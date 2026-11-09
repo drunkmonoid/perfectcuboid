@@ -171,3 +171,15 @@ class HuntTest extends munit.CatsEffectSuite:
     assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 102, 200))).head.contains("leaves a gap"))
     assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 90, 200))).head.contains("overlaps"))
     assert(Merge.problems(List(Shard("a", 1, 100), Shard("b", 101, 100))).head.contains("no checkpoint"))
+
+  test("a hunt past the Long square limit verifies, and other kinds stop at their own limit"):
+    withTempFile: path =>
+      val first = Search.MaxSmallestEdge - 99
+      for
+        _ <- Hunt.run(Quarry.eulerBricks, path, first + 299, blockSize = 100, cores = 4, from = Some(first))
+        report <- Verify.run(Quarry.eulerBricks, path, blocks = 3)
+        resume <- Hunt.readResume(Quarry.eulerBricks, path)
+        _ <- Hunt.run(Quarry.faceCuboids, path, Search.MaxSmallestEdge + 1) // refused before reading on
+      yield
+        assertEquals(resume.searchedUpTo, first + 299)
+        assertEquals(report.last, "OK", report)
