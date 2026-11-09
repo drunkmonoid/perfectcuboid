@@ -56,6 +56,36 @@ object NearMisses:
       cuboid <- Cuboid.of(s, x, y)
     yield cuboid
 
+  /** Face cuboids, and any perfect cuboid, whose space diagonal is d: found the other way
+    * round from `faceCuboidsWithSharedEdge`, as an independent check on it.
+    *
+    * If a face cuboid has whole face diagonal p on the face s × x, then d² = p² + y², with y
+    * its third edge. So (p, y) is a pair of legs under the hypotenuse d, and (s, x) a pair under
+    * p: two splittings of a hypotenuse, where the other search pairs legs. Each face cuboid
+    * comes up twice this way, once for each of its whole face diagonals, and is kept once.
+    */
+  def faceCuboidsWithSpaceDiagonal(d: Long): List[Cuboid] =
+    val found =
+      for
+        (u, v) <- Pythagorean.legsWithHypotenuse(d)
+        (p, y) <- List((u, v), (v, u))
+        (s, x) <- Pythagorean.legsWithHypotenuse(p)
+        if y <= SquaredCuboid.MaxEdge && x <= SquaredCuboid.MaxEdge
+        if isPerfectSquare(s * s + y * y) || isPerfectSquare(x * x + y * y)
+        cuboid <- Cuboid.of(s, x, y)
+      yield cuboid
+    found.distinct.sortBy(c => (c.a: Long, c.b: Long))
+
+  /** The face cuboids with space diagonal up to `limit`, found both ways: from each space
+    * diagonal, and from each shared edge (which is always shorter than the space diagonal).
+    */
+  def bothWays(limit: Long): (List[Cuboid], List[Cuboid]) =
+    def diagonal(c: Cuboid): Long = c.spaceDiagonal.fold(Long.MaxValue)(d => d: Long)
+    val fromDiagonals = (1L to limit).toList.flatMap(faceCuboidsWithSpaceDiagonal)
+    val fromSharedEdges = (1L to limit).toList.flatMap(faceCuboidsWithSharedEdge).filter(diagonal(_) <= limit)
+    def inOrder(cuboids: List[Cuboid]) = cuboids.sortBy(c => (diagonal(c), c.a: Long, c.b: Long))
+    (inOrder(fromDiagonals), inOrder(fromSharedEdges))
+
   /** Every face cuboid with edges up to SquaredCuboid.MaxEdge, ordered by shared edge. */
   def allFaceCuboids: LazyList[Cuboid] =
     LazyList.iterate(1L)(_ + 1).takeWhile(_ <= SquaredCuboid.MaxEdge).flatMap(faceCuboidsWithSharedEdge)

@@ -85,6 +85,7 @@ object Cli:
     case Report.Saunderson(limit)           => saundersonReport(limit)
     case Report.Legs(leg)                   => legsReport(leg)
     case Report.FaceCuboids(maxSharedEdge)  => faceReport(maxSharedEdge)
+    case Report.CrossCheck(limit)           => crossCheckReport(limit)
     case Report.EdgeCuboids(maxSquaredEdge) => edgeReport(maxSquaredEdge)
     case Report.NearMisses                  => nearMissesReport
     case Report.Stats(maxExponent)          => statsReport(maxExponent)
@@ -143,6 +144,17 @@ object Cli:
     s"Face cuboids whose whole face diagonals meet at an edge <= $maxSharedEdge"
       #:: cuboids.map(c => describeSquared(c.squared.get)) // face cuboids keep to SquaredCuboid.MaxEdge
       :+ "Done."
+
+  def crossCheckReport(limit: Long): LazyList[String] =
+    val (fromDiagonals, fromSharedEdges) = NearMisses.bothWays(limit)
+    val missing = fromSharedEdges.diff(fromDiagonals) ++ fromDiagonals.diff(fromSharedEdges)
+    LazyList(
+      s"Face cuboids with space diagonal <= $limit, found two independent ways:",
+      s"  from the space diagonal, split twice into two legs: ${fromDiagonals.size}",
+      s"  from the shared edge, pairing its legs:             ${fromSharedEdges.size}",
+      if missing.isEmpty then "  the same cuboids both ways" else s"  ${missing.size} found only one way:"
+    ) ++ missing.map(c => "    " + describeSquared(c.squared.get)) ++
+      LazyList("The first few:") ++ fromDiagonals.take(5).map(c => "  " + describeSquared(c.squared.get))
 
   def edgeReport(maxSquaredEdge: Long): LazyList[String] =
     val cuboids =

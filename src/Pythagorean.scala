@@ -44,6 +44,24 @@ object Pythagorean:
       yield (e - d) / 2
     xs.sorted
 
+  /** Every pair of legs x < y with x² + y² = h², smallest x first.
+    *
+    * Every Pythagorean triple is k times a primitive one, (m² − n², 2mn, m² + n²) with m > n
+    * coprime and of opposite parity. So for each divisor q of h, as m² + n², the triple is
+    * scaled by k = h / q, and m runs only up to √q: no need to try every x below h.
+    */
+  def legsWithHypotenuse(h: Long): List[(Long, Long)] =
+    val pairs =
+      for
+        q <- NumberTheory.divisors(h)
+        n <- Iterator.iterate(1L)(_ + 1).takeWhile(n => 2 * n * n < q).toList
+        m <- exactSqrt(q - n * n).toList
+        if m > n && (m - n) % 2 == 1 && gcd(m, n) == 1
+        k = h / q
+        (odd, even) = (k * (m * m - n * n), k * 2 * m * n)
+      yield (odd min even, odd max even)
+    pairs.distinct.sorted
+
   /** Every y with a² + y² a perfect square, smallest first: the completions of a².
     * The divisors of a² come straight from the factorisation of a, with every exponent doubled.
     */

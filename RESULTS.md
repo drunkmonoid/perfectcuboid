@@ -324,6 +324,28 @@ scala-cli run . -- nearmisses
   those are multiples of the first two. The one usually quoted, 520 × 576 × √618849, is the
   second; 1443 × 1800 × √461776 comes first.
 
+### Face cuboids, found a second way
+
+```sh
+scala-cli run . -- crosscheck 1e5   # about a minute
+```
+
+The face cuboid search starts from the edge where the two whole face diagonals meet and pairs
+up the legs that go with it. `crosscheck` also finds them the other way round, from the space
+diagonal d. If the face s × x has the whole diagonal p, and y is the third edge, then
+d² = p² + y² and p² = s² + x²: so a face cuboid is a hypotenuse split into two legs, one of
+which splits again. The splits come from Euclid's formula, k(m² − n², 2mn, m² + n²), over the
+divisors of the hypotenuse, with no legs paired at all. The two searches share only the test
+for squares.
+
+| space diagonal ≤ | from the space diagonal | from the shared edge | the same |
+| ---: | ---: | ---: | --- |
+| 10⁴ | 85 | 85 | yes |
+| 10⁵ | 1,127 | 1,127 | yes |
+
+So the first search misses none of the face cuboids up to there, and the second finds none
+the first does not.
+
 ## Speed
 
 ```sh

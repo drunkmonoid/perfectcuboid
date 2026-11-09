@@ -12,6 +12,7 @@ enum Report:
   case Saunderson(limit: Long)
   case Legs(leg: Long)
   case FaceCuboids(maxSharedEdge: Long)
+  case CrossCheck(maxSpaceDiagonal: Long)
   case EdgeCuboids(maxSquaredEdge: Long)
   case NearMisses
   case Stats(maxExponent: Int)
@@ -100,6 +101,9 @@ object CommandLine:
     ),
     report("face", "Face cuboids whose whole face diagonals meet at an edge up to LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.FaceCuboids(_))
+    ),
+    report("crosscheck", "Face cuboids with space diagonal up to LIMIT (default 10000), found two ways, compared.")(
+      number("LIMIT", 10_000, SquaredCuboid.MaxEdge).map(Report.CrossCheck(_))
     ),
     report("edge", "Edge cuboids whose irrational edge is at most √LIMIT (default 1000).")(
       number("LIMIT", 1000).map(Report.EdgeCuboids(_))

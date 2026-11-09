@@ -37,6 +37,7 @@ scala-cli run . -- verify hunt-primitive.txt --kind primitive    # check a hunt'
 scala-cli run . -- analyse hunt-primitive.txt --kind primitive   # counts, rules, origins and closest calls of its bricks
 scala-cli run . -- face 1000             # face cuboids: one face diagonal irrational
 scala-cli run . -- edge 3000000          # edge cuboids: one edge irrational
+scala-cli run . -- crosscheck 1e5        # face cuboids found two independent ways, compared
 scala-cli run . -- nearmisses            # the first body, face and edge cuboid
 scala-cli run . -- bench 1e6 --runs 3    # time the readable, fast and parallel searches
 scala-cli run . -- scaling --chart t.svg # search speed on 1 thread, 2, ... every core

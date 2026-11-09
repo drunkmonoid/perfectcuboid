@@ -1,0 +1,10 @@
+Face cuboids with space diagonal <= 3000, found two independent ways:
+  from the space diagonal, split twice into two legs: 15
+  from the shared edge, pairing its legs:             15
+  the same cuboids both ways
+The first few:
+  104 × 153 × 672   face diagonals 185, 680, √474993   space diagonal 697
+  117 × 520 × 756   face diagonals 533, 765, √841936   space diagonal 925
+  448 × 495 × 840   face diagonals √445729, 952, 975   space diagonal 1073
+  264 × 448 × 975   face diagonals 520, √1020321, 1073   space diagonal 1105
+  264 × 495 × 952   face diagonals 561, √976000, 1073   space diagonal 1105

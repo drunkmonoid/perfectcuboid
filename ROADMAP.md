@@ -142,7 +142,7 @@ buys, and make the results easier to see and to reuse.
   resumable nights, verified, and recorded in RESULTS.md.
 - [ ] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
   closest near misses found.
-- [ ] **52. Search by space diagonal.** Face cuboids found a second way, from the sums of three
+- [x] **52. Search by space diagonal.** Face cuboids found a second way, from the sums of three
   squares that make a square, as an independent check on the first.
 
 ### More mathematics

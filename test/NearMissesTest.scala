@@ -44,3 +44,15 @@ class NearMissesTest extends munit.ScalaCheckSuite:
     val firstTwo = NearMisses.allEdgeCuboids.take(2).toList
     assertEquals(firstTwo, List(squared(461776, 1443 * 1443, 1800 * 1800), squared(520 * 520, 576 * 576, 618849)))
     assert(firstTwo.forall(_.kind == Kind.Edge))
+
+  test("the legs under a hypotenuse are those a brute-force search finds"):
+    for h <- 1L to 2000L do
+      val brute =
+        (1L until h).filter(x => Arith.isPerfectSquare(h * h - x * x)).map(x => (x, Arith.isqrt(h * h - x * x)))
+      assertEquals(Pythagorean.legsWithHypotenuse(h), brute.filter(_ < _).toList, s"h = $h")
+
+  test("face cuboids found from the space diagonal are those found from the shared edge"):
+    val (fromDiagonals, fromSharedEdges) = NearMisses.bothWays(5000)
+    assertEquals(fromDiagonals, fromSharedEdges)
+    assert(fromDiagonals.contains(Cuboid.of(104, 153, 672).get))
+    assert(fromDiagonals.forall(c => c.kind == Kind.Face))
