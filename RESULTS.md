@@ -538,9 +538,8 @@ start-up, about 0.8 s.
   rather than a `LazyList`, so memory stays flat. In phase 10 both crashed.
 - **The JVM is faster.** One thread for one thread, it takes 11.2 s where native takes 18.5 s,
   and it can use every core.
-- **Allocating on several threads at once** still breaks native runs. With `--threads 4`,
-  two of four runs crashed, with a segmentation fault or an error exit. The runs that
-  finished gave the right bricks.
+- **Several threads break native runs**, and not only by crashing: some runs that finish
+  give wrong answers. Native runs now refuse `--threads` above 1; the next section says why.
 - **Lazy lists** still keep too much alive on native: its collector scans the stack
   conservatively, so it can hold on to the start of a `LazyList` and every element computed
   after it. The reports built on `LazyList`s and `Future`s, like `stats`, still crash.
@@ -549,3 +548,48 @@ start-up, about 0.8 s.
 
 So the JVM is the platform for this project, and the native build is for short commands
 and patient single-threaded hunts.
+
+### Why several threads break native runs
+
+Phase 46 looked for the cause. With the faster search of phases 43 and 44, `unbounded 300000`
+on 4 threads, run five times as a native executable, crashed three times: twice with an array
+index of tens of millions into the filter's table of 437 Longs, once with a segmentation
+fault. Of the two runs that finished, neither printed the JVM's 27,387 lines. One thread gave
+the JVM's output exactly, every time.
+
+The index comes from a table of remainders that the search fills a moment earlier with
+numbers below 27,907, in an array no other thread can see. So the array's memory changed
+underneath the code. Narrowing it down, each experiment five or six runs of 100,000 or
+300,000 edges on 4 threads:
+
+| experiment | result |
+| --- | --- |
+| as built, 1 thread | right every time |
+| as built, 4 threads | crashes or wrong answers in most runs |
+| multithreading support forced on when linking | the same (it was on already) |
+| the `commix` garbage collector instead of `immix` | the same |
+| no Cats Effect or fs2: 4 plain `Thread`s calling the search | the same |
+| 4 plain threads, 2 GB heap, so the collector never needs to run | right every time |
+| 4 plain threads, 256 MB heap | 3 runs of 4 wrong |
+| 4 plain threads, 256 MB heap, an unoptimised debug build | right every time, 4 times slower |
+
+So the search's code is not the cause, and neither are Cats Effect and fs2: nothing is
+shared between the threads, and the same code is right on one thread and on the JVM. What
+breaks it is a garbage collection while several threads are running optimised native code.
+That is a fault inside Scala Native 0.5.12 (the newest release), whose collector scans
+stacks conservatively. One plausible mechanism: optimised code can keep a pointer into the
+middle of an array and drop the pointer to its start, and a collector that only recognises
+the start frees the array while it is still in use.
+
+A wrong answer is worse than a crash in a search like this one, so native runs now refuse
+`--threads` above 1, with a message saying why. To use every core with the native build, run
+several single-threaded processes on separate ranges of edges (phase 47).
+
+| hunt, by its own timer | to 10⁶ | 300,000 edges near 10⁹ | memory |
+| --- | ---: | ---: | ---: |
+| native, 1 thread | 9 s | 15 s | 94–111 MB |
+| JVM, 1 thread | 5 s | 11 s | 280 MB |
+| JVM, 12 threads | 2 s | 4 s | 400–500 MB |
+
+All three wrote the same files. The JVM is faster even on one thread, and the native build
+uses a third of the memory.

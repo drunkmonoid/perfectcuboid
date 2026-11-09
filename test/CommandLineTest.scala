@@ -32,6 +32,10 @@ class CommandLineTest extends munit.FunSuite:
       Right(Command.Scaling(1_000_000, 100_000, Hunt.DefaultBlockSize, List(1, 4), Some("t.svg")))
     )
 
+  test("Scala Native allows one thread only, the JVM any number"):
+    assert(Platform.threadsAllowed(1, native = true) && !Platform.threadsAllowed(2, native = true))
+    assert(Platform.threadsAllowed(12, native = false) && !Platform.threadsAllowed(0, native = false))
+
   test("left-out numbers take their defaults"):
     assertEquals(parse("stats"), Right(Command.Print(Report.Stats(6))))
     assertEquals(

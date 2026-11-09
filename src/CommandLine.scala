@@ -74,6 +74,7 @@ object CommandLine:
       .option[Int]("threads", "How many threads to search on (default: every core, but 1 on Scala Native).")
       .withDefault(Platform.defaultThreads)
       .validate("--threads must be at least 1")(_ >= 1)
+      .validate(Platform.tooManyThreads)(Platform.threadsAllowed(_))
 
   private def report(name: String, help: String)(opts: Opts[Report]): Opts[Command] =
     Opts.subcommand(name, help)(opts.map(Command.Print(_)))
@@ -208,8 +209,9 @@ object CommandLine:
         Opts
           .options[Int]("threads", "A number of threads to time; repeat it for more (default: 1 to every core).")
           .map(_.toList)
-          .withDefault((1 to Runtime.getRuntime.availableProcessors).toList)
-          .validate("--threads must be at least 1")(_.forall(_ >= 1)),
+          .withDefault((1 to Platform.defaultThreads).toList)
+          .validate("--threads must be at least 1")(_.forall(_ >= 1))
+          .validate(Platform.tooManyThreads)(_.forall(Platform.threadsAllowed(_))),
         Opts.option[String]("chart", "Also draw the speeds as an SVG chart in this file.").orNone
       ).mapN(Command.Scaling(_, _, _, _, _))
     )

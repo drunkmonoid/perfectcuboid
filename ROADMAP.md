@@ -123,8 +123,10 @@ buys, and make the results easier to see and to reuse.
   root, each kept only if a count of the pairs it rejects says it pays.
 - [x] **45. Scaling across threads.** Speed at 1 to 12 threads and for different block sizes,
   tuned, and charted in `docs/`.
-- [ ] **46. Native threads.** Find why native hunts crash on several threads, fix it, and
-  compare native with the JVM at full thread count.
+- [x] **46. Native threads.** Find why native hunts crash on several threads, fix it, and
+  compare native with the JVM at full thread count. (The cause turned out to be inside Scala
+  Native's garbage collector, beyond this project's reach, so native runs now refuse more
+  than one thread instead.)
 
 ### Searching further
 

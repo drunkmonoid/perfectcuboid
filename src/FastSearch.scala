@@ -161,7 +161,7 @@ object FastSearch:
     * `Future`s, and the results are put back in order before anyone sees them. The
     * `using ExecutionContext` parameter is the thread pool, which the caller provides.
     */
-  def allEulerBricksParallel(blockSize: Long = 2000, cores: Int = Runtime.getRuntime.availableProcessors)(using
+  def allEulerBricksParallel(blockSize: Long = 2000, cores: Int = Platform.defaultThreads)(using
       ExecutionContext
   ): LazyList[Cuboid] =
     def searchBlock(start: Long): List[Cuboid] =
