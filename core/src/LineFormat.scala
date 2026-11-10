@@ -59,6 +59,9 @@ object LineFormat:
   */
 final case class EdgesLine(a: Long, b: Long, c: Long) derives LineFormat
 
+/** A parallelepiped's line: its edges a ≥ b ≥ c and p = 2u·v, q = 2u·w, r = 2v·w. */
+final case class ParallelepipedLine(a: Long, b: Long, c: Long, p: Long, q: Long, r: Long) derives LineFormat
+
 /** One edge of a `SquaredCuboid`: a whole number n, or the square root of one, √n. */
 enum Length:
   case Whole(n: Long)

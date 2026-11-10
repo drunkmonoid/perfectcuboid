@@ -7,6 +7,10 @@ import scala.concurrent.duration.*
 /** A CatsEffectSuite runs tests that return an `IO`. */
 class HuntTest extends munit.CatsEffectSuite:
 
+  // These run whole hunts, some several times over: beside a long hunt, or the other platforms'
+  // tests, they can take longer than munit's usual 30 seconds.
+  override val munitIOTimeout: scala.concurrent.duration.Duration = scala.concurrent.duration.Duration(180, "s")
+
   def expected(upTo: Long): List[(Long, Long, Long)] =
     FastSearch.eulerBricksBetween(1, upTo).map(c => (c.a: Long, c.b: Long, c.c: Long))
 
@@ -163,6 +167,22 @@ class HuntTest extends munit.CatsEffectSuite:
         assertEquals(found.toSet, bySharedEdge.toSet)
         assert(found.nonEmpty)
         assertEquals(report.last, "OK", report)
+
+  test("a hunt of parallelepipeds finds what their search finds, resumes to the same file, and verifies"):
+    def lines(path: Path) = Files[IO].readUtf8Lines(path).compile.toList
+    withTempFile: once =>
+      withTempFile: twice =>
+        for
+          _ <- Hunt.run(Quarry.parallelepipeds, once, 200, blockSize = 50, cores = 4)
+          _ <- Hunt.run(Quarry.parallelepipeds, twice, 100, blockSize = 50, cores = 4)
+          _ <- Hunt.run(Quarry.parallelepipeds, twice, 200, blockSize = 50, cores = 4)
+          one <- lines(once)
+          two <- lines(twice)
+          report <- Verify.run(Quarry.parallelepipeds, once, blocks = 2)
+        yield
+          assertEquals(two, one)
+          assertEquals(HuntFile.parse(Quarry.parallelepipeds, one), Parallelepiped.search(200))
+          assertEquals(report.last, "OK", report)
 
   test("a new file says what it holds on its first line"):
     withTempFile: path =>

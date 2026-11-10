@@ -28,3 +28,17 @@ class ParallelepipedTest extends munit.FunSuite:
     assert(twice.isPerfect)
     assertEquals(twice.scaledFrom, Some((factor = 2L, from = Parallelepiped.sawyerReiter)))
     assertEquals(Parallelepiped.sawyerReiter.scaledFrom, None)
+
+  test("sums of two squares from the factors are those found by trying every one"):
+    for n <- 0L to 20_000L do assertEquals(Parallelepiped.twoSquares(n), Parallelepiped.twoSquaresByTrial(n), s"n = $n")
+
+  test("and so for large numbers too"):
+    val rng = scala.util.Random(83)
+    for _ <- 1 to 200 do
+      val n = rng.nextLong(1_000_000_000_000L) + 1
+      assertEquals(Parallelepiped.twoSquares(n), Parallelepiped.twoSquaresByTrial(n), s"n = $n")
+
+  test("searching in blocks finds what searching all at once does"):
+    val whole = Parallelepiped.search(160)
+    val blocks = List((1L, 40L), (41L, 97L), (98L, 160L)).flatMap(Parallelepiped.searchBetween)
+    assertEquals(blocks, whole)

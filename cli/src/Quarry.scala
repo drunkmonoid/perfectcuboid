@@ -117,6 +117,52 @@ object Quarry:
       SquaredCuboid.MaxEdge
     )
 
+  private def parallelepipedLine(s: Parallelepiped): String =
+    LineFormat.write(ParallelepipedLine(s.a, s.b, s.c, s.p, s.q, s.r))
+
+  private def parseParallelepiped(line: String): Option[Parallelepiped] =
+    LineFormat.parse[ParallelepipedLine](line).map(l => Parallelepiped(l.a, l.b, l.c, l.p, l.q, l.r))
+
+  /** A perfect parallelepiped checked again with BigInt, without `Parallelepiped`'s code: edges in
+    * order, solid (twice its Gram matrix positive definite), and all 13 lengths whole.
+    */
+  private def checkParallelepiped(s: Parallelepiped): Boolean =
+    val List(a, b, c, p, q, r) = List(s.a, s.b, s.c, s.p, s.q, s.r).map(BigInt(_)): @unchecked
+    val edges = a * a + b * b + c * c
+    val squares = List(
+      a * a + b * b + p,
+      a * a + b * b - p,
+      a * a + c * c + q,
+      a * a + c * c - q,
+      b * b + c * c + r,
+      b * b + c * c - r,
+      edges + p + q + r,
+      edges + p - q - r,
+      edges - p + q - r,
+      edges - p - q + r
+    )
+    val (x, y, z) = (2 * a * a, 2 * b * b, 2 * c * c)
+    val det = x * (y * z - r * r) - p * (p * z - r * q) + q * (p * r - y * q)
+    a >= b && b >= c && c >= 1 && x * y - p * p > 0 && det > 0 &&
+    squares.forall(n => n >= 0 && Arith.isPerfectSquareBig(n))
+
+  /** Perfect parallelepipeds by their longest edge (phase 84): each shape once, as
+    * `Parallelepiped.search` finds them. Primitive means not a scaled copy of a smaller one; a
+    * perfect cuboid, the right-angled case, would count as perfect.
+    */
+  val parallelepipeds: Quarry[Parallelepiped] =
+    Quarry(
+      "perfect parallelepipeds",
+      "longest edge",
+      (first, last) => Parallelepiped.searchBetween(first, last).iterator,
+      parallelepipedLine,
+      parseParallelepiped,
+      s => Summary.one(s.scaledFrom.isEmpty, s.isCuboid, Specimen(BigInt(s.a) * s.a, parallelepipedLine(s))),
+      _.a,
+      checkParallelepiped,
+      1_000_000
+    )
+
   private def squaredLine(c: SquaredCuboid): String =
     LineFormat.write(SquaredLine(Length.of(c.a2), Length.of(c.b2), Length.of(c.c2)))
 
@@ -159,6 +205,7 @@ object Quarry:
       "primitive" -> primitiveBricks,
       "odd" -> oddEdge,
       "diagonal" -> faceByDiagonal,
+      "parallelepiped" -> parallelepipeds,
       "face" -> faceCuboids,
       "edge" -> edgeCuboids
     )
