@@ -233,7 +233,7 @@ one found; `verify` checks the whole file at the end either way.
   the search by smallest edge, and the two cross-checked where their ranges overlap.
 - [ ] **79. Sieving the diagonals.** Legs generated for a whole block of edges at once from a
   sieve, instead of one edge's factors at a time; kept if faster.
-- [ ] **80. The Vector API.** The remainder filters and the square test on SIMD lanes
+- [x] **80. The Vector API.** The remainder filters and the square test on SIMD lanes
   (`jdk.incubator.vector`), measured with JMH; kept if they pay.
 - [ ] **81. A GPU experiment.** The pair test on the laptop's integrated GPU through OpenCL,
   measured against the CPU. Kept in `experiments/` with its numbers, whatever they say.

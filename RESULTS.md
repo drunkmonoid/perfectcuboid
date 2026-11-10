@@ -1149,6 +1149,36 @@ of three that phases 43 and 44 won. On this laptop, busy with a hunt, the ratio 
 to 1.49, which is why the baseline had to come from CI itself, and why `--check` is meant for
 CI's machines, which run nothing else.
 
+### SIMD lanes, by the Vector API
+
+```sh
+./mill experiments.vector.assembly
+java --add-modules jdk.incubator.vector -jar out/experiments/vector/assembly.dest/out.jar 999000001 3000
+```
+
+Phase 80 tried the three remainder filters on 8 lanes at once, with Java's Vector API
+(`experiments/vector`): for one leg, the remainders of the next 8 legs' squares added to its own,
+brought below the modulus, and looked up, all three moduli for all 8 lanes. The lookups are
+gathers, which Java 17's API reads from an array of indices. This laptop's processor has AVX2,
+256 bits, so 8 lanes of 32-bit numbers, and no AVX-512. All four versions count the same pairs.
+On an idle machine, 3,000 edges, the medians of 11 runs:
+
+| the filters, 3,000 edges from | 999,000,001 | 2,999,000,001 |
+| --- | ---: | ---: |
+| as the search does them: one bit per remainder, a plain loop | 122.7 ms | 95.5 ms |
+| a plain loop on tables of one `int` per remainder | 218.9 ms | 169.2 ms |
+| 8 lanes on the `int` tables | 96.1 ms (1.28×) | 79.3 ms (1.20×) |
+| 8 lanes on the bit tables | 94.4 ms (1.30×) | 74.4 ms (1.28×) |
+
+So the lanes pay, by about 1.3 on the filters. (A first try, on a machine busy with a hunt,
+compared them with the plain loop on `int` tables and seemed to show twice that: the tables of
+330 KB, too big for the fastest cache, were what made that loop slow, not the lack of lanes.)
+The filters are now about three quarters of the search's time (the GPU's numbers below), so
+the whole search would be about 1.2 times as fast. It is not in the search yet: the Vector API
+is still an incubator module, which every run must add by hand and which warns that it may
+change, and it is JVM-only, where the search is the same code on three platforms. When the API is
+final, this is the first speed-up to take.
+
 ### Threads
 
 ```sh
