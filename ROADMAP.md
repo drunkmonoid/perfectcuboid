@@ -187,3 +187,100 @@ buys, and make the results easier to see and to reuse.
 - [x] **69. A contributor's guide.** How to add a hunt kind, a command or a chart, and how to
   run a shard and check it.
 - [x] **70. Version 2.0.** A final pass over every document, the changelog, and a `v2.0` tag.
+
+## Towards 3.0
+
+Thirty more, same rules. First a build that can't drift out of step with itself, then the
+search made faster by better methods rather than more hours, then further, and every
+experiment kept with its measurements whether or not it pays.
+
+The machine hunts by night and is built on by day. So nothing is measured while a hunt
+runs: benchmarks and timings wait for an idle machine. Each night the hunt resumes with the
+newest build only if that build's search has been shown to find exactly the bricks the old
+one found; `verify` checks the whole file at the end either way.
+
+### By night
+
+- [ ] **71. Forecasts first.** Before the long hunt, write down what the models predict for
+  it: how many primitive bricks, how they divide by residue pattern, the records, the chance.
+  Committed before the hunt's first night.
+- [ ] **72. The hunt to 10¹⁰, by night.** Every primitive brick with smallest edge up to 10¹⁰,
+  run each night and stopped each morning (`timeout --signal=INT`, which stops it as Ctrl+C
+  does), verified, and held against phase 71's forecasts. It finishes whenever the nights add
+  up, so its commit may come after later phases.
+
+### Building
+
+- [ ] **73. Mill.** One `core` module built for the JVM, JavaScript and Scala Native, with `cli`,
+  `web` and `bench` depending on it, so no build lists the files it takes from another. The
+  same checks as now, and CI and CONTRIBUTING moved over.
+- [ ] **74. The tour on the core.** The worksheets use the built core instead of listing source
+  files, so a change in `core` can no longer break them unnoticed.
+- [ ] **75. Faster CI.** The JVM, JavaScript and Native checks as parallel jobs, with the
+  build cached, so a push is checked in minutes, not a quarter of an hour.
+- [ ] **76. Mutation testing.** Stryker4s over the arithmetic and the search: every surviving
+  mutant either killed by a new test or explained.
+- [ ] **77. A speed guard.** A check in CI that times the search against a fixed reference
+  kernel on the same runner and fails on a large slowdown, kept only if it proves stable.
+
+### Searching faster
+
+- [ ] **78. Search by the odd edge.** Every primitive brick has exactly one odd edge, and odd
+  numbers pair with fewer legs. A search by the odd edge, its speed and its coverage against
+  the search by smallest edge, and the two cross-checked where their ranges overlap.
+- [ ] **79. Sieving the diagonals.** Legs generated for a whole block of edges at once from a
+  sieve, instead of one edge's factors at a time; kept if faster.
+- [ ] **80. The Vector API.** The remainder filters and the square test on SIMD lanes
+  (`jdk.incubator.vector`), measured with JMH; kept if they pay.
+- [ ] **81. A GPU experiment.** The pair test on the laptop's integrated GPU through OpenCL,
+  measured against the CPU. Kept in `experiments/` with its numbers, whatever they say.
+- [ ] **82. Processes on one machine.** `hunt --processes N` runs N shards side by side and
+  merges them, so the native build uses every core too.
+
+### Searching further
+
+- [ ] **83. From the space diagonal.** A search for perfect cuboids that starts from the space
+  diagonal d and its sums of three squares, skipping Euler bricks altogether; how far it gets
+  per hour against the brick search.
+- [ ] **84. Parallelepipeds, further.** The perfect parallelepiped search with its symmetries
+  used, taken as far as an hour goes, and counted by size.
+
+### More mathematics
+
+- [ ] **85. Gaussian perfect cuboids.** Boxes whose edges and diagonals are Gaussian integers
+  a + bi, where perfect ones are known to exist: a search, and the smallest found.
+- [ ] **86. Points over finite fields.** The number of solutions of the perfect cuboid
+  equations mod p for every prime up to a bound, against the count a random system would give.
+- [ ] **87. Certificates.** `Local`'s proofs written out as certificates that a small,
+  independent checker verifies, sharing no code with the prover.
+- [ ] **88. The brick graph.** Primitive bricks joined by derivation and by curve multiples:
+  its components, how far each family reaches, and a chart.
+- [ ] **89. Where the misses fall.** The fractional parts of all the space diagonals, tested for
+  uniformity, as a check on the chance heuristic of phase 53.
+
+### Scala
+
+- [ ] **90. Typed results files.** A header naming the kind and the format version, so `verify`
+  and `merge` refuse a mismatch by themselves; older files still read.
+- [ ] **91. Checked literals.** Limits and edges written as literals checked at compile time,
+  and checked once at the program's edge otherwise.
+- [ ] **92. Hunt events.** Custom JFR events for blocks and checkpoints, so a profile of a hunt
+  reads in the hunt's own terms.
+- [ ] **93. A notebook.** A Jupyter notebook (Almond) that explores the catalogue with the
+  core library.
+- [ ] **94. The core as a library.** A small public API, published locally, and an example
+  project outside the build that uses it, checked in CI.
+
+### Sharing it
+
+- [ ] **95. A brick in 3D.** The checker draws the box, its diagonals and their lengths, and
+  turns it with the mouse.
+- [ ] **96. Charts that answer back.** The site's brick chart zooms and filters, and each dot
+  opens the brick in the catalogue.
+- [ ] **97. OEIS b-files.** The hunt's bricks written out as b-files for A031173, A031174 and
+  A031175, ready to offer; submitting them stays a person's decision.
+- [ ] **98. A methods note.** How the searches work and how their results were verified,
+  written for readers who know the problem.
+- [ ] **99. Tour, part three.** Worksheets for what 3.0 adds: the Mill build, the Vector API,
+  the notebook.
+- [ ] **100. Version 3.0.** A final pass over every document, the changelog, and a `v3.0` tag.
