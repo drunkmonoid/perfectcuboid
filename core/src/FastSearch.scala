@@ -158,14 +158,14 @@ object FastSearch:
     * are far from random: 7, 17 and 41, for example, let 74–89% through, and the powers of 2,
     * 3 and 5 are not much better.
     */
-  private val FirstModulus = 11 * 43 * 59
-  private val SecondModulus = 19 * 53 * 37
-  private val ThirdModulus = 13 * 47 * 29
+  private[perfectcuboid] val FirstModulus = 11 * 43 * 59
+  private[perfectcuboid] val SecondModulus = 19 * 53 * 37
+  private[perfectcuboid] val ThirdModulus = 13 * 47 * 29
 
   /** Bit r is set when some square leaves remainder r mod m: one bit per remainder, so that
     * each table, 2 to 5 KB, stays in the processor's fastest cache.
     */
-  private def squareRemainderBits(m: Int): IArray[Long] =
+  private[perfectcuboid] def squareRemainderBits(m: Int): IArray[Long] =
     val bits = new Array[Long]((m + 63) / 64)
     for r <- 0 until m do
       val square = (r.toLong * r % m).toInt
@@ -177,7 +177,7 @@ object FastSearch:
   private val ThirdSquares = squareRemainderBits(ThirdModulus)
 
   /** The remainders of the legs' squares mod m, each computed once for all its pairs. */
-  private def squareRemainders(legs: IArray[Long], m: Int): Array[Int] =
+  private[perfectcuboid] def squareRemainders(legs: IArray[Long], m: Int): Array[Int] =
     val out = new Array[Int](legs.length)
     var i = 0
     while i < legs.length do
