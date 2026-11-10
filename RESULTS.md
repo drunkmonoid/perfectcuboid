@@ -1041,6 +1041,24 @@ Three times as fast near 10⁹. The hunts found the same primitive bricks as the
 in the same ranges, and every Euler brick with smallest edge from 5,000,001 to 5,300,000,
 27,813 of them, came out byte for byte the same as before.
 
+### A guard in CI
+
+```sh
+./mill speed.run           # the ratio
+./mill speed.run --check   # ... and fail if it is 1.5 times the baseline
+```
+
+So that the speed won here is not lost again unnoticed, CI times the search over 3,000 edges
+just below 10⁹ beside a reference kernel, a fixed brute-force test of pairs a² + b² that does
+the same kind of work but never changes, in the same JVM, taking turns, 15 times each after a
+warm-up (`speed/src/Guard.scala`). The ratio of the two medians cancels the machine's speed.
+GitHub gives each run a different machine, and over six runs the times ranged from 95 to 143 ms
+while the ratio stayed between 0.99 and 1.11. So the baseline is 1.05 (`speed/baseline.txt`),
+and a run fails above 1.5 times it: far beyond the ratio's own noise, well short of the factor
+of three that phases 43 and 44 won. On this laptop, busy with a hunt, the ratio ranged from 1.13
+to 1.49, which is why the baseline had to come from CI itself, and why `--check` is meant for
+CI's machines, which run nothing else.
+
 ### Threads
 
 ```sh

@@ -223,7 +223,7 @@ one found; `verify` checks the whole file at the end either way.
   brought a run from 5–7 minutes to 4, by running the test suites in parallel.)
 - [ ] **76. Mutation testing.** Stryker4s over the arithmetic and the search: every surviving
   mutant either killed by a new test or explained.
-- [ ] **77. A speed guard.** A check in CI that times the search against a fixed reference
+- [x] **77. A speed guard.** A check in CI that times the search against a fixed reference
   kernel on the same runner and fails on a large slowdown, kept only if it proves stable.
 
 ### Searching faster

@@ -1,0 +1,4 @@
+# The speed guard's baseline: the search's time over the reference kernel's, on GitHub's runners.
+# Six runs from phases 77 to 86 measured 0.987, 1.014, 1.055, 1.056, 1.075 and 1.105, while the
+# times themselves ranged from 95 to 143 ms. `./mill speed.run --check` fails above 1.5 times this.
+1.05
