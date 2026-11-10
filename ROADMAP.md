@@ -252,7 +252,7 @@ one found; `verify` checks the whole file at the end either way.
 
 - [ ] **85. Gaussian perfect cuboids.** Boxes whose edges and diagonals are Gaussian integers
   a + bi, where perfect ones are known to exist: a search, and the smallest found.
-- [ ] **86. Points over finite fields.** The number of solutions of the perfect cuboid
+- [x] **86. Points over finite fields.** The number of solutions of the perfect cuboid
   equations mod p for every prime up to a bound, against the count a random system would give.
 - [ ] **87. Certificates.** `Local`'s proofs written out as certificates that a small,
   independent checker verifies, sharing no code with the prover.

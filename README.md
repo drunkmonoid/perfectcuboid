@@ -86,6 +86,7 @@ perfectcuboid legs 240                   # factorise a number and list every leg
 perfectcuboid legs 3825123056546413051   # ... any number up to 2⁶³ − 1
 perfectcuboid rules 100000               # check the known Euler brick rules on every brick found
 perfectcuboid local                      # prove such rules by trying every remainder mod pᵏ
+perfectcuboid fields 200                 # the perfect cuboid equations mod every prime: counts and formulas
 perfectcuboid saunderson 1e7             # Saunderson's bricks, built from a formula
 perfectcuboid derived 1e6                # primitive bricks paired with their derived bricks ab × ac × bc
 perfectcuboid curve 44 117 240           # new bricks from points on elliptic curves
@@ -161,6 +162,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Coverage.scala` | families of bricks built from Pythagorean triples, against the bricks a search found |
 | `cli/src/Records.scala` | records among the bricks found, and how bricks per edge follow its legs |
 | `cli/src/BrickGraph.scala` | the primitive bricks found, joined into families by derivation and curve multiples |
+| `cli/src/FiniteFields.scala` | the perfect cuboid equations mod p: how many solutions, and formulas for them |
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |

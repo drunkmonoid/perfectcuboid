@@ -708,6 +708,59 @@ patterns written as how often p divides each edge, largest first:
   variables are too few; they also count every solution mod pᵏ alike, while these bricks
   were chosen by their smallest edge.
 
+### The equations mod every prime
+
+```sh
+java -jar perfectcuboid.jar fields 1000   # 5 minutes
+```
+
+Take the perfect cuboid's equations, a² + b² = x², a² + c² = y², b² + c² = z² and
+a² + b² + c² = w², with every number taken mod a prime p (`FiniteFields.scala`). Four equations
+in seven unknowns: equations that behaved like random ones would leave about p³ of the p⁷
+choices. The count is quick, since for each (a, b, c) the number of x with x² = t is 1 + (t/p),
+(t/p) the Legendre symbol; a test checks it against trying all p⁷ choices for p = 3, 5 and 7.
+
+| p | p mod 8 | solutions | / p³ | with none of the seven 0 |
+| ---: | ---: | ---: | ---: | ---: |
+| 3 | 3 | 49 | 1.81 | 0 |
+| 5 | 5 | 193 | 1.54 | 0 |
+| 7 | 7 | 721 | 2.10 | 0 |
+| 11 | 3 | 2,161 | 1.62 | 0 |
+| 13 | 5 | 3,649 | 1.66 | 0 |
+| 17 | 1 | 7,681 | 1.56 | 0 |
+| 19 | 3 | 7,345 | 1.07 | 0 |
+| 23 | 7 | 16,721 | 1.37 | 5,632 |
+| 29 | 5 | 33,601 | 1.38 | 0 |
+| 31 | 7 | 38,161 | 1.28 | 17,280 |
+| 37 | 5 | 52,417 | 1.03 | 0 |
+| 41 | 1 | 88,321 | 1.28 | 30,720 |
+| 101 | 5 | 1,041,601 | 1.01 | 614,400 |
+| 997 | 5 | 1,003,505,857 | 1.01 | 960,749,568 |
+
+**The same rules, a second way.** Mod 3, 5, 7, 11, 13, 17, 19, 29 and 37 there is no solution
+with all seven lengths nonzero, and mod every other prime up to 1000 there is one. So a perfect
+cuboid has a length divisible by each of those nine primes: exactly the odd primes the rules
+above found by trying remainders mod pᵏ for p up to 37, here from counting mod p alone, and
+up to 1000 there are no others.
+
+**Exact formulas.** The counts come close to p³ as p grows, but not by chance: they follow
+exact formulas, one for each class of p mod 8. With p = x² + 2y² when p ≡ 1 or 3 (mod 8), and
+p = u² + v², u odd, when p ≡ 1 or 5 (mod 8), the number of solutions is
+
+| p mod 8 | solutions mod p |
+| --- | --- |
+| 7 | p³ + 9p² − 9p |
+| 3 | p³ + 9p² − 9p − 16y²(p − 1) |
+| 5 | p³ + 9p² − 9p + (4u² − 8v²)(p − 1) |
+| 1 | p³ + 9p² − 9p + (4u² − 8v² + 16x²)(p − 1) |
+
+They were found here by fitting the counts, not by proof, and they give the count exactly for
+all 167 odd primes up to 1000; `fields` checks each one. Formulas of this kind, built from how p
+is written with the Gaussian integers (u² + v²) and with √−2 (x² + 2y²), are what one expects when
+the shape the equations define has a lot of structure, the way the number of points of an
+elliptic curve with complex multiplication does. They have not been compared with the literature
+on the perfect cuboid's variety, which may well know them.
+
 ## Near misses
 
 Each kind has exactly one irrational length out of seven.

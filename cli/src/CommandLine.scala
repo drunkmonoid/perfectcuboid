@@ -46,6 +46,7 @@ enum Command:
   case Densities(file: String)
   case Records(file: String, legsUpTo: Long)
   case Misses(file: String)
+  case Fields(limit: Int)
   case Graph(file: String, chart: Option[String])
   case Forecast(file: String, target: Long)
   case NearCalls(file: String, face: Boolean)
@@ -277,6 +278,18 @@ object CommandLine:
       ).mapN(Command.Graph(_, _))
     )
 
+  private val fields: Opts[Command] =
+    Opts.subcommand(
+      "fields",
+      "The perfect cuboid equations mod every odd prime up to P (default 100): how many solutions."
+    )(
+      Opts
+        .argument[Int]("P")
+        .withDefault(100)
+        .validate("P must be from 3 to 1000")(p => p >= 3 && p <= 1000)
+        .map(Command.Fields(_))
+    )
+
   private val misses: Opts[Command] =
     Opts.subcommand("misses", "Where the space diagonals of the bricks in a hunt's FILE fall between whole numbers.")(
       Opts.argument[String]("FILE").map(Command.Misses(_))
@@ -351,7 +364,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ brickGraph :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ brickGraph :+ fields :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )

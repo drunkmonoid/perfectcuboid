@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | bricks-graph | misses | forecast | nearcalls | pictures | bench | scaling]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | bricks-graph | fields | misses | forecast | nearcalls | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -61,6 +61,8 @@ Subcommands:
         Records among the bricks in a hunt's FILE, and bricks per edge against its legs.
     bricks-graph
         The primitive bricks in a hunt's FILE, joined by derivation and curve multiples.
+    fields
+        The perfect cuboid equations mod every odd prime up to P (default 100): how many solutions.
     misses
         Where the space diagonals of the bricks in a hunt's FILE fall between whole numbers.
     forecast

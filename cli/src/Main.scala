@@ -93,7 +93,8 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
             .compile
             .drain >> IO.println(s"Wrote $c")
       yield ()
-    case Command.Misses(file) =>
+    case Command.Fields(limit) => IO.blocking(FiniteFields.lines(limit)).flatMap(_.traverse_(IO.println))
+    case Command.Misses(file)  =>
       Analysis
         .read(Quarry.eulerBricks, Path(file))
         .flatMap((bricks, resume) => IO.blocking(Misses.lines(bricks, resume.searchedUpTo)))
