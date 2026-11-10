@@ -67,6 +67,18 @@ object Quarry:
       check = cuboid => eulerBricks.check(cuboid) && cuboid.isPrimitive
     )
 
+  /** The primitive Euler bricks by their odd edge (`OddSearch`): the region of bricks whose
+    * odd edge is at most the limit, wherever their smallest edge is.
+    */
+  val oddEdge: Quarry[Cuboid] =
+    primitiveBricks.copy(
+      name = "primitive Euler bricks by odd edge",
+      key = "odd edge",
+      search = OddSearch.primitiveBricksIterator,
+      keyOf = OddSearch.oddEdge,
+      check = cuboid => primitiveBricks.check(cuboid) && OddSearch.oddEdge(cuboid) != 0
+    )
+
   /** The edge of a face cuboid where its two whole face diagonals meet. */
   private def sharedEdge(c: Cuboid): Long =
     val List(ab, ac, bc) = BigCuboid.from(c).faceDiagonals.map(_.isDefined): @unchecked
@@ -119,4 +131,10 @@ object Quarry:
 
   /** By the names the command line uses. */
   val byName: Map[String, Quarry[?]] =
-    Map("bricks" -> eulerBricks, "primitive" -> primitiveBricks, "face" -> faceCuboids, "edge" -> edgeCuboids)
+    Map(
+      "bricks" -> eulerBricks,
+      "primitive" -> primitiveBricks,
+      "odd" -> oddEdge,
+      "face" -> faceCuboids,
+      "edge" -> edgeCuboids
+    )

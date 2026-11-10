@@ -134,6 +134,22 @@ class HuntTest extends munit.CatsEffectSuite:
         )
         assertEquals(report.last, "OK", report)
 
+  test("a hunt by odd edge finds what the odd-edge search finds, resumes to the same file, and verifies"):
+    def lines(path: Path) = Files[IO].readUtf8Lines(path).compile.toList
+    withTempFile: once =>
+      withTempFile: twice =>
+        for
+          _ <- Hunt.run(Quarry.oddEdge, once, 30_000, blockSize = 1000, cores = 4)
+          _ <- Hunt.run(Quarry.oddEdge, twice, 12_000, blockSize = 1000, cores = 4)
+          _ <- Hunt.run(Quarry.oddEdge, twice, 30_000, blockSize = 1000, cores = 4)
+          one <- lines(once)
+          two <- lines(twice)
+          report <- Verify.run(Quarry.oddEdge, once, blocks = 3)
+        yield
+          assertEquals(two, one)
+          assertEquals(HuntFile.parse(Quarry.oddEdge, one), OddSearch.primitiveBricksIterator(1, 30_000).toList)
+          assertEquals(report.last, "OK", report)
+
   test("a hunt can start later, and a later run resumes it from its own start"):
     withTempFile: path =>
       for

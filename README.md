@@ -51,6 +51,7 @@ perfectcuboid bricks 100000              # ... or up to another limit
 perfectcuboid unbounded 1e7              # by smallest edge, other edges unbounded, flat memory
 perfectcuboid hunt hunt-primitive.txt 3e9 --kind primitive   # long search to a file: Ctrl+C stops, rerun resumes
 perfectcuboid hunt hunt-face.txt 1e6 --kind face             # ... of face cuboids (or bricks, or edge)
+perfectcuboid hunt hunt-odd.txt 1e7 --kind odd               # ... of primitive bricks by their odd edge
 perfectcuboid hunt part2.txt 2e9 --from 1000000001           # one range of a longer search, a shard
 perfectcuboid merge all.txt part1.txt part2.txt              # join shards that follow on from each other
 perfectcuboid verify hunt-primitive.txt --kind primitive     # check a hunt's file without trusting the search
@@ -132,6 +133,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `core/src/Counting.scala` | how many triples a number is a leg or hypotenuse of, from its factorisation |
 | `core/src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
 | `core/src/Sieve.scala` | factorising a block of consecutive numbers at once, by a segmented sieve |
+| `core/src/OddSearch.scala` | the primitive bricks found by their odd edge instead of their smallest |
 | `core/src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |
 | `core/src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |
 | `core/src/Theory.scala` | known divisibility and parity rules for Euler bricks |

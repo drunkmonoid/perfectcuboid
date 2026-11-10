@@ -171,7 +171,7 @@ object CommandLine:
     Opts
       .option[String](
         "kind",
-        "bricks (by smallest edge, the default), primitive (the same, primitive only), face (by shared edge) or edge (by squared edge)."
+        "bricks (by smallest edge, the default), primitive (the same, primitive only), odd (primitive, by odd edge), face (by shared edge) or edge (by squared edge)."
       )
       .withDefault("bricks")
       .mapValidated(kind =>

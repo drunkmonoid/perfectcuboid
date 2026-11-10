@@ -498,6 +498,33 @@ better than small ones.
 
 Records are left out: nothing here predicts them better than a guess.
 
+## Searching by the odd edge
+
+```sh
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-odd.txt 1e7 --kind odd    # primitive bricks, by odd edge
+java -jar perfectcuboid.jar verify hunt-odd.txt --kind odd
+```
+
+Every primitive brick has exactly one odd edge, so a search can go through the odd numbers u
+instead and find each primitive brick once, at its odd edge (`OddSearch.scala`). The other two
+edges are legs of u from either side, shorter or longer: of the 1,167 bricks with odd edge up
+to 10⁷, the odd edge is the shortest in 601, the middle in 338 and the longest in 228. Every
+divisor pair of u² gives a leg, since both divisors are odd, and every leg is even.
+
+It covers a different region. A brick's smallest edge is at most its odd edge, so the bricks
+with odd edge up to N are among those with smallest edge up to N, about 70% of them:
+
+| N | primitive bricks, odd edge ≤ N | primitive bricks, smallest edge ≤ N |
+| ---: | ---: | ---: |
+| 10⁵ | 120 | 180 |
+| 10⁶ | 416 | 608 |
+| 10⁷ | 1,167 | 1,647 |
+
+**Cross-checked.** So the hunt by odd edge to 10⁷ must find exactly the bricks of the long
+hunt's file whose odd edge is at most 10⁷, and it does: the same 1,167, none missing and none
+extra. Two searches that share the pair test and the legs' arithmetic, but not the order of
+the edges, which edge they start from, or which legs they pair.
+
 ## Perfect parallelepipeds
 
 ```sh

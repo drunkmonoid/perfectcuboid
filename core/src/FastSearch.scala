@@ -62,6 +62,16 @@ object FastSearch:
     * the products that don't, whose legs are too long anyway.
     */
   private[perfectcuboid] def legsAboveWide(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
+    legsFromDivisorsBelow(a, factors, onlyAbove = true)
+
+  /** Every leg y that pairs with a, shorter than a as well as longer, up to `Edge.Max`, sorted:
+    * for the search by the odd edge (`OddSearch`), where the other two edges can be either.
+    */
+  def legsOf(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
+    legsFromDivisorsBelow(a, factors, onlyAbove = false)
+
+  /** The legs of a from the divisors d < a of a², all of them or only those above a. */
+  private def legsFromDivisorsBelow(a: Long, factors: NumberTheory.Factorization, onlyAbove: Boolean): IArray[Long] =
     val us = new Array[Long](factors.map(_._2 * 2 + 1).product)
     val vs = new Array[Long](us.length)
     us(0) = 1
@@ -97,7 +107,9 @@ object FastSearch:
         // a²/d − d, as unsigned 64-bit numbers; halving it with >>> brings it back below 2⁶³.
         val difference = x * z - us(i) * vs(i)
         val y = difference >>> 1
-        if (difference & 1) == 0 && y > a && y <= Edge.Max then
+        // y > 0: for a = 1 the divisor 1 is not below a, and gives no triangle.
+        val wanted = if onlyAbove then y > a else y > 0
+        if (difference & 1) == 0 && wanted && y <= Edge.Max then
           legs(count) = y
           count += 1
       i += 1
@@ -179,7 +191,7 @@ object FastSearch:
     val sum = if x + y >= m then x + y - m else x + y
     ((squares(sum >>> 6) >>> sum) & 1) != 0
 
-  /** The Euler bricks a × b × c with b and c taken from `legs`, all the legs above a.
+  /** The Euler bricks a × b × c with b and c taken from `legs`, legs that pair with a.
     *
     * Most pairs are ruled out by remainders alone: if b² + c² leaves a remainder mod 27,907
     * that no square leaves, it is not a square. With the remainders of the squared legs
@@ -188,7 +200,7 @@ object FastSearch:
     * pair in 300 is left for the exact test. (Benchmarks chose three moduli: with two, too
     * many pairs reach the exact test, and a fourth costs more than it saves.)
     */
-  private def eulerBricksWithLegs(a: Long, legs: IArray[Long]): List[Cuboid] =
+  private[perfectcuboid] def eulerBricksWithLegs(a: Long, legs: IArray[Long]): List[Cuboid] =
     val first = squareRemainders(legs, FirstModulus)
     val second = squareRemainders(legs, SecondModulus)
     val third = squareRemainders(legs, ThirdModulus)
