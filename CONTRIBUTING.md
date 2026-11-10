@@ -28,9 +28,10 @@ CI runs all of these on every push, and they should all pass first:
 ./mill __.test                                 # every test, on every platform (Native is slow to link)
 ./mill bench.compile
 ./mill api.docJar
-scala-cli fmt --check docs/tour
-./mill __.publishLocal                         # the worksheets use what this publishes
+scala-cli fmt --check docs/tour examples
+./mill __.publishLocal                         # the worksheets and examples use what this publishes
 for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || break; done
+scala-cli test examples/library --server=false
 ```
 
 The compiler is strict: every warning is an error, unused code and discarded values are

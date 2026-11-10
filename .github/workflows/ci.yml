@@ -25,7 +25,7 @@ jobs:
       - name: Formatting
         run: |
           ./mill mill.scalalib.scalafmt/checkFormatAll
-          scala-cli fmt --check docs/tour
+          scala-cli fmt --check docs/tour examples
       - name: Tests on the JVM, and the page's on Node
         run: ./mill '{core.jvm,cli.jvm,web,speed,checker}.test'
       # Fails if the search is 1.5 times as slow, against a reference timed beside it, as the
@@ -40,6 +40,10 @@ jobs:
         run: |
           ./mill __.publishLocal
           for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
+      - name: A project outside the build, on the library as published
+        run: |
+          scala-cli test examples/library --server=false
+          scala-cli run examples/library --server=false
       - name: Name the failed tests
         if: failure()
         run: python3 .github/failed-tests.py

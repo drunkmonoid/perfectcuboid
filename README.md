@@ -101,6 +101,20 @@ perfectcuboid stats 7                    # how the number of Euler bricks grows,
 perfectcuboid pictures docs 7            # the two charts above, as SVG files
 ```
 
+**Using the library**
+
+The core is a library for the JVM, JavaScript and Scala Native, `PerfectCuboid` its few
+functions meant to stay as they are. Published to this machine by `./mill core.__.publishLocal`,
+a project uses it as it would any other library; [`examples/library`](examples/library) is one:
+
+```scala
+//> using repository ivy2Local
+//> using dep io.github.drunkmonoid::perfectcuboid-core::3.0.0-SNAPSHOT
+
+perfectcuboid.PerfectCuboid.primitiveEulerBricks(1, 10_000)   // the 56 primitive bricks
+perfectcuboid.PerfectCuboid.kind(44, 117, 240)                // Some(Body): only the space diagonal irrational
+```
+
 **Working on the code**
 
 ```sh
@@ -140,6 +154,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `core/src/Counting.scala` | how many triples a number is a leg or hypotenuse of, from its factorisation |
 | `core/src/Families.scala` | the Berggren tree of all primitive triples, Saunderson's bricks |
 | `core/src/Sieve.scala` | factorising a block of consecutive numbers at once, by a segmented sieve |
+| `core/src/PerfectCuboid.scala` | the library's few functions meant to stay as they are, for programs outside |
 | `core/src/OddSearch.scala` | the primitive bricks found by their odd edge instead of their smallest |
 | `core/src/FastSearch.scala` | the unbounded search with arrays and while loops, and in parallel |
 | `core/src/NearMisses.scala` | `SquaredCuboid` for irrational edges, face and edge cuboid searches |

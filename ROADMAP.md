@@ -273,7 +273,7 @@ one found; `verify` checks the whole file at the end either way.
   reads in the hunt's own terms.
 - [ ] **93. A notebook.** A Jupyter notebook (Almond) that explores the catalogue with the
   core library.
-- [ ] **94. The core as a library.** A small public API, published locally, and an example
+- [x] **94. The core as a library.** A small public API, published locally, and an example
   project outside the build that uses it, checked in CI.
 
 ### Sharing it
