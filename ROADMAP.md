@@ -284,7 +284,7 @@ one found; `verify` checks the whole file at the end either way.
   opens the brick in the catalogue.
 - [x] **97. OEIS b-files.** The hunt's bricks written out as b-files for A031173, A031174 and
   A031175, ready to offer; submitting them stays a person's decision.
-- [ ] **98. A methods note.** How the searches work and how their results were verified,
+- [x] **98. A methods note.** How the searches work and how their results were verified,
   written for readers who know the problem.
 - [ ] **99. Tour, part three.** Worksheets for what 3.0 adds: the Mill build, the Vector API,
   the notebook.

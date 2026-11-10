@@ -7,7 +7,7 @@ functional Scala 3: is there a box whose edges, face diagonals and space diagona
 numbers? Nobody knows.
 
 The biggest search here went through every primitive Euler brick with smallest edge up to 3·10⁹:
-15,101 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md). See
+15,101 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md); know it already? [The methods](docs/methods.md). See
 [RESULTS.md](RESULTS.md) for that and the rest of what the searches have found,
 [ROADMAP.md](ROADMAP.md) for how the project was built up, [CHANGELOG.md](CHANGELOG.md) for what
 each version holds, and [CONTRIBUTING.md](CONTRIBUTING.md) for how to add to it.

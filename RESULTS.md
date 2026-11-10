@@ -73,7 +73,11 @@ b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges we
 every leg that pairs with it stays below `Edge.Max` ≈ 5.3·10¹⁸, the longest edge whose
 diagonals fit in a `Long`. Since phase 49, the block search goes on past that edge, and keeps
 the legs up to `Edge.Max`. So from there on it finds every brick whose edges all fit, which is
-every brick a `Cuboid` can hold. At first it worked out a²'s divisors in `BigInt` arithmetic,
+every brick a `Cuboid` can hold. Up to a = 3,263,469,420 that is every brick: the longest leg of
+a is below a²/2, and so below `Edge.Max`. Beyond, the legs from the smallest divisors of a² are
+longer than that, so a hunt there finds every brick whose longest edge is at most `Edge.Max`,
+and says nothing of longer ones. For scale: of the 15,101 bricks up to 3·10⁹, the longest edge
+of all is 2.3·10¹⁴. At first it worked out a²'s divisors in `BigInt` arithmetic,
 which halved the speed there. Now each divisor d < a of a² is kept as u·v, with u and v both
 dividing a, so that a²/d = (a/u)·(a/v) is a product of two `Long`s, and it fits in 64 bits
 (read as unsigned) for every leg up to `Edge.Max`. The `BigInt` version stays, as what the
