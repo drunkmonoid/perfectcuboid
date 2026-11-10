@@ -255,6 +255,39 @@ below a million. Every primitive brick has exactly one odd edge (all 15,101 in t
 do), and 416 of them have it below a million: so his list, made without computers, was
 incomplete, unless it counted something else.
 
+### The brick graph
+
+```sh
+java -Xmx2g -jar perfectcuboid.jar bricks-graph hunt-primitive.txt --chart docs/bricks-graph.svg   # 2 minutes
+```
+
+Join two of the primitive bricks found when one is the other's derived brick, or the brick at
+2P, 3P or 4P on one of the other's three curves (`BrickGraph.scala`). The pieces the graph falls
+into are the families these two maps make, as far as the hunt can see them.
+
+| file at 3·10⁹: primitive bricks in a piece | pieces |
+| ---: | ---: |
+| 1 | 8,285 |
+| 2 | 3,374 |
+| 3 | 10 |
+| 4 | 2 |
+| 7 | 2 |
+| 8 | 2 |
+
+3,401 derivations and 50 curve multiples join the 15,101 bricks into 11,675 pieces. More than
+half the bricks are alone, and nearly every piece of two is a brick and its derived partner.
+The largest two hold eight bricks each, from the two smallest bricks of all: Halcke's
+44 × 117 × 240 with its partner 429 × 880 × 2340 and six bricks on their curves, the largest
+92736259 × 505834140 × 2290860000; and 240 × 252 × 275 with 1008 × 1100 × 1155 and six more, up
+to 1649048180 × 1731500589 × 15095757600. Then 140 × 480 × 693 and 160 × 231 × 792, with five.
+
+So the maps that make bricks from bricks reach only a little way within the range searched.
+The curves' multiples grow too fast, their edges about squaring with each step (from Halcke's
+brick, 2P has seven- and eight-digit edges, 3P sixteen to nineteen), and derivation only pairs. Almost every brick found
+stands in a family of one or two: the search finds what no formula here would have made.
+
+![The primitive bricks of the 3·10⁹ hunt, in families joined by derivation and curves](docs/bricks-graph.svg)
+
 ## The Pythagorean graph
 
 ```sh

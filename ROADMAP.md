@@ -256,7 +256,7 @@ one found; `verify` checks the whole file at the end either way.
   equations mod p for every prime up to a bound, against the count a random system would give.
 - [ ] **87. Certificates.** `Local`'s proofs written out as certificates that a small,
   independent checker verifies, sharing no code with the prover.
-- [ ] **88. The brick graph.** Primitive bricks joined by derivation and by curve multiples:
+- [x] **88. The brick graph.** Primitive bricks joined by derivation and by curve multiples:
   its components, how far each family reaches, and a chart.
 - [x] **89. Where the misses fall.** The fractional parts of all the space diagonals, tested for
   uniformity, as a check on the chance heuristic of phase 53.

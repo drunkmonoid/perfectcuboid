@@ -79,6 +79,20 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
         _ <- IO.println("")
         _ <- IO.blocking(Records.legsLines(all, legsUpTo)).flatMap(_.traverse_(IO.println))
       yield ()
+    case Command.Graph(file, chart) =>
+      for
+        (bricks, resume) <- Analysis.read(Quarry.eulerBricks, Path(file))
+        primitive = bricks.filter(_.isPrimitive).map(BigCuboid.from)
+        which = f"with smallest edge up to ${resume.searchedUpTo}%,d"
+        graph <- IO.blocking(BrickGraph.of(primitive))
+        _ <- BrickGraph.lines(graph, which).traverse_(IO.println)
+        _ <- chart.traverse_ : c =>
+          fs2.Stream
+            .emit(BrickGraph.chart(graph))
+            .through(Files[IO].writeUtf8(Path(c)))
+            .compile
+            .drain >> IO.println(s"Wrote $c")
+      yield ()
     case Command.Misses(file) =>
       Analysis
         .read(Quarry.eulerBricks, Path(file))

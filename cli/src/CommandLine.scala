@@ -46,6 +46,7 @@ enum Command:
   case Densities(file: String)
   case Records(file: String, legsUpTo: Long)
   case Misses(file: String)
+  case Graph(file: String, chart: Option[String])
   case Forecast(file: String, target: Long)
   case NearCalls(file: String, face: Boolean)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
@@ -268,6 +269,14 @@ object CommandLine:
       Opts.argument[String]("FILE").map(Command.Densities(_))
     )
 
+  private val brickGraph: Opts[Command] =
+    Opts.subcommand("bricks-graph", "The primitive bricks in a hunt's FILE, joined by derivation and curve multiples.")(
+      (
+        Opts.argument[String]("FILE"),
+        Opts.option[String]("chart", "Also write a chart of the pieces' sizes to this SVG file.").orNone
+      ).mapN(Command.Graph(_, _))
+    )
+
   private val misses: Opts[Command] =
     Opts.subcommand("misses", "Where the space diagonals of the bricks in a hunt's FILE fall between whole numbers.")(
       Opts.argument[String]("FILE").map(Command.Misses(_))
@@ -342,7 +351,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ brickGraph :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )
