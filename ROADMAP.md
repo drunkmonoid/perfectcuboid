@@ -269,7 +269,7 @@ one found; `verify` checks the whole file at the end either way.
   and `merge` refuse a mismatch by themselves; older files still read.
 - [x] **91. Checked literals.** Limits and edges written as literals checked at compile time,
   and checked once at the program's edge otherwise.
-- [ ] **92. Hunt events.** Custom JFR events for blocks and checkpoints, so a profile of a hunt
+- [x] **92. Hunt events.** Custom JFR events for blocks and checkpoints, so a profile of a hunt
   reads in the hunt's own terms.
 - [ ] **93. A notebook.** A Jupyter notebook (Almond) that explores the catalogue with the
   core library.

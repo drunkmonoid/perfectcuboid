@@ -171,6 +171,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
+| `cli/src-jvm/HuntEvents.scala` | Java Flight Recorder events for each block searched and checkpoint written |
 | `cli/src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `cli/src/CommandLine.scala` | the commands, and how the command line is parsed into one |
 | `core/src/Platform.scala` | what differs on Scala Native: one search thread, and no more |

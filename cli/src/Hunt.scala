@@ -149,7 +149,7 @@ object Blocks:
         // would keep everything else waiting, progress reports included, so it runs on the
         // pool meant for long, blocking work.
         IO.blocking:
-          val finds = Chunk.from(quarry.search(first, last).toVector)
+          val finds = Chunk.from(HuntEvents.block(first, last)(quarry.search(first, last).toVector))
           val summary =
             if summarize then finds.foldLeft(Summary.empty)((summary, find) => summary |+| quarry.summarize(find))
             else Summary.empty
@@ -266,10 +266,10 @@ object Hunt:
       .flatMap: cursor =>
         // A write cursor remembers its position, and each write gives back the moved cursor.
         blocks.evalScan(cursor): (cursor, block) =>
+          val bytes = HuntFile.blockText(quarry, block.finds.toList, block.last).getBytes("UTF-8")
           for
-            moved <- cursor.write(
-              Chunk.array(HuntFile.blockText(quarry, block.finds.toList, block.last).getBytes("UTF-8"))
-            )
+            moved <- cursor.write(Chunk.array(bytes))
+            _ <- IO(HuntEvents.checkpoint(block.last, bytes.length))
             _ <- progress.update(p => Progress(block.last, p.found |+| block.summary))
             _ <- block.finds
               .filter(quarry.summarize(_).perfect > 0)

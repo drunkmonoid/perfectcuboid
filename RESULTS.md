@@ -973,6 +973,21 @@ test mod 9 every time. In the same way, an odd edge makes every leg a multiple o
 test mod 64 then passes far more often than for random sums; 5 does something similar. Near 10⁹ that leaves about 1,200
 exact square roots per edge, almost all of them on 128-bit numbers.
 
+### The hunt's own events
+
+```sh
+java -XX:StartFlightRecording=filename=hunt.jfr -jar perfectcuboid.jar hunt hunt.txt 2e5 --threads 2
+jfr summary hunt.jfr                                # 20 perfectcuboid.Block, 20 perfectcuboid.Checkpoint
+jfr print --events perfectcuboid.Block hunt.jfr     # each block: its keys, finds, duration, thread
+```
+
+Since phase 92 a hunt records its own Java Flight Recorder events beside the JVM's: one per
+block searched, with its first and last key, its finds and how long it took, and one per
+checkpoint written, with the bytes (`cli/src-jvm/HuntEvents.scala`). So a profile like the one
+above reads in the hunt's terms: the first block of that run, edges 1 to 10,000, took 490 ms and
+found 849 bricks. JFR costs almost nothing while no recording asks for these events, and Scala
+Native, which has no flight recorder, gets a version that does nothing.
+
 ### Microbenchmarks
 
 ```sh
