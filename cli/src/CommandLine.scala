@@ -19,6 +19,7 @@ enum Report:
   case Stats(maxExponent: Int)
   case Check(a: BigInt, b: BigInt, c: BigInt)
   case LocalRules(maxPrime: Int)
+  case GaussianCuboids(size: Int)
   case Certificates(maxPrime: Int)
   case DerivedPairs(maxSmallestEdge: Long)
   case Curve(a: BigInt, b: BigInt, c: BigInt, multiples: Int)
@@ -136,6 +137,13 @@ object CommandLine:
         .withDefault(37)
         .validate("P must be from 2 to 43")(p => p >= 2 && p <= 43)
         .map(Report.LocalRules(_))
+    ),
+    report("gaussian", "Perfect cuboids with Gaussian integer edges, real and imaginary parts up to N (default 12).")(
+      Opts
+        .argument[Int]("N")
+        .withDefault(12)
+        .validate("N must be from 1 to 200")(n => n >= 1 && n <= 200)
+        .map(Report.GaussianCuboids(_))
     ),
     report("certificates", "The rules of local for primes up to P (default 37), with the evidence, for checker.")(
       Opts

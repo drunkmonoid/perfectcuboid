@@ -785,6 +785,38 @@ the shape the equations define has a lot of structure, the way the number of poi
 elliptic curve with complex multiplication does. They have not been compared with the literature
 on the perfect cuboid's variety, which may well know them.
 
+## Perfect cuboids with Gaussian edges
+
+```sh
+java -Xmx3g -jar perfectcuboid.jar gaussian 150   # a few minutes
+```
+
+Let the edges be Gaussian integers, re + im·i with whole re and im, and ask for all four
+diagonals to be squares of Gaussian integers too (`Gaussian.scala`). Over these, perfect boxes
+are easy if a length may be 0: W. J. A. Colman, [*A perfect cuboid in Gaussian
+integers*](https://www.mathstat.dal.ca/FQ/Scanned/32-3/colman.pdf) (Fibonacci Quarterly 32,
+1994), takes a² + b² = d² and the third edge c = d·i, so that a² + b² + c² = 0 is a square. Whether
+one exists with all seven lengths nonzero his paper leaves open.
+
+The search joins two edges when a² + b² is a square, finds the triangles of that graph, the
+Gaussian Euler bricks, and tests their space diagonals. Each box is counted once among its
+variants by the signs of its edges, their order, multiplying all three by i, and conjugating.
+
+| real and imaginary parts up to | perfect, all seven lengths nonzero | with a length 0 |
+| ---: | ---: | ---: |
+| 8 | 0 | 13 |
+| 12 | 0 | 35 |
+| 60 | 0 | 1,046 |
+| 150 | 0 | 7,608 |
+
+The smallest with a zero is 1 − 2i × 2 − i × 2 + 2i, with face diagonals 2 − 2i, 1 + 2i and
+2 + i, and space diagonal 0; and 3i × 4i × 5 is Colman's kind in its plainest form. Every one of
+the 7,608 has its zero in the space diagonal, none in a face diagonal. (A face diagonal 0 needs
+b = ±ia, and then c² + a² and c² − a² both squares: over the whole numbers, Fermat's right
+triangle with square area, which cannot exist; over the Gaussian integers none turned up
+either.) With all seven lengths nonzero, none: so the Gaussian integers do not make the problem
+easy after all, at least not this far.
+
 ## Near misses
 
 Each kind has exactly one irrational length out of seven.

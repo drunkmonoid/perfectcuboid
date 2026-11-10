@@ -250,8 +250,10 @@ one found; `verify` checks the whole file at the end either way.
 
 ### More mathematics
 
-- [ ] **85. Gaussian perfect cuboids.** Boxes whose edges and diagonals are Gaussian integers
-  a + bi, where perfect ones are known to exist: a search, and the smallest found.
+- [x] **85. Gaussian perfect cuboids.** Boxes whose edges and diagonals are Gaussian integers
+  a + bi, where perfect ones are known to exist: a search, and the smallest found. (Known only
+  with a length 0, it turned out, as in Colman's of 1994; with all seven nonzero the search found
+  none.)
 - [x] **86. Points over finite fields.** The number of solutions of the perfect cuboid
   equations mod p for every prime up to a bound, against the count a random system would give.
 - [x] **87. Certificates.** `Local`'s proofs written out as certificates that a small,

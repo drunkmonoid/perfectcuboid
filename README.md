@@ -69,6 +69,7 @@ perfectcuboid edge 3000000               # edge cuboids: one edge irrational
 perfectcuboid crosscheck 1e5             # face cuboids found two independent ways, compared
 perfectcuboid nearcalls hunt-face.txt --kind face            # the face (or edge) cuboids nearest to perfect
 perfectcuboid parallelepiped 300         # slanted boxes with all 13 lengths whole
+perfectcuboid gaussian 60                # boxes with Gaussian integer edges and all diagonals Gaussian squares
 perfectcuboid nearmisses                 # the first body, face and edge cuboid
 perfectcuboid bench 1e6 --runs 3         # time the readable, fast and parallel searches
 perfectcuboid scaling --chart t.svg      # search speed on 1 thread, 2, ... every core
@@ -166,6 +167,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/BrickGraph.scala` | the primitive bricks found, joined into families by derivation and curve multiples |
 | `cli/src/FiniteFields.scala` | the perfect cuboid equations mod p: how many solutions, and formulas for them |
 | `cli/src/OeisFiles.scala` | the bricks found as OEIS b-files, the published rows kept as they are |
+| `cli/src/Gaussian.scala` | perfect cuboids over the Gaussian integers: the search, and its symmetries |
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |

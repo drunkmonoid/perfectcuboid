@@ -41,6 +41,7 @@ class GoldenTest extends munit.FunSuite:
   golden("saunderson", "saunderson", "1e7")
   golden("legs", "legs", "240")
   golden("certificates", "certificates", "7")
+  golden("gaussian", "gaussian", "8")
   golden("legs-prime", "legs", "2305843009213693951") // 2⁶¹ − 1
   golden("legs-big", "legs", "3825123056546413051") // 149491 · 747451 · 34233211
   golden("legs-many", "legs", "614889782588491410") // the product of the first 15 primes

@@ -176,6 +176,7 @@ object Cli:
     case Report.Check(a, b, c)              => checkReport(a, b, c)
     case Report.LocalRules(maxPrime)        => localReport(maxPrime)
     case Report.Certificates(maxPrime)      => LazyList.from(Local.certificate(maxPrime))
+    case Report.GaussianCuboids(size)       => LazyList.from(Gaussian.lines(size))
     case Report.DerivedPairs(limit)         => derivedReport(limit)
     case Report.Curve(a, b, c, multiples)   => curveReport(a, b, c, multiples)
     case Report.BrickOrigins(limit)         => originsReport(limit)

@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | certificates | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | bricks-graph | fields | bfiles | misses | forecast | nearcalls | pictures | bench | scaling]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | gaussian | certificates | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | bricks-graph | fields | bfiles | misses | forecast | nearcalls | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -29,6 +29,8 @@ Subcommands:
         The seven lengths of the box A × B × C, of any size, and how near perfect it is.
     local
         Rules every Euler brick and perfect cuboid obeys mod primes up to P (default 37), by computer.
+    gaussian
+        Perfect cuboids with Gaussian integer edges, real and imaginary parts up to N (default 12).
     certificates
         The rules of local for primes up to P (default 37), with the evidence, for checker.
     derived

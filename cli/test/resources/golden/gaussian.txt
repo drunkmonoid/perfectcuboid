@@ -1,0 +1,11 @@
+Perfect cuboids with Gaussian edges, real and imaginary parts up to 8, all seven lengths nonzero:
+  0, counted once up to signs, order, multiplying by i and conjugating
+With a diagonal 0 allowed: 13 more, 13 of them with space diagonal 0 and 0 with a face diagonal 0; the smallest:
+  1-2i × 2-1i × 2+2i                   diagonals 2-2i, 1+2i, 2+1i, 0
+  1-3i × 1+3i × 4                      diagonals 4i, 3-1i, 3+1i, 0
+  3i × 4i × 5                          diagonals 5i, 4, 3, 0
+  2-4i × 4-2i × 4+4i                   diagonals 4-4i, 2+4i, 4+2i, 0
+  5i × 3-4i × 6+2i                     diagonals 2-6i, 4+3i, 5, 0
+  2-3i × 6-2i × 3+6i                   diagonals 6-3i, 2+6i, 3+2i, 0
+  3-3i × 4-4i × 5+5i                   diagonals 5-5i, 4+4i, 3+3i, 0
+  2-6i × 2+6i × 8                      diagonals 8i, 6-2i, 6+2i, 0
