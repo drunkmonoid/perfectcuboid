@@ -19,6 +19,7 @@ enum Report:
   case Stats(maxExponent: Int)
   case Check(a: BigInt, b: BigInt, c: BigInt)
   case LocalRules(maxPrime: Int)
+  case Certificates(maxPrime: Int)
   case DerivedPairs(maxSmallestEdge: Long)
   case Curve(a: BigInt, b: BigInt, c: BigInt, multiples: Int)
   case BrickOrigins(maxSmallestEdge: Long)
@@ -134,6 +135,13 @@ object CommandLine:
         .withDefault(37)
         .validate("P must be from 2 to 43")(p => p >= 2 && p <= 43)
         .map(Report.LocalRules(_))
+    ),
+    report("certificates", "The rules of local for primes up to P (default 37), with the evidence, for checker.")(
+      Opts
+        .argument[Int]("P")
+        .withDefault(37)
+        .validate("P must be from 2 to 43")(p => p >= 2 && p <= 43)
+        .map(Report.Certificates(_))
     ),
     report("derived", "Primitive Euler bricks with smallest edge up to LIMIT (default 100000), paired by derivation.")(
       number("LIMIT", 100_000, Search.MaxSmallestEdge).map(Report.DerivedPairs(_))

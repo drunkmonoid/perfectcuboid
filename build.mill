@@ -122,6 +122,14 @@ object bench extends Strict, JmhModule:
   def jmhCoreVersion = "1.37"
   def moduleDeps = Seq(cli.jvm)
 
+/** Checks the certificates of `perfectcuboid certificates` with code of its own: it depends on
+  * nothing else in the project. `./mill checker.run docs/local-certificates.txt`.
+  */
+object checker extends Strict:
+  def mainClass = Some("checker.Checker")
+
+  object test extends ScalaTests, Munit
+
 /** The speed guard: `./mill speed.run`, and `./mill speed.run --check` in CI (speed/src/Guard.scala). */
 object speed extends Strict:
   def moduleDeps = Seq(core.jvm)

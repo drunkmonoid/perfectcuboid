@@ -182,6 +182,45 @@ object Local:
         candidates.exists(_ % p == 0)
     )
 
+  /** A rule in the words of a certificate (`certificate`), which `checker` reads. */
+  def ruleWords(p: Int, k: Int, perfect: Boolean): List[String] =
+    val found = patterns(p, k, perfect)
+    if found.isEmpty then List("impossible")
+    else
+      val forced = found.map(_.edges).reduce((x, y) => x.lazyZip(y).map(math.min))
+      if forced.head > 0 then List(("edges" :: forced.filter(_ > 0).map(_.toString)).mkString(" "))
+      else
+        val words = Map(
+          Lengths.Edges -> "edge",
+          Lengths.EdgesOrSpace -> "edge-or-space",
+          Lengths.EdgesOrFaces -> "edge-or-face",
+          Lengths.Any -> "any"
+        )
+        Lengths.values
+          .find(lengths => found.forall(pattern => lengths.of(pattern).exists(_ > 0)))
+          .map(lengths => s"some ${words(lengths)}")
+          .toList
+
+  /** The rules for every prime up to `maxPrime`, written out with the evidence for them: every
+    * pattern found mod pᵏ, for bricks and for perfect cuboids. `checker` (a separate module,
+    * sharing no code with this one) finds the patterns again its own way and checks the rules.
+    */
+  def certificate(maxPrime: Int): List[String] =
+    val primes = (2 to maxPrime).filter(n => (2 until n).forall(n % _ != 0)).toList
+    List(
+      s"# The rules of `perfectcuboid local` for every prime up to $maxPrime, with their evidence.",
+      "# Each case: every pattern of valuations (edges | face diagonals | space diagonal), largest",
+      "# first, that a primitive brick, or a perfect cuboid, shows mod p^k; then what all share.",
+      "# Checked by `./mill checker.run FILE`, which shares no code with the program that wrote it."
+    ) ++ primes.flatMap: prime =>
+      val (q, k) = modulus(prime)
+      List(false, true).flatMap: perfect =>
+        val kind = if perfect then "perfect" else "brick"
+        val lines = patterns(q, k, perfect).toList
+          .map(pt => s"pattern ${pt.edges.mkString(" ")} | ${pt.faces.mkString(" ")} | ${pt.space}")
+          .sorted
+        (s"case $q $k $kind" :: lines) ++ ruleWords(q, k, perfect).map("rule " + _)
+
   /** The prime power tried for each prime: a high power of 2, and the square of the others.
     * Lower powers miss rules: mod 2⁷ only shows "8 and 4", mod 17 nothing at all.
     */

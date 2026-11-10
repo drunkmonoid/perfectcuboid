@@ -708,6 +708,24 @@ patterns written as how often p divides each edge, largest first:
   variables are too few; they also count every solution mod pᵏ alike, while these bricks
   were chosen by their smallest edge.
 
+### Certificates
+
+```sh
+java -jar perfectcuboid.jar certificates 37 > docs/local-certificates.txt   # a minute
+./mill checker.run docs/local-certificates.txt                              # a minute and a half
+```
+
+A proof by computer is only as good as the program, so the rules above come with their
+evidence. `certificates` writes, for each prime up to 37 and for bricks and perfect cuboids
+apart, every pattern of divisibility that a solution mod pᵏ can show, and the rules in a few
+fixed words (`edges 4 2`, `some edge-or-space`, `some any`). `checker` is a module of its own
+that depends on nothing else in the project: it tries every triple of remainders a ≤ b ≤ c
+mod pᵏ itself, with its own loops and its own valuations, finds the patterns again, requires
+them to be exactly the certificate's, and checks each rule against them. On
+`docs/local-certificates.txt` it checked all 24 cases and 14 rules; CI checks them at every
+push, and its tests make sure it notices a pattern left out, a pattern that cannot occur, and a
+rule stronger than the patterns allow.
+
 ### The equations mod every prime
 
 ```sh

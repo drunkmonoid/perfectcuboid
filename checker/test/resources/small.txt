@@ -1,0 +1,108 @@
+# The rules of `perfectcuboid local` for every prime up to 7, with their evidence.
+# Each case: every pattern of valuations (edges | face diagonals | space diagonal), largest
+# first, that a primitive brick, or a perfect cuboid, shows mod p^k; then what all share.
+# Checked by `./mill checker.run FILE`, which shares no code with the program that wrote it.
+case 2 8 brick
+pattern 4 2 0 | 2 0 0 | 0
+pattern 4 3 0 | 3 0 0 | 0
+pattern 4 4 0 | 4 0 0 | 0
+pattern 5 2 0 | 2 0 0 | 0
+pattern 5 3 0 | 3 0 0 | 0
+pattern 5 4 0 | 4 0 0 | 0
+pattern 5 5 0 | 4 0 0 | 0
+pattern 6 2 0 | 2 0 0 | 0
+pattern 6 3 0 | 3 0 0 | 0
+pattern 6 4 0 | 4 0 0 | 0
+pattern 6 5 0 | 4 0 0 | 0
+pattern 6 6 0 | 4 0 0 | 0
+pattern 7 2 0 | 2 0 0 | 0
+pattern 7 3 0 | 3 0 0 | 0
+pattern 7 4 0 | 4 0 0 | 0
+pattern 7 5 0 | 4 0 0 | 0
+pattern 7 6 0 | 4 0 0 | 0
+pattern 7 7 0 | 4 0 0 | 0
+pattern 8 2 0 | 2 0 0 | 0
+pattern 8 3 0 | 3 0 0 | 0
+pattern 8 4 0 | 4 0 0 | 0
+pattern 8 5 0 | 4 0 0 | 0
+pattern 8 6 0 | 4 0 0 | 0
+pattern 8 7 0 | 4 0 0 | 0
+pattern 8 8 0 | 4 0 0 | 0
+rule edges 4 2
+case 2 8 perfect
+pattern 4 2 0 | 2 0 0 | 0
+pattern 4 3 0 | 3 0 0 | 0
+pattern 4 4 0 | 4 0 0 | 0
+pattern 5 2 0 | 2 0 0 | 0
+pattern 5 3 0 | 3 0 0 | 0
+pattern 5 4 0 | 4 0 0 | 0
+pattern 5 5 0 | 4 0 0 | 0
+pattern 6 2 0 | 2 0 0 | 0
+pattern 6 3 0 | 3 0 0 | 0
+pattern 6 4 0 | 4 0 0 | 0
+pattern 6 5 0 | 4 0 0 | 0
+pattern 6 6 0 | 4 0 0 | 0
+pattern 7 2 0 | 2 0 0 | 0
+pattern 7 3 0 | 3 0 0 | 0
+pattern 7 4 0 | 4 0 0 | 0
+pattern 7 5 0 | 4 0 0 | 0
+pattern 7 6 0 | 4 0 0 | 0
+pattern 7 7 0 | 4 0 0 | 0
+pattern 8 2 0 | 2 0 0 | 0
+pattern 8 3 0 | 3 0 0 | 0
+pattern 8 4 0 | 4 0 0 | 0
+pattern 8 5 0 | 4 0 0 | 0
+pattern 8 6 0 | 4 0 0 | 0
+pattern 8 7 0 | 4 0 0 | 0
+pattern 8 8 0 | 4 0 0 | 0
+rule edges 4 2
+case 3 4 brick
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 2 0 0 | 0
+pattern 3 1 0 | 1 0 0 | 0
+pattern 3 2 0 | 2 0 0 | 0
+pattern 3 3 0 | 2 0 0 | 0
+pattern 4 1 0 | 1 0 0 | 0
+pattern 4 2 0 | 2 0 0 | 0
+pattern 4 3 0 | 2 0 0 | 0
+pattern 4 4 0 | 2 0 0 | 0
+rule edges 2 1
+case 3 4 perfect
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 2 0 0 | 0
+pattern 3 1 0 | 1 0 0 | 0
+pattern 3 2 0 | 2 0 0 | 0
+pattern 3 3 0 | 2 0 0 | 0
+pattern 4 1 0 | 1 0 0 | 0
+pattern 4 2 0 | 2 0 0 | 0
+pattern 4 3 0 | 2 0 0 | 0
+pattern 4 4 0 | 2 0 0 | 0
+rule edges 2 1
+case 5 2 brick
+pattern 1 0 0 | 1 0 0 | 1
+pattern 1 1 0 | 1 0 0 | 0
+pattern 2 0 0 | 1 0 0 | 1
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 1 0 0 | 0
+rule edges 1
+case 5 2 perfect
+pattern 1 0 0 | 1 0 0 | 1
+pattern 1 1 0 | 1 0 0 | 0
+pattern 2 0 0 | 1 0 0 | 1
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 1 0 0 | 0
+rule edges 1
+case 7 2 brick
+pattern 0 0 0 | 0 0 0 | 0
+pattern 1 0 0 | 0 0 0 | 0
+pattern 1 1 0 | 1 0 0 | 0
+pattern 2 0 0 | 0 0 0 | 0
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 1 0 0 | 0
+case 7 2 perfect
+pattern 1 0 0 | 0 0 0 | 0
+pattern 1 1 0 | 1 0 0 | 0
+pattern 2 0 0 | 0 0 0 | 0
+pattern 2 1 0 | 1 0 0 | 0
+pattern 2 2 0 | 1 0 0 | 0
+rule edges 1

@@ -27,7 +27,7 @@ jobs:
           ./mill mill.scalalib.scalafmt/checkFormatAll
           scala-cli fmt --check docs/tour
       - name: Tests on the JVM, and the page's on Node
-        run: ./mill '{core.jvm,cli.jvm,web,speed}.test'
+        run: ./mill '{core.jvm,cli.jvm,web,speed,checker}.test'
       # Only reports for now, as a notice on the run's page: the baseline must come from these
       # machines, so --check waits until a few runs show how much the ratio moves.
       - name: The speed guard
@@ -65,3 +65,18 @@ jobs:
       - name: Name the failed tests
         if: failure()
         run: python3 .github/failed-tests.py
+
+  # The rules of `local`, checked again by code that shares nothing with the program.
+  certificates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/mill
+          key: mill-${{ hashFiles('mill', 'build.mill') }}
+      - name: The checker's own copy of the small certificate is the program's
+        run: cmp cli/test/resources/golden/certificates.txt checker/test/resources/small.txt
+      - name: The certificates for every prime up to 37
+        run: ./mill checker.run docs/local-certificates.txt

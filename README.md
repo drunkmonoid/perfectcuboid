@@ -87,6 +87,7 @@ perfectcuboid legs 3825123056546413051   # ... any number up to 2⁶³ − 1
 perfectcuboid rules 100000               # check the known Euler brick rules on every brick found
 perfectcuboid local                      # prove such rules by trying every remainder mod pᵏ
 perfectcuboid fields 200                 # the perfect cuboid equations mod every prime: counts and formulas
+perfectcuboid certificates 37            # the rules of local with their evidence, for ./mill checker.run
 perfectcuboid saunderson 1e7             # Saunderson's bricks, built from a formula
 perfectcuboid derived 1e6                # primitive bricks paired with their derived bricks ab × ac × bc
 perfectcuboid curve 44 117 240           # new bricks from points on elliptic curves
