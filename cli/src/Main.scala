@@ -94,7 +94,26 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
             .drain >> IO.println(s"Wrote $c")
       yield ()
     case Command.Fields(limit) => IO.blocking(FiniteFields.lines(limit)).flatMap(_.traverse_(IO.println))
-    case Command.Misses(file)  =>
+    case Command.BFiles(file, directory, published) =>
+      def lines(dir: String, name: String) = Files[IO].readUtf8Lines(Path(dir) / name).compile.toList
+      for
+        (bricks, resume) <- Analysis.read(Quarry.eulerBricks, Path(file))
+        before <- published.fold(IO.pure(List.empty[OeisFiles.Row])): dir =>
+          (lines(dir, "b031173.txt"), lines(dir, "b031174.txt"), lines(dir, "b031175.txt")).mapN(OeisFiles.published)
+        _ <- OeisFiles.rows(bricks, resume.searchedUpTo, before) match
+          case Left(why)  => IO.println(s"No b-files: $why")
+          case Right(all) =>
+            Files[IO].createDirectories(Path(directory)) >>
+              OeisFiles
+                .files(all, before.size, resume.searchedUpTo)
+                .traverse_ : f =>
+                  fs2.Stream
+                    .emits(f.lines.map(_ + "\n"))
+                    .through(Files[IO].writeUtf8(Path(directory) / f.name))
+                    .compile
+                    .drain >> IO.println(s"Wrote ${Path(directory) / f.name}: ${all.size} rows")
+      yield ()
+    case Command.Misses(file) =>
       Analysis
         .read(Quarry.eulerBricks, Path(file))
         .flatMap((bricks, resume) => IO.blocking(Misses.lines(bricks, resume.searchedUpTo)))

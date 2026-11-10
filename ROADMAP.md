@@ -280,7 +280,7 @@ one found; `verify` checks the whole file at the end either way.
   turns it with the mouse.
 - [ ] **96. Charts that answer back.** The site's brick chart zooms and filters, and each dot
   opens the brick in the catalogue.
-- [ ] **97. OEIS b-files.** The hunt's bricks written out as b-files for A031173, A031174 and
+- [x] **97. OEIS b-files.** The hunt's bricks written out as b-files for A031173, A031174 and
   A031175, ready to offer; submitting them stays a person's decision.
 - [ ] **98. A methods note.** How the searches work and how their results were verified,
   written for readers who know the problem.

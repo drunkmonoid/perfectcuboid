@@ -42,6 +42,12 @@ the hunt's file with longest edge below 5·10⁸ are exactly the 3,556 in the OE
 none missing and none extra. (The comment in A031174 and A031175 says "3356 primitive bricks";
 the tables the same entries link to have 3,556 rows, so the comment has two digits swapped.)
 
+The same argument carries the tables on: the hunt to 3·10⁹ holds every primitive brick with
+longest edge up to 3·10⁹, 7,004 of them. [`docs/oeis`](docs/oeis/README.md) has the three b-files
+with the 3,556 published rows unchanged and 3,448 more after them, written by
+`bfiles hunt-primitive.txt docs/oeis --published DIR` once the file was checked against the
+published rows.
+
 The earlier hunt of all Euler bricks, not only primitive ones, searched every smallest edge
 up to 30,500,000. It found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
 

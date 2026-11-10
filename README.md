@@ -62,6 +62,7 @@ perfectcuboid densities hunt-primitive.txt                   # how often small p
 perfectcuboid records hunt-primitive.txt                     # the edges with most bricks, flattest and squarest bricks
 perfectcuboid forecast hunt-primitive.txt 1e10               # what the bricks so far predict for a longer hunt
 perfectcuboid misses hunt-primitive.txt                      # where the space diagonals fall between whole numbers
+perfectcuboid bfiles hunt-primitive.txt docs/oeis            # the bricks as OEIS b-files for A031173-5
 perfectcuboid bricks-graph hunt-primitive.txt                # the bricks joined into families by derivation and curves
 perfectcuboid face 1000                  # face cuboids: one face diagonal irrational
 perfectcuboid edge 3000000               # edge cuboids: one edge irrational
@@ -164,6 +165,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Records.scala` | records among the bricks found, and how bricks per edge follow its legs |
 | `cli/src/BrickGraph.scala` | the primitive bricks found, joined into families by derivation and curve multiples |
 | `cli/src/FiniteFields.scala` | the perfect cuboid equations mod p: how many solutions, and formulas for them |
+| `cli/src/OeisFiles.scala` | the bricks found as OEIS b-files, the published rows kept as they are |
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |

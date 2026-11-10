@@ -47,6 +47,7 @@ enum Command:
   case Densities(file: String)
   case Records(file: String, legsUpTo: Long)
   case Misses(file: String)
+  case BFiles(file: String, directory: String, published: Option[String])
   case Fields(limit: Int)
   case Graph(file: String, chart: Option[String])
   case Forecast(file: String, target: Long)
@@ -298,6 +299,23 @@ object CommandLine:
         .map(Command.Fields(_))
     )
 
+  private val bfiles: Opts[Command] =
+    Opts.subcommand(
+      "bfiles",
+      "The primitive bricks in a hunt's FILE as OEIS b-files for A031173-5, written to DIRECTORY."
+    )(
+      (
+        Opts.argument[String]("FILE"),
+        Opts.argument[String]("DIRECTORY"),
+        Opts
+          .option[String](
+            "published",
+            "A directory with the published b031173-5.txt, to keep their rows and go on from them."
+          )
+          .orNone
+      ).mapN(Command.BFiles(_, _, _))
+    )
+
   private val misses: Opts[Command] =
     Opts.subcommand("misses", "Where the space diagonals of the bricks in a hunt's FILE fall between whole numbers.")(
       Opts.argument[String]("FILE").map(Command.Misses(_))
@@ -372,7 +390,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ brickGraph :+ fields :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ brickGraph :+ fields :+ bfiles :+ misses :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )
