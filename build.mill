@@ -140,6 +140,13 @@ object speed extends Strict:
 /** Experiments, kept with their numbers whatever they showed (RESULTS.md). Not run by CI. */
 object experiments extends Module:
 
+  /** Phase 80: the search's filters on SIMD lanes. `./mill experiments.vector.run`. */
+  object vector extends Strict:
+    def moduleDeps = Seq(core.jvm)
+    def mainClass = Some("perfectcuboid.vector.VectorFilter")
+    // The Vector API is still an incubator module in Java 17, so it has to be added.
+    def forkArgs = Seq("--add-modules", "jdk.incubator.vector")
+
   /** Phase 81: the search's filters on the GPU, by OpenCL. `./mill experiments.gpu.run`. */
   object gpu extends Strict:
     def moduleDeps = Seq(core.jvm)
