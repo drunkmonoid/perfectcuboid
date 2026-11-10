@@ -1,5 +1,6 @@
 # Checks every push and pull request: the code is formatted, compiles without warnings,
-# and every test passes, on every platform.
+# and every test passes, on every platform. Three jobs side by side: the JVM with everything
+# that runs there, and the core's tests on JavaScript and on Scala Native, the slowest to build.
 name: CI
 
 on:
@@ -7,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  jvm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,8 +26,8 @@ jobs:
         run: |
           ./mill mill.scalalib.scalafmt/checkFormatAll
           scala-cli fmt --check docs/tour
-      - name: Tests, the core on the JVM, JavaScript and Scala Native, the rest on the JVM
-        run: ./mill __.test
+      - name: Tests on the JVM, and the page's on Node
+        run: ./mill '{core.jvm,cli.jvm,web}.test'
       - name: The microbenchmarks compile (running them takes a quiet machine)
         run: ./mill bench.compile
       - name: The API docs build
@@ -35,6 +36,28 @@ jobs:
         run: |
           ./mill __.publishLocal
           for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
+      - name: Name the failed tests
+        if: failure()
+        run: python3 .github/failed-tests.py
+
+  platform:
+    strategy:
+      matrix:
+        platform: [js, native]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/mill
+          key: mill-${{ hashFiles('mill', 'build.mill') }}
+      - name: The core's tests on ${{ matrix.platform }}
+        run: ./mill core.${{ matrix.platform }}.test
+      # The release's executable links too: it builds the command line, not only the core.
+      - name: The native executable
+        if: matrix.platform == 'native'
+        run: ./mill cli.native.nativeLink && out/cli/native/nativeLink.dest/out check 44 117 240
       - name: Name the failed tests
         if: failure()
         run: python3 .github/failed-tests.py
