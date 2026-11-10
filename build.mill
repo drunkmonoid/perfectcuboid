@@ -122,6 +122,13 @@ object bench extends Strict, JmhModule:
   def jmhCoreVersion = "1.37"
   def moduleDeps = Seq(cli.jvm)
 
+/** The speed guard: `./mill speed.run`, and `./mill speed.run --check` in CI (speed/src/Guard.scala). */
+object speed extends Strict:
+  def moduleDeps = Seq(core.jvm)
+  def mainClass = Some("perfectcuboid.speed.Guard")
+
+  object test extends ScalaTests, Munit
+
 /** The API docs: `./mill api.docJar`, then the HTML is in out/api/docJar.dest/javadoc. */
 object api extends Strict:
   def sources = Task { core.jvm.sources() ++ cli.jvm.sources() }

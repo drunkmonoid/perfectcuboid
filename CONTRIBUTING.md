@@ -12,6 +12,7 @@ local repository that `./mill __.publishLocal` fills.
 | `cli` | the command line, hunts, files and reports, on Cats Effect | `cli/src`, `cli/test/src` |
 | `web` | the page in `docs/check`, the core compiled to JavaScript | `web/src`, `web/test/src` |
 | `bench` | JMH microbenchmarks | `bench/src` |
+| `speed` | the speed guard: the search timed against a fixed reference, in CI | `speed/src` |
 | `api` | the API docs of `core` and `cli` together | (theirs) |
 
 A file in `core` may use only `core`, and must compile on all three platforms: no files, no

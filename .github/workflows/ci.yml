@@ -27,7 +27,11 @@ jobs:
           ./mill mill.scalalib.scalafmt/checkFormatAll
           scala-cli fmt --check docs/tour
       - name: Tests on the JVM, and the page's on Node
-        run: ./mill '{core.jvm,cli.jvm,web}.test'
+        run: ./mill '{core.jvm,cli.jvm,web,speed}.test'
+      # Only reports for now, as a notice on the run's page: the baseline must come from these
+      # machines, so --check waits until a few runs show how much the ratio moves.
+      - name: The speed guard
+        run: ./mill speed.run
       - name: The microbenchmarks compile (running them takes a quiet machine)
         run: ./mill bench.compile
       - name: The API docs build
