@@ -1179,6 +1179,34 @@ is still an incubator module, which every run must add by hand and which warns t
 change, and it is JVM-only, where the search is the same code on three platforms. When the API is
 final, this is the first speed-up to take.
 
+### The integrated GPU
+
+```sh
+./mill experiments.gpu.assembly
+java -jar out/experiments/gpu/assembly.dest/out.jar 999000001 20000
+```
+
+Phase 81 ran the same three filters on the laptop's Intel UHD Graphics (48 execution units,
+1.4 GHz, no double precision), through OpenCL (`experiments/gpu`): one work-item per leg, against
+every longer leg of its edge, the survivors written back for the CPU's exact test. The GPU's
+surviving pairs were exactly the CPU's, and so were the bricks.
+
+| 20,000 edges from | 999,000,001 | 2,999,000,001 |
+| --- | ---: | ---: |
+| pairs of legs | 223,107,638 | 270,838,687 |
+| one CPU thread, the whole search | 698 ms | 837 ms |
+| the GPU's filters, with copying both ways | 257 ms | 299 ms |
+| one CPU thread with the GPU filtering (legs, GPU, exact test) | 400 ms (1.75×) | 460 ms (1.82×) |
+
+The GPU alone filters about 78,000 edges a second near 10⁹, close to what all 12 threads of
+the CPU search do. But the GPU and the CPU share one power budget. The 12-thread search did
+104,000 edges a second near 3·10⁹ on its own, and 84,000 beside the GPU kept busy filtering,
+while the GPU, slowed in turn, managed about 43,000. Together, then, perhaps 120,000 to 125,000
+edges a second, about a fifth more than the CPU alone: the gain predicted before the
+experiment, from about one extra thread's worth. It is real but small, for a native OpenCL
+library and a second program in OpenCL C, so it stays an experiment. A GPU with its own power,
+a desktop's, would make the same code the main engine instead.
+
 ### Threads
 
 ```sh

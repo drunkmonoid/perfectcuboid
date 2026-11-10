@@ -145,6 +145,18 @@ object GpuFilter:
     val first = args.headOption.flatMap(_.toLongOption).getOrElse(999_000_001L)
     val count = args.drop(1).headOption.flatMap(_.toIntOption).getOrElse(20_000)
     val gpu = Gpu()
+    // `... loop SECONDS`: keep the GPU filtering one block over and over, for timing what a busy
+    // GPU does to a search running on the CPU beside it.
+    if args.lift(2).contains("loop") then
+      val b = block(first, count)
+      val capacity = cpuPairs(b).size * 2 + 1024
+      val until = System.nanoTime + args.lift(3).flatMap(_.toLongOption).getOrElse(60L) * 1_000_000_000L
+      var rounds = 0
+      while System.nanoTime < until do
+        gpu.pairs(b, capacity): Unit
+        rounds += 1
+      println(s"the GPU filtered the block $rounds times")
+      return
     println(s"${gpu.name}: ${Moduli.mkString(", ")} as filters, edges from $first, $count of them")
     val b = block(first, count)
     val expectedPairs = cpuPairs(b)
