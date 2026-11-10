@@ -106,12 +106,16 @@ object Local:
     */
   val densityCases: List[(Int, Int, Int)] = List((2, 13, 5), (3, 7, 2), (5, 5, 2), (7, 4, 1), (11, 3, 1), (13, 3, 1))
 
+  /** `densities` for each of `densityCases`, worked out once: mod 2¹³ it takes seconds. */
+  lazy val caseDensities: Map[(Int, Int, Int), Map[List[Int], Double]] =
+    densityCases.map(c => c -> densities(c._1, c._2, c._3)).toMap
+
   /** For each prime, its patterns' predicted and observed shares among these primitive bricks. */
   def densityLines(bricks: Seq[Cuboid]): List[String] =
     val primitive = bricks.filter(_.isPrimitive)
     s"How often p divides each edge, among ${primitive.size} primitive bricks, against the local densities:" ::
       densityCases.flatMap: (p, k, cap) =>
-        val predicted = densities(p, k, cap)
+        val predicted = caseDensities((p, k, cap))
         val observed = primitive.groupBy(patternOf(_, p, cap)).view.mapValues(_.size).toMap
         def show(pattern: List[Int]) =
           pattern.map(v => if v == cap then s"$v+" else v.toString).mkString("(", ", ", ")")

@@ -33,3 +33,6 @@ jobs:
         run: ./mill api.docJar
       - name: The guided tour's worksheets
         run: for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
+      - name: Name the failed tests
+        if: failure()
+        run: python3 .github/failed-tests.py

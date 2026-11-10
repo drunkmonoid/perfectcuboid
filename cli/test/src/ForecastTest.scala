@@ -2,6 +2,10 @@ package perfectcuboid
 
 class ForecastTest extends munit.FunSuite:
 
+  // The local densities mod 2¹³ take seconds alone, and far longer while `./mill __.test` builds
+  // and runs the other platforms' tests beside these.
+  override val munitTimeout: scala.concurrent.duration.Duration = scala.concurrent.duration.Duration(180, "s")
+
   test("an exact power law gives its own exponent, no slope, and an exact forecast"):
     val counts = List(1_000_000L, 100_000_000L, 10_000_000_000L, 1_000_000_000_000L).map: n =>
       (limit = n, count = math.round(math.sqrt(n.toDouble)).toInt)

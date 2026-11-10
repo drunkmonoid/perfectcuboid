@@ -95,7 +95,7 @@ object Forecast:
   def shares(bricks: Seq[Cuboid], split: Long, n: Double): List[(p: Int, shares: List[Share])] =
     val (below, above) = bricks.partition(_.a <= split)
     Local.densityCases.map: (p, k, cap) =>
-      val densities = Local.densities(p, k, cap)
+      val densities = Local.caseDensities((p, k, cap))
       def share(of: Seq[Cuboid]) =
         of.groupBy(Local.patternOf(_, p, cap)).view.mapValues(_.size.toDouble / of.size).toMap
       val (b, a) = (share(below), share(above))
