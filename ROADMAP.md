@@ -228,7 +228,7 @@ one found; `verify` checks the whole file at the end either way.
 
 ### Searching faster
 
-- [ ] **78. Search by the odd edge.** Every primitive brick has exactly one odd edge, and odd
+- [x] **78. Search by the odd edge.** Every primitive brick has exactly one odd edge, and odd
   numbers pair with fewer legs. A search by the odd edge, its speed and its coverage against
   the search by smallest edge, and the two cross-checked where their ranges overlap.
 - [ ] **79. Sieving the diagonals.** Legs generated for a whole block of edges at once from a

@@ -604,6 +604,19 @@ hunt's file whose odd edge is at most 10⁷, and it does: the same 1,167, none m
 extra. Two searches that share the pair test and the legs' arithmetic, but not the order of
 the edges, which edge they start from, or which legs they pair.
 
+**Twice as fast.** On an idle machine, 12 threads, each time from starting the program:
+
+| 300,000 edges from | by smallest edge | by odd edge |
+| ---: | ---: | ---: |
+| 999,000,001 | 2.72 s | 1.37 s |
+| 2,999,700,001 | 2.90 s | 1.37 s |
+
+It tries only the odd numbers, and an odd number's legs, though more of them pair, are fewer to
+list. So to the same N it is about twice as fast, and finds about 70% of the bricks the search
+by smallest edge finds. The two answer different questions: "no perfect cuboid with odd edge up
+to N" against "none with smallest edge up to N". That is why the published bounds come in both
+kinds, and why the one for the odd edge is the larger.
+
 ## Perfect parallelepipeds
 
 ```sh
