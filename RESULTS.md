@@ -890,8 +890,8 @@ java -jar perfectcuboid.jar verify hunt-diagonal.txt --kind diagonal
 
 Since phase 83 the second method below is a hunt of its own, by space diagonal: every face
 cuboid, and so every perfect cuboid, with space diagonal up to the limit, written and checked
-like any other hunt. Up to 20,000 it finds exactly the face cuboids the search by shared edge
-finds. Where it could matter is in what it covers. A perfect cuboid with space diagonal d has
+like any other hunt. Up to 8,000 it finds exactly the face cuboids the search by shared edge
+finds, which a test checks at every push (and up to 20,000, tried once). Where it could matter is in what it covers. A perfect cuboid with space diagonal d has
 smallest edge below d / √3, so the brick hunt to 3·10⁹ has already ruled out every perfect
 cuboid with space diagonal up to √3 · 3·10⁹ ≈ 5.2·10⁹. A search by space diagonal adds something
 new only beyond that, and its edges stop at `SquaredCuboid.MaxEdge` ≈ 1.75·10⁹ well before: as it
