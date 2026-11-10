@@ -31,6 +31,7 @@ jobs:
           cp site/index.html _site/
           cp -r docs/check _site/check
           cp -r docs/catalogue _site/catalogue
+          cp -r docs/chart _site/chart
           cp docs/*.svg _site/charts/
           ./mill api.docJar
           cp -r out/api/docJar.dest/docs _site/api

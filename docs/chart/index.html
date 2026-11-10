@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brick Chart</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb; --raised: #ffffff; --ink: #0b0b0b; --ink-2: #52514e; --line: #e6e5e0;
+    --accent: #2a78d6; --problem: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface: #1a1a19; --raised: #232322; --ink: #f0efec; --ink-2: #c3c2b7; --line: #383835;
+      --accent: #3987e5; --problem: #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--surface); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+  main { max-width: 52rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+  h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  .lede { color: var(--ink-2); margin: 0 0 1rem; }
+  .controls { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: end; margin: 0 0 .75rem; }
+  label { display: block; font-size: .85rem; color: var(--ink-2); }
+  input { display: block; width: 11rem; margin-top: .2rem; padding: .45rem .6rem; font: inherit;
+    font-variant-numeric: tabular-nums; color: var(--ink); background: var(--raised);
+    border: 1px solid var(--line); border-radius: 8px; }
+  input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  button { font: inherit; font-size: .9rem; padding: .45rem .9rem; color: var(--ink); background: var(--raised);
+    border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  #chart { display: block; width: 100%; height: min(70vh, 30rem); background: var(--raised);
+    border: 1px solid var(--line); border-radius: 12px; cursor: crosshair; touch-action: none; }
+  #chart-status { color: var(--ink-2); font-variant-numeric: tabular-nums; min-height: 1.5em; margin: .5rem 0 0; }
+  footer { margin-top: 2rem; color: var(--ink-2); font-size: .85rem; }
+  a { color: var(--accent); }
+  body.embedded main { padding: 0; max-width: none; }
+  body.embedded h1, body.embedded .lede, body.embedded footer { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>The bricks, by smallest and longest edge</h1>
+  <p class="lede">Every primitive Euler brick with smallest edge up to 3·10⁹. Drag across the chart to zoom
+    in, double-click to see everything again, and click a dot to open its brick in the
+    <a href="../catalogue/">catalogue</a>.</p>
+  <div class="controls">
+    <label>smallest edge from <input id="from" inputmode="numeric"></label>
+    <label>smallest edge to <input id="to" inputmode="numeric"></label>
+    <button id="reset">Reset</button>
+  </div>
+  <canvas id="chart" data-file="../catalogue/bricks.txt" aria-label="Each primitive Euler brick as a dot, by its smallest and longest edge, on log axes"></canvas>
+  <p id="chart-status" aria-live="polite"></p>
+  <footer>Drawn by the same Scala as the command line, compiled to JavaScript by Scala.js, from
+    <a href="https://github.com/drunkmonoid/perfectcuboid">perfectcuboid</a>.</footer>
+</main>
+<script>if (new URLSearchParams(location.search).has("embed")) document.body.classList.add("embedded")</script>
+<script src="../check/main.js"></script>
+</body>
+</html>

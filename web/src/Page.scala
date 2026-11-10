@@ -127,9 +127,10 @@ object Page:
     }: js.Function1[js.Dynamic, Unit]
 
   private def page(): Unit =
-    Option(dom.document.getElementById("catalogue")) match
-      case Some(table) => Catalogue.show(table.asInstanceOf[dom.html.Element])
-      case None        =>
+    (Option(dom.document.getElementById("catalogue")), Option(dom.document.getElementById("chart"))) match
+      case (Some(table), _) => Catalogue.show(table.asInstanceOf[dom.html.Element])
+      case (_, Some(chart)) => BrickChart.show(chart.asInstanceOf[dom.html.Canvas])
+      case _                =>
         checker()
         searcher()
 

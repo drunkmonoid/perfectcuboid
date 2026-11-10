@@ -37,6 +37,7 @@
   /* An <object>, not an <img>: only then do the charts' hover titles work. */
   figure object { display: block; width: 100%; aspect-ratio: 720 / 440; border: 1px solid var(--line); border-radius: 8px; }
   figcaption { color: var(--ink-2); font-size: .9rem; margin-top: .4rem; }
+  iframe.chart { display: block; width: 100%; height: 36rem; border: 0; }
   footer { margin-top: 3rem; color: var(--ink-2); font-size: .85rem; }
 </style>
 </head>
@@ -52,6 +53,7 @@
 
   <div class="cards">
     <a class="card" href="check/"><strong>Check a box</strong><span>Type three edges of any size and see all seven lengths, worked out in your browser.</span></a>
+    <a class="card" href="chart/"><strong>The chart</strong><span>Every brick as a dot: zoom in, hover to read one, click to open it in the catalogue.</span></a>
     <a class="card" href="catalogue/"><strong>The catalogue</strong><span>All 15,101 primitive bricks up to 3·10⁹: sort them, look up an edge, open any one.</span></a>
     <a class="card" href="api/"><strong>API docs</strong><span>Every public definition of the library, described.</span></a>
     <a class="card" href="https://github.com/drunkmonoid/perfectcuboid/blob/main/docs/essay.md"><strong>The story</strong><span>What looking for a perfect box found, and taught, in plain words.</span></a>
@@ -65,8 +67,10 @@
     <figcaption>How many Euler bricks there are with smallest edge up to N.</figcaption>
   </figure>
   <figure>
-    <object type="image/svg+xml" data="charts/bricks-3e9.svg" aria-label="The 15,101 primitive Euler bricks with smallest edge up to three billion, by smallest and longest edge">The 15,101 primitive Euler bricks with smallest edge up to three billion, by smallest and longest edge</object>
-    <figcaption>The primitive bricks up to 3·10⁹, by smallest and longest edge. Hover a dot to read its edges.</figcaption>
+    <iframe class="chart" src="chart/?embed" title="The 15,101 primitive Euler bricks with smallest edge up to three billion, by smallest and longest edge"></iframe>
+    <figcaption>The primitive bricks up to 3·10⁹, by smallest and longest edge. Drag across it to zoom in,
+      double-click to see everything again, and click a dot to open its brick in the catalogue
+      (<a href="chart/">full page</a>).</figcaption>
   </figure>
   <figure>
     <object type="image/svg+xml" data="charts/threads.svg" aria-label="Search speed near a billion on 1 to 12 threads, measured and as perfect scaling would have it">Search speed near a billion on 1 to 12 threads, measured and as perfect scaling would have it</object>

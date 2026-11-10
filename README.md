@@ -17,6 +17,8 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 
 ![The primitive Euler bricks, by smallest and longest edge](docs/bricks.svg)
 
+[`docs/chart`](docs/chart/index.html) draws them all, smallest edge against longest: drag to zoom,
+hover to read a brick, click to open it in the catalogue.
 [`docs/catalogue`](docs/catalogue/index.html) lists every primitive brick of the 3·10⁹ hunt, sortable and
 filterable, each one opening in the checker; its data is [`bricks.txt`](docs/catalogue/bricks.txt),
 the hunt's file without its checkpoints (`grep -v '^#' hunt-primitive.txt`).
@@ -187,6 +189,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
+| `web/src/BrickChart.scala` | the chart of all the bricks that zooms, and opens a brick in the catalogue |
 | `web/src/Drawing.scala` | the checker's drawing of the box, its diagonals and their lengths, as SVG |
 | `cli/src-jvm/HuntEvents.scala` | Java Flight Recorder events for each block searched and checkpoint written |
 | `cli/src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |

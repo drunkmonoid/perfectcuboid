@@ -84,6 +84,10 @@ object Catalogue:
       (_: dom.Event) =>
         current += 1; draw()
     )
+    // Filters given in the address, as in ?from=23760&to=23760 from the chart.
+    val params = dom.URLSearchParams(dom.window.location.search)
+    List("edge" -> edge, "from" -> from, "to" -> to).foreach: (name, input) =>
+      Option(params.get(name)).foreach(v => input.value = v)
     status.textContent = "Loading…"
     val _ = dom
       .fetch(table.getAttribute("data-file"))

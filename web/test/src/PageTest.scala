@@ -72,3 +72,26 @@ class PageTest extends munit.FunSuite:
         .toList
       assert(numbers.forall(v => v >= 0 && v <= Drawing.Width), (yaw, pitch))
     assertEquals(Drawing.proportions(BigCuboid.of(1, 1000, 1000000).get), Drawing.P3(0.05, 0.05, 1.0))
+
+  test("the chart's log axes go from a value to its share of the way along, and back"):
+    assertEqualsDouble(BrickChart.share(100, 10, 1000), 0.5, 1e-12)
+    assertEqualsDouble(BrickChart.valueAt(0.5, 10, 1000), 100, 1e-9)
+    assertEquals(BrickChart.ticks(5, 2e4), List(10.0, 100.0, 1000.0, 10000.0))
+
+  test("dragging a rectangle zooms to it, whichever corner it starts from"):
+    val view = BrickChart.View(10, 1e4, 10, 1e4)
+    val frame = BrickChart.Frame(0, 0, 300, 300)
+    val zoomed = BrickChart.zoom(view, frame, 100, 200, 200, 100)
+    assertEqualsDouble(zoomed.x0, 100, 1e-6)
+    assertEqualsDouble(zoomed.x1, 1000, 1e-6)
+    assertEqualsDouble(zoomed.y0, 100, 1e-6)
+    assertEqualsDouble(zoomed.y1, 1000, 1e-6)
+    assertEquals(BrickChart.zoom(view, frame, 200, 100, 100, 200), zoomed)
+
+  test("the brick nearest the pointer, if one is close enough"):
+    val frame = BrickChart.Frame(0, 0, 600, 400)
+    val view = BrickChart.whole(catalogue)
+    val first = catalogue.head
+    val at = BrickChart.place(first, view, frame)
+    assertEquals(BrickChart.nearest(catalogue, view, frame, at.x + 2, at.y - 2, 8), Some(first))
+    assertEquals(BrickChart.nearest(catalogue, view, frame, -50, -50, 8), None)
