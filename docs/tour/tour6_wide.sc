@@ -1,9 +1,8 @@
 // A guided tour, part 6: numbers bigger than a Long.
 // Run it with:  scala-cli run docs/tour/tour6_wide.sc
 //> using scala 3.9.0
-//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
-//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
-//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
+//> using repository ivy2Local
+//> using dep io.github.drunkmonoid::perfectcuboid-core::3.0.0-SNAPSHOT
 
 import perfectcuboid.*
 

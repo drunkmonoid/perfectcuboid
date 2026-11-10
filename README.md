@@ -110,7 +110,8 @@ UPDATE_GOLDEN=1 ./mill cli.jvm.test      # accept changed command output into cl
 The build is `build.mill`. `core` is the pure library, built for the JVM, JavaScript and Scala
 Native with one set of tests for all three; `cli` is the command line, hunts and reports, on
 the JVM (and Native, for the release executable); `web` is the page, `bench` the JMH
-benchmarks. The worksheets in `docs/tour` run with [scala-cli](https://scala-cli.virtuslab.org).
+benchmarks. The worksheets in `docs/tour` run with [scala-cli](https://scala-cli.virtuslab.org), on
+the library as `./mill __.publishLocal` publishes it to this machine.
 
 The native binary suits short commands and single-threaded hunts: see
 [RESULTS.md](RESULTS.md#scala-native-long-runs-work-on-one-thread).

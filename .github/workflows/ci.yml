@@ -31,8 +31,10 @@ jobs:
         run: ./mill bench.compile
       - name: The API docs build
         run: ./mill api.docJar
-      - name: The guided tour's worksheets
-        run: for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
+      - name: The guided tour's worksheets, on the library as published
+        run: |
+          ./mill __.publishLocal
+          for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || exit 1; done
       - name: Name the failed tests
         if: failure()
         run: python3 .github/failed-tests.py

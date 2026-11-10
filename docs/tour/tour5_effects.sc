@@ -2,10 +2,8 @@
 // Run it with:  scala-cli run docs/tour/tour5_effects.sc
 //> using scala 3.9.0
 //> using dep org.typelevel::cats-effect::3.7.1
-//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
-//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
-//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
-//> using file ../../core/src/Search.scala ../../core/src/Sieve.scala ../../core/src/FastSearch.scala ../../core/src/Platform.scala
+//> using repository ivy2Local
+//> using dep io.github.drunkmonoid::perfectcuboid-core::3.0.0-SNAPSHOT
 
 import cats.effect.{IO, Ref}
 import cats.effect.unsafe.implicits.global // the runtime that runs IO values, for a worksheet

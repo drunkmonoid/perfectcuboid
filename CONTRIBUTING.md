@@ -3,7 +3,8 @@
 The build is [Mill](https://mill-build.org), in `build.mill`. The `./mill` script downloads
 Mill and a Java 17 the first time, so nothing needs installing first, apart from clang for
 Scala Native and Node for the JavaScript tests. The guided tour's worksheets run with
-[scala-cli](https://scala-cli.virtuslab.org).
+[scala-cli](https://scala-cli.virtuslab.org), and use the library as a dependency, from the
+local repository that `./mill __.publishLocal` fills.
 
 | module | what it is | its sources and tests |
 | --- | --- | --- |
@@ -26,16 +27,13 @@ CI runs all of these on every push, and they should all pass first:
 ./mill bench.compile
 ./mill api.docJar
 scala-cli fmt --check docs/tour
+./mill __.publishLocal                         # the worksheets use what this publishes
 for sheet in docs/tour/*.sc; do scala-cli run "$sheet" --server=false || break; done
 ```
 
 The compiler is strict: every warning is an error, unused code and discarded values are
 warnings, `null` is not a value of every type, and reading a field before it is set is caught.
 Every public definition has a doc comment.
-
-**Watch the worksheets' file lists.** The worksheets in `docs/tour` don't take all of the
-code: each lists the files it needs, with `//> using file`. If a file starts using another
-one, add that one to every list that has the first. CI catches it; a full local run does too.
 
 ## Adding a report
 

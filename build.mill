@@ -16,7 +16,7 @@
 // Each module takes whole directories, so no file list can fall out of step with the code.
 package build
 
-import mill.*, scalalib.*, scalajslib.*, scalanativelib.*
+import mill.*, scalalib.*, scalajslib.*, scalanativelib.*, publish.*
 import mill.scalanativelib.api.ReleaseMode
 import mill.contrib.jmh.JmhModule
 
@@ -38,6 +38,20 @@ trait Strict extends ScalaModule:
     "-Yexplicit-nulls"
   )
 
+/** Published to the local Ivy repository by `./mill __.publishLocal`, for the worksheets in
+  * docs/tour, which use the library as a dependency like any other.
+  */
+trait Published extends PublishModule:
+  def publishVersion = "3.0.0-SNAPSHOT"
+  def pomSettings = PomSettings(
+    description = "Looking for a perfect cuboid, in purely functional Scala 3",
+    organization = "io.github.drunkmonoid",
+    url = "https://github.com/drunkmonoid/perfectcuboid",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("drunkmonoid", "perfectcuboid"),
+    developers = Seq(Developer("drunkmonoid", "Drunk Monoid", "https://github.com/drunkmonoid"))
+  )
+
 /** The tests' framework: munit, with ScalaCheck for properties. */
 trait Munit extends TestModule.Munit:
   def mvnDeps = super.mvnDeps() ++ Seq(
@@ -52,7 +66,8 @@ trait Native extends ScalaNativeModule:
   def scalaNativeVersion = "0.5.12"
 
 object core extends Module:
-  trait Shared extends Strict, PlatformScalaModule
+  trait Shared extends Strict, PlatformScalaModule, Published:
+    def artifactName = "perfectcuboid-core"
 
   object jvm extends Shared:
     object test extends ScalaTests, Munit
@@ -66,7 +81,8 @@ object core extends Module:
       def releaseMode = ReleaseMode.ReleaseFast
 
 object cli extends Module:
-  trait Shared extends Strict, PlatformScalaModule:
+  trait Shared extends Strict, PlatformScalaModule, Published:
+    def artifactName = "perfectcuboid-cli"
     def mainClass = Some("perfectcuboid.Main")
     def mvnDeps = Seq(
       mvn"org.typelevel::cats-effect::3.7.1",

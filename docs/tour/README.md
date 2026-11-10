@@ -3,6 +3,13 @@
 Eight worksheets for someone new to Scala, each a short runnable file that explains one idea
 with the project's own code. Read the file, run it, change something, run it again.
 
+They use the project's library as a dependency, from the local repository on your machine.
+Fill it once, from the repository's root, and again after changing the library:
+
+```sh
+./mill __.publishLocal
+```
+
 | run | about |
 | --- | --- |
 | `scala-cli run docs/tour/tour1_numbers.sc` | values, `Long` overflow, `Option`, `Either` |

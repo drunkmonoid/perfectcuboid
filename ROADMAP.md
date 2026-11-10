@@ -216,7 +216,7 @@ one found; `verify` checks the whole file at the end either way.
 - [x] **73. Mill.** One `core` module built for the JVM, JavaScript and Scala Native, with `cli`,
   `web` and `bench` depending on it, so no build lists the files it takes from another. The
   same checks as now, and CI and CONTRIBUTING moved over.
-- [ ] **74. The tour on the core.** The worksheets use the built core instead of listing source
+- [x] **74. The tour on the core.** The worksheets use the built core instead of listing source
   files, so a change in `core` can no longer break them unnoticed.
 - [ ] **75. Faster CI.** The JVM, JavaScript and Native checks as parallel jobs, with the
   build cached, so a push is checked in minutes, not a quarter of an hour.

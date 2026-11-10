@@ -1,13 +1,8 @@
 // A guided tour, part 7: a long search that can stop at any moment.
 // Run it with:  scala-cli run docs/tour/tour7_files.sc
 //> using scala 3.9.0
-//> using dep co.fs2::fs2-io::3.14.0
-//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
-//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
-//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
-//> using file ../../core/src/Search.scala ../../core/src/Sieve.scala ../../core/src/FastSearch.scala ../../core/src/Platform.scala
-//> using file ../../cli/src/Hunt.scala ../../cli/src/Quarry.scala ../../cli/src/Summary.scala ../../cli/src/Eta.scala
-//> using file ../../cli/src/Verify.scala ../../cli/src/Merge.scala ../../core/src/LineFormat.scala
+//> using repository ivy2Local
+//> using dep io.github.drunkmonoid::perfectcuboid-cli::3.0.0-SNAPSHOT
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
