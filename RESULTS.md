@@ -11,12 +11,13 @@ with the command shown next to it. `perfectcuboid.jar` is the jar of a
 A perfect cuboid would be an Euler brick whose space diagonal is also whole. Every perfect
 cuboid is a multiple of a primitive one, whose edges share no common factor, so it is enough
 to look at primitive bricks. The long hunt searched every primitive Euler brick with **smallest
-edge up to 3,000,000,000**, however long the other edges. It found 15,101 of them, and no
-perfect cuboid.
+edge up to 4,455,910,000**, however long the other edges (past 3,263,469,420, every one whose
+longest edge fits a `Cuboid`, below). It found 17,318 of them, and no perfect cuboid.
 
 ```sh
 java -Xmx1g -jar perfectcuboid.jar hunt hunt-primitive.txt 1e9 --kind primitive   # 4 h 15 min on 10 threads
 java -Xmx1g -jar perfectcuboid.jar hunt hunt-primitive.txt 3e9 --kind primitive   # 6 h 55 min more, on 8
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-primitive.txt 1e10 --kind primitive  # stopped at 4,455,910,000
 java -Xmx1g -jar perfectcuboid.jar verify hunt-primitive.txt --kind primitive     # 0 problems, in 3 s
 ```
 
@@ -29,7 +30,7 @@ checkpoints, searched three blocks again, and found no problem.
 
 | digits in the longest edge | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| primitive bricks | 5 | 14 | 46 | 177 | 462 | 1,180 | 2,747 | 5,756 | 3,706 | 871 | 121 | 15 | 1 |
+| primitive bricks | 5 | 14 | 46 | 177 | 462 | 1,180 | 2,747 | 6,105 | 5,059 | 1,290 | 205 | 26 | 2 |
 
 The longest is 2669972725 × 100334332878000 × 233255492180172, whose longest edge is more than
 87,000 times its shortest. Up to 10⁹ the longest had been 825973020 × 74800516901 ×
@@ -801,6 +802,35 @@ is written with the Gaussian integers (u² + v²) and with √−2 (x² + 2y²),
 the shape the equations define has a lot of structure, the way the number of points of an
 elliptic curve with complex multiplication does. They have not been compared with the literature
 on the perfect cuboid's variety, which may well know them.
+
+## The hunt to 10¹⁰, stopped
+
+Phase 72 carried the hunt on from 3·10⁹ towards 10¹⁰, on 8 threads beside the day's other
+work, and was stopped at smallest edge 4,455,910,000 when it was clear that going on would add
+little: every one of these edges lies far below what published searches have ruled out. `verify`
+found no problem in the file: all 17,318 bricks re-checked with BigInt, the 445,591 checkpoints
+checked, three blocks searched again. The 2,217 bricks above 3·10⁹ are the first data that the
+forecasts written before the hunt (phase 71, above) had never seen, and the same models, asked
+about 4,455,910,000 instead of 10¹⁰, did well:
+
+| the bricks from 3·10⁹ to 4,455,910,000 | forecast | found |
+| --- | ---: | ---: |
+| primitive bricks up to 4,455,910,000 | 17,306 (17,231 to 17,381) | 17,318 |
+| chance of a perfect cuboid among the new ones | 2.86·10⁻⁶ | 3.00·10⁻⁶ |
+| pattern shares inside their ranges (for 2,217 bricks) | about 19 of 20 | 18 of 20 |
+| a new brick closer than 4.2·10⁻⁵ | 17% likely | yes |
+
+The drift the forecasts pointed to went on, a little: two edges divisible by 7, 11 and 13 in
+43.2%, 50.3% and 35.0% of the new bricks, against 42.8%, 49.9% and 34.4% from 10⁹ to 3·10⁹,
+towards the local densities.
+
+**A new closest call.** 4061165768 × 10136008575 × 10894334400, primitive, has the space
+diagonal √237918259246671920449 = 15,424,599,159.99997455…, which misses a whole number by
+2.5·10⁻⁵: nearer than any brick before it. Its derived brick is 45048927 × 48419264 × 120846600.
+
+**What it covers.** From 3,263,469,420 on, the longest legs of an edge are longer than
+`Edge.Max` ≈ 5.3·10¹⁸, so the hunt there covers the bricks whose longest edge is at most that.
+The longest edge of any brick found above 3·10⁹ is 1.8·10¹⁴.
 
 ## Perfect cuboids with Gaussian edges
 

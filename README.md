@@ -6,8 +6,8 @@ Looking for a [perfect cuboid](https://en.wikipedia.org/wiki/Euler_brick#Perfect
 functional Scala 3: is there a box whose edges, face diagonals and space diagonal are all whole
 numbers? Nobody knows.
 
-The biggest search here went through every primitive Euler brick with smallest edge up to 3·10⁹:
-15,101 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md); know it already? [The methods](docs/methods.md). See
+The biggest search here went through every primitive Euler brick with smallest edge up to
+4,455,910,000: 17,318 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md); know it already? [The methods](docs/methods.md). See
 [RESULTS.md](RESULTS.md) for that and the rest of what the searches have found,
 [ROADMAP.md](ROADMAP.md) for how the project was built up, [CHANGELOG.md](CHANGELOG.md) for what
 each version holds, and [CONTRIBUTING.md](CONTRIBUTING.md) for how to add to it.
@@ -19,7 +19,7 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 
 [`docs/chart`](docs/chart/index.html) draws them all, smallest edge against longest: drag to zoom,
 hover to read a brick, click to open it in the catalogue.
-[`docs/catalogue`](docs/catalogue/index.html) lists every primitive brick of the 3·10⁹ hunt, sortable and
+[`docs/catalogue`](docs/catalogue/index.html) lists every primitive brick the hunt found, sortable and
 filterable, each one opening in the checker; its data is [`bricks.txt`](docs/catalogue/bricks.txt),
 the hunt's file without its checkpoints (`grep -v '^#' hunt-primitive.txt`).
 

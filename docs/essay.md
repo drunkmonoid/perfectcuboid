@@ -29,8 +29,8 @@ number a there are only a handful of such legs, and they can be listed exactly f
 of a². Then the search only has to try pairs of those legs, and ask whether b² + c² is a square
 too. If it is, that is an Euler brick, and then one more question settles whether it is perfect.
 
-Done on every shortest edge from 1 up to three billion, this found 15,101 primitive Euler
-bricks. None of them is perfect.
+Done on every shortest edge from 1 up to about four and a half billion, this found 17,318
+primitive Euler bricks. None of them is perfect.
 
 ![How the number of Euler bricks grows](growth.svg)
 
@@ -41,9 +41,9 @@ about two and a half times the bricks, and a little less each time.
 ![The primitive bricks up to three billion, by shortest and longest edge](bricks-3e9.svg)
 
 Some of them are very flat: one is 87,362 times as long as it is short. One is almost a cube,
-its longest edge only 2.2% longer than its shortest. The nearest miss is 640347864 ×
-1045085760 × 1939671305. Its space diagonal comes within about four hundred-thousandths of the
-whole number 2,294,466,039, but is not whole.
+its longest edge only 2.2% longer than its shortest. The nearest miss is 4061165768 ×
+10136008575 × 10894334400. Its space diagonal comes within about two and a half
+hundred-thousandths of the whole number 15,424,599,160, but is not whole.
 
 ## What a computer can prove
 

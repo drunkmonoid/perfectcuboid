@@ -69,7 +69,7 @@ the same file, byte for byte. Ranges split into shards, on several processes or 
 
 ## What the numbers say
 
-No perfect cuboid has a smallest edge up to 3·10⁹ (15,101 primitive Euler bricks). Published
+No perfect cuboid has a smallest edge up to 4,455,910,000 (17,318 primitive Euler bricks). Published
 searches have gone much further; this one is an independent check of part of that range, with
 every step recorded.
 

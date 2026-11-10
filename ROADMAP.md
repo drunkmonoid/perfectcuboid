@@ -206,10 +206,12 @@ one found; `verify` checks the whole file at the end either way.
   it: how many primitive bricks, how they divide by residue pattern, the records, the chance.
   Committed before the hunt's first night. (Records were left out: no model predicts them
   better than a guess. The models were first tested on the hunt to 3·10⁹.)
-- [ ] **72. The hunt to 10¹⁰, by night.** Every primitive brick with smallest edge up to 10¹⁰,
+- [x] **72. The hunt to 10¹⁰, by night.** Every primitive brick with smallest edge up to 10¹⁰,
   run each night and stopped each morning (`timeout --signal=INT`, which stops it as Ctrl+C
   does), verified, and held against phase 71's forecasts. It finishes whenever the nights add
   up, so its commit may come after later phases.
+  (Stopped at 4,455,910,000, where going on would add little: verified, and the forecasts
+  held.)
 
 ### Building
 
