@@ -1161,6 +1161,42 @@ Three times as fast near 10⁹. The hunts found the same primitive bricks as the
 in the same ranges, and every Euler brick with smallest edge from 5,000,001 to 5,300,000,
 27,813 of them, came out byte for byte the same as before.
 
+### Mutation testing
+
+```sh
+mutation/run.sh   # six hours and twenty minutes, on the machine beside a hunt
+```
+
+Phase 76 asked how much the tests would notice: Stryker4s changed the arithmetic and the search
+one small way at a time, a `<` for a `<=`, a condition for `true`, an `&&` for an `||`, and ran
+the tests against each of the 457 changes (`stryker4s.conf`: `Arith`, `Wide`, `Montgomery`,
+`NumberTheory`, `PollardRho`, `Pythagorean`, `Sieve`, `FastSearch` and `Search`; the core's
+tests and the JVM's tests of the search). Its command runner switches each change on through an
+environment variable that it reads afresh at every use, which in the search's inner loops made
+the tests a hundred times slower, so `mutation/tests.sh` points those reads at one value read
+once per run. 363 changes were caught, 254 by a failing test and 109 by a test that no longer
+finished. The other 94, one by one:
+
+| what the change did | changes | |
+| --- | ---: | --- |
+| reached a case no test reached | 14 | now caught, `core/test/src/BoundaryTest.scala` |
+| took a faster path, or spoiled a step that a later exact step repairs: same results | 32 | equivalent |
+| disabled a step that is never needed: the step up after `Arith.isqrt`'s first guess (provably: below 2⁶³ the guess is never low), and after `Wide.isqrt`'s Newton step (in 1.6 million numbers near squares, where it would be, never) | 5 | equivalent |
+| changed a case that cannot occur: a leg equal to the edge, a brick with b = c, an odd modulus equal to twice a remainder, a filter's sum against a negative number | 23 | equivalent |
+| changed only the message of a failed `require` | 12 | |
+| changed what happens only at `Edge.Max`, about 5.3·10¹⁸, or at blocks of 2³¹ edges: no run reaches either | 8 | |
+
+The 14 were real gaps. One of them could have hidden a wrong answer: the filter brings the sum
+of two remainders below the modulus with `>=`, and with `>` instead a pair whose squares add up to
+a multiple of 13·47·29 would have been ruled out without being tried. Seven bricks of the hunt's
+file are such pairs, the smallest 2018940 × 2023632 × 2844205, and no test held one. Another showed
+an argument wrong: a change to Montgomery reduction looked as if it could not matter, and a new
+test showed that `mulMod` then gave the modulus itself, not 0, for a product that is a multiple
+of it. The others: `isqrtBig` on a number like 8 = 2·4, where one Newton step past the root goes
+back up; the largest `Wide`, and 0; products of `Wide`s, of 0 and of numbers too large; and the
+checks that refuse a modulus of 1 or a "composite" 3. Each new test was checked the other way
+round too: with its change put back in by hand, it fails.
+
 ### A guard in CI
 
 ```sh

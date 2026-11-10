@@ -223,8 +223,9 @@ one found; `verify` checks the whole file at the end either way.
 - [x] **75. Faster CI.** The JVM, JavaScript and Native checks as parallel jobs, with the
   build cached, so a push is checked in minutes, not a quarter of an hour. (Mill alone had
   brought a run from 5–7 minutes to 4, by running the test suites in parallel.)
-- [ ] **76. Mutation testing.** Stryker4s over the arithmetic and the search: every surviving
-  mutant either killed by a new test or explained.
+- [x] **76. Mutation testing.** Stryker4s over the arithmetic and the search: every surviving
+  mutant either killed by a new test or explained. (457 mutants: 363 caught; of the 94
+  left, 14 caught by new tests, 60 equivalent, 12 messages, 8 at limits no run reaches.)
 - [x] **77. A speed guard.** A check in CI that times the search against a fixed reference
   kernel on the same runner and fails on a large slowdown, kept only if it proves stable.
 

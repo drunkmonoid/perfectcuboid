@@ -132,6 +132,7 @@ UPDATE_GOLDEN=1 ./mill cli.jvm.test      # accept changed command output into cl
 ./mill mill.bsp.BSP/install              # set up Metals, IntelliJ or VS Code
 ./mill web.fullLinkJS && cp out/web/fullLinkJS.dest/main.js docs/check/main.js  # rebuild the page
 ./mill speed.run                         # the search's speed against a fixed reference, as CI checks it
+mutation/run.sh                          # mutation testing of the arithmetic and the search: hours (stryker4s.conf)
 ./mill cli.native.nativeLink             # a native executable in out/cli/native/nativeLink.dest/out (needs clang)
 ```
 

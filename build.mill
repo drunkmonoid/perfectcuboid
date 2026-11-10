@@ -59,6 +59,12 @@ trait Munit extends TestModule.Munit:
     mvn"org.scalameta::munit-scalacheck::1.3.1"
   )
 
+  /** Mutation testing (stryker4s.conf) switches on one mutant at a time through this variable,
+    * which the tests' JVM must see.
+    */
+  def activeMutation = Task.Input(Task.env.get("ACTIVE_MUTATION").map("ACTIVE_MUTATION" -> _).toMap)
+  def forkEnv = Task(super.forkEnv() ++ activeMutation())
+
 trait Js extends ScalaJSModule:
   def scalaJSVersion = "1.22.0"
 
@@ -152,6 +158,12 @@ object experiments extends Module:
     def moduleDeps = Seq(core.jvm)
     def mvnDeps = Seq(mvn"org.jocl:jocl:2.0.6")
     def mainClass = Some("perfectcuboid.gpu.GpuFilter")
+
+/** Mutation testing, by Stryker4s's command runner: `mutation/run.sh` (see stryker4s.conf). */
+object mutation extends ScalaModule:
+  def scalaVersion = "3.9.0"
+  def mvnDeps = Seq(mvn"io.stryker-mutator::stryker4s-command-runner:1.1.1")
+  def mainClass = Some("stryker4s.command.Stryker4sMain")
 
 /** The API docs: `./mill api.docJar`, then the HTML is in out/api/docJar.dest/javadoc. */
 object api extends Strict:

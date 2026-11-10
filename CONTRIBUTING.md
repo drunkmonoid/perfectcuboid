@@ -13,6 +13,7 @@ local repository that `./mill __.publishLocal` fills.
 | `web` | the page in `docs/check`, the core compiled to JavaScript | `web/src`, `web/test/src` |
 | `bench` | JMH microbenchmarks | `bench/src` |
 | `checker` | checks the certificates of `local`'s rules, sharing no code with the program | `checker/src` |
+| `mutation` | runs Stryker4s, the mutation tester, outside Mill: `mutation/run.sh` | `stryker4s.conf` |
 | `speed` | the speed guard: the search timed against a fixed reference, in CI | `speed/src` |
 | `api` | the API docs of `core` and `cli` together | (theirs) |
 

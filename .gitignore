@@ -7,3 +7,4 @@ hunt-*.txt
 api/
 out/
 perfectcuboid.jar
+target/
