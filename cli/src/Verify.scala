@@ -22,7 +22,8 @@ object Verify:
       sinceCheckpoint: Long,
       problems: Vector[String],
       problemCount: Long,
-      start: Long = 1
+      start: Long = 1,
+      kind: Option[String] = None
   ):
     def lastCheckpoint: Long = checkpoints.lastOption.getOrElse(start - 1)
 
@@ -40,10 +41,14 @@ object Verify:
     val next = state.copy(lines = state.lines + 1)
     val prefix = HuntFile.checkpointPrefix(quarry)
     if !complete || line.isEmpty then next
+    else if HuntFile.kindIn(line).isDefined then
+      if state.lines == 0 then next.copy(kind = HuntFile.kindIn(line))
+      else next.problem(s"line ${next.lines}: a header can only be the first line")
     else if line.startsWith(HuntFile.startPrefix(quarry)) then
       line.stripPrefix(HuntFile.startPrefix(quarry)).toLongOption match
-        case Some(n) if n >= 1 && state.lines == 0 => next.copy(start = n)
-        case _ => next.problem(s"line ${next.lines}: a start can only be the first line, and at least 1")
+        case Some(n) if n >= 1 && (state.lines == 0 || (state.lines == 1 && state.kind.isDefined)) =>
+          next.copy(start = n)
+        case _ => next.problem(s"line ${next.lines}: a start can only come first, after a header, and be at least 1")
     else if line.startsWith(prefix) then
       line.stripPrefix(prefix).toLongOption match
         case Some(n) if n > state.lastCheckpoint && state.lastKey <= n =>
@@ -90,6 +95,14 @@ object Verify:
 
   /** The whole check, as lines to print. */
   def run[A](quarry: Quarry[A], path: Path, blocks: Int): IO[List[String]] =
+    Hunt
+      .readResume(quarry, path)
+      .flatMap: resume =>
+        HuntFile.wrongKind(quarry, path, resume.kind) match
+          case Some(why) => IO.pure(List(s"Verifying $path as ${quarry.name}", s"  $why", "PROBLEMS FOUND"))
+          case None      => checked(quarry, path, blocks)
+
+  private def checked[A](quarry: Quarry[A], path: Path, blocks: Int): IO[List[String]] =
     for
       state <- read(quarry, path)
       spotChecks <- blocksToSearch(state.checkpoints, blocks, state.start).traverse: (first, last) =>

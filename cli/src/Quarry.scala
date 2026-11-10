@@ -130,6 +130,9 @@ object Quarry:
     )
 
   /** By the names the command line uses. */
+  /** The name `--kind` takes for this kind, which a file's header records. */
+  def nameOf(quarry: Quarry[?]): String = byName.collectFirst { case (name, q) if q eq quarry => name }.get
+
   val byName: Map[String, Quarry[?]] =
     Map(
       "bricks" -> eulerBricks,

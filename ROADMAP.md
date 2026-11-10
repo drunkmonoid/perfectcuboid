@@ -263,7 +263,7 @@ one found; `verify` checks the whole file at the end either way.
 
 ### Scala
 
-- [ ] **90. Typed results files.** A header naming the kind and the format version, so `verify`
+- [x] **90. Typed results files.** A header naming the kind and the format version, so `verify`
   and `merge` refuse a mismatch by themselves; older files still read.
 - [ ] **91. Checked literals.** Limits and edges written as literals checked at compile time,
   and checked once at the program's edge otherwise.

@@ -17,8 +17,32 @@ import scala.concurrent.duration.*
   *
   * A file that covers only part of the range, a shard, begins with the key it starts from, as
   * in `# smallest edges from 5000001`. Without that line it starts from 1.
+  *
+  * Since format 2 a file's first line says what it holds, as in
+  * `# perfectcuboid results, format 2, kind primitive`, so that `hunt`, `verify` and `merge`
+  * refuse a file of another kind. Files without it, written before, read as they always did.
   */
 object HuntFile:
+
+  /** The version of the format a new file is written in. */
+  val Format: Int = 2
+
+  private val HeaderPattern = """# perfectcuboid results, format (\d+), kind (\w+)""".r
+
+  /** The first line of a new file of this kind, with its newline. */
+  def headerLine(quarry: Quarry[?]): String =
+    s"# perfectcuboid results, format $Format, kind ${Quarry.nameOf(quarry)}\n"
+
+  /** The kind a header line names, if the line is one. */
+  def kindIn(line: String): Option[String] = line match
+    case HeaderPattern(_, kind) => Option(kind)
+    case _                      => None
+
+  /** Why a file whose header names `kind` cannot be read as this kind, if it cannot. */
+  def wrongKind(quarry: Quarry[?], path: Path, kind: Option[String]): Option[String] =
+    kind
+      .filter(_ != Quarry.nameOf(quarry))
+      .map(k => s"$path holds ${Quarry.byName.get(k).fold(k)(_.name)} (--kind $k), not ${quarry.name}")
 
   /** How a checkpoint line starts; the number after it is how far the search has got. */
   def checkpointPrefix(quarry: Quarry[?]): String = s"# searched ${quarry.key}s up to "
@@ -44,7 +68,9 @@ object HuntFile:
       validBytes: Long,
       sinceCheckpoint: Summary,
       bytesRead: Long,
-      from: Long = 1
+      from: Long = 1,
+      kind: Option[String] = None,
+      bodyStart: Long = 0
   ):
     /** Whether the file holds anything yet, even only its start. */
     def isEmpty: Boolean = validBytes == 0
@@ -60,16 +86,30 @@ object HuntFile:
     val bytesRead = state.bytesRead + line.getBytes("UTF-8").length + (if complete then 1 else 0)
     val prefix = checkpointPrefix(quarry)
     if !complete then state.copy(bytesRead = bytesRead)
+    else if state.bytesRead == 0 && kindIn(line).isDefined then
+      state.copy(validBytes = bytesRead, bytesRead = bytesRead, kind = kindIn(line), bodyStart = bytesRead)
     else if line.startsWith(prefix) then
       line.stripPrefix(prefix).toLongOption match
         case Some(n) =>
-          Resume(n, state.found |+| state.sinceCheckpoint, bytesRead, Summary.empty, bytesRead, state.from)
+          state.copy(
+            searchedUpTo = n,
+            found = state.found |+| state.sinceCheckpoint,
+            validBytes = bytesRead,
+            sinceCheckpoint = Summary.empty,
+            bytesRead = bytesRead
+          )
         case None => state.copy(bytesRead = bytesRead)
     else if line.startsWith(startPrefix(quarry)) then
-      // Only as the very first line: the start comes before anything else.
+      // Only before anything but the header: the start comes first.
       line.stripPrefix(startPrefix(quarry)).toLongOption match
-        case Some(n) if n >= 1 && state.bytesRead == 0 =>
-          Resume(n - 1, Summary.empty, bytesRead, Summary.empty, bytesRead, n)
+        case Some(n) if n >= 1 && state.bytesRead == state.bodyStart =>
+          state.copy(
+            searchedUpTo = n - 1,
+            validBytes = bytesRead,
+            bytesRead = bytesRead,
+            from = n,
+            bodyStart = bytesRead
+          )
         case _ => state.copy(bytesRead = bytesRead)
     else
       quarry.parse(line) match
@@ -173,6 +213,8 @@ object Hunt:
       val start = if found.isEmpty then from.getOrElse(1L) else found.from
       if upTo > quarry.maxKey then
         IO.println(f"${quarry.name} can only be hunted up to ${quarry.key} ${quarry.maxKey}%,d")
+      else if HuntFile.wrongKind(quarry, path, found.kind).isDefined then
+        IO.println(HuntFile.wrongKind(quarry, path, found.kind).get)
       else if !found.isEmpty && from.exists(_ != found.from) then
         IO.println(s"$path covers ${quarry.key}s from ${found.from}, not ${from.getOrElse(1L)}: use another file")
       else if upTo < start then IO.println(s"Nothing to search: $upTo is before ${quarry.key} $start")
@@ -181,11 +223,11 @@ object Hunt:
         for
           _ <- dropUnfinishedBlock(path, found).whenA(found.bytesRead > found.validBytes)
           _ <- Stream
-            .emit(HuntFile.startLine(quarry, start))
+            .emit(HuntFile.headerLine(quarry) + (if start > 1 then HuntFile.startLine(quarry, start) else ""))
             .through(Files[IO].writeUtf8(path, Flags.Append))
             .compile
             .drain
-            .whenA(found.isEmpty && start > 1)
+            .whenA(found.isEmpty)
           _ <- IO.println(
             if !found.isEmpty && resume.searchedUpTo >= start then
               s"Resuming after ${quarry.key} ${resume.searchedUpTo} (${resume.found.found} ${quarry.name} so far)"

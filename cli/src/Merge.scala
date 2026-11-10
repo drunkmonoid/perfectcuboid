@@ -41,22 +41,26 @@ object Merge:
             .traverse(path => Hunt.readResume(quarry, path).map(resume => (path = path, resume = resume)))
             .flatMap: read =>
               val shards = read.sortBy(_.resume.from)
-              val found = problems(shards.map(s => Shard(s.path.toString, s.resume.from, s.resume.searchedUpTo)))
+              val kinds = shards.flatMap(s => HuntFile.wrongKind(quarry, s.path, s.resume.kind))
+              val found =
+                kinds ++ problems(shards.map(s => Shard(s.path.toString, s.resume.from, s.resume.searchedUpTo)))
               if found.nonEmpty then IO.pure("Cannot merge:" :: found.map("  " + _))
               else write(quarry, out, shards).as(report(quarry, out, shards.map(_.resume)))
 
-  /** Each shard's bytes up to its last checkpoint, without its start line; one start line, if
-    * the whole range does not start at 1, goes first. Anything after a shard's last checkpoint
+  /** Each shard's bytes up to its last checkpoint, without its header or start line; one header,
+    * and one start line if the whole range does not start at 1, go first. Anything after a shard's last checkpoint
     * belongs to an unfinished block, and is left out.
     */
   private def write[A](quarry: Quarry[A], out: Path, shards: List[(path: Path, resume: HuntFile.Resume)]): IO[Unit] =
     val from = shards.head.resume.from
-    val start = Stream.emit(HuntFile.startLine(quarry, from)).filter(_ => from > 1).through(fs2.text.utf8.encode)
+    val start = Stream
+      .emit(HuntFile.headerLine(quarry) + (if from > 1 then HuntFile.startLine(quarry, from) else ""))
+      .through(fs2.text.utf8.encode)
     val bodies = Stream
       .emits(shards)
       .flatMap: (path, resume) =>
-        val skip = if resume.from > 1 then HuntFile.startLine(quarry, resume.from).getBytes("UTF-8").length else 0
-        Files[IO].readRange(path, 64 * 1024, skip.toLong, resume.validBytes)
+        // Each shard's header and start, if it has them, are left behind: the new file has its own.
+        Files[IO].readRange(path, 64 * 1024, resume.bodyStart, resume.validBytes)
     (start ++ bodies).through(Files[IO].writeAll(out)).compile.drain
 
   private def report(quarry: Quarry[?], out: Path, resumes: List[HuntFile.Resume]): List[String] =

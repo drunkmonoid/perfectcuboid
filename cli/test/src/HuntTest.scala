@@ -150,6 +150,51 @@ class HuntTest extends munit.CatsEffectSuite:
           assertEquals(HuntFile.parse(Quarry.oddEdge, one), OddSearch.primitiveBricksIterator(1, 30_000).toList)
           assertEquals(report.last, "OK", report)
 
+  test("a new file says what it holds on its first line"):
+    withTempFile: path =>
+      for
+        _ <- Hunt.run(Quarry.primitiveBricks, path, 1000, blockSize = 100, cores = 2)
+        lines <- Files[IO].readUtf8Lines(path).compile.toList
+        resume <- Hunt.readResume(Quarry.primitiveBricks, path)
+      yield
+        assertEquals(lines.head, "# perfectcuboid results, format 2, kind primitive")
+        assertEquals(resume.kind, Some("primitive"))
+        assertEquals(resume.searchedUpTo, 1000L)
+
+  test("a file written before headers still resumes and verifies"):
+    withTempFile: path =>
+      val old =
+        HuntFile.blockText(Quarry.primitiveBricks, FastSearch.eulerBricksBetween(1, 500).filter(_.isPrimitive), 500)
+      for
+        _ <- fs2.Stream.emit(old).through(Files[IO].writeUtf8(path)).compile.drain
+        _ <- Hunt.run(Quarry.primitiveBricks, path, 2000, blockSize = 100, cores = 2)
+        lines <- Files[IO].readUtf8Lines(path).compile.toList
+        report <- Verify.run(Quarry.primitiveBricks, path, blocks = 3)
+      yield
+        assert(!lines.head.startsWith("# perfectcuboid"), lines.head)
+        assertEquals(
+          HuntFile.parse(Quarry.primitiveBricks, lines),
+          FastSearch.eulerBricksBetween(1, 2000).filter(_.isPrimitive)
+        )
+        assertEquals(report.last, "OK", report)
+
+  test("hunt, verify and merge refuse a file of another kind"):
+    withTempFile: path =>
+      withTempFile: out =>
+        for
+          _ <- Hunt.run(Quarry.primitiveBricks, path, 1000, blockSize = 100, cores = 2)
+          before <- Files[IO].readUtf8(path).compile.string
+          _ <- Hunt.run(Quarry.eulerBricks, path, 2000, blockSize = 100, cores = 2)
+          after <- Files[IO].readUtf8(path).compile.string
+          report <- Verify.run(Quarry.eulerBricks, path, blocks = 3)
+          _ <- Files[IO].delete(out)
+          merged <- Merge.run(Quarry.eulerBricks, out, List(path))
+        yield
+          assertEquals(after, before)
+          assertEquals(report.last, "PROBLEMS FOUND")
+          assert(report.exists(_.contains("holds primitive Euler bricks (--kind primitive)")), report)
+          assert(merged.exists(_.contains("holds primitive Euler bricks")), merged)
+
   test("a hunt can start later, and a later run resumes it from its own start"):
     withTempFile: path =>
       for
@@ -160,7 +205,10 @@ class HuntTest extends munit.CatsEffectSuite:
         resume <- Hunt.readResume(Quarry.eulerBricks, path)
         report <- Verify.run(Quarry.eulerBricks, path, blocks = 3)
       yield
-        assertEquals(lines.head, "# smallest edges from 1001")
+        assertEquals(
+          lines.take(2),
+          List("# perfectcuboid results, format 2, kind bricks", "# smallest edges from 1001")
+        )
         assertEquals(HuntFile.parse(Quarry.eulerBricks, lines), FastSearch.eulerBricksBetween(1001, 3000))
         assertEquals((resume.from, resume.searchedUpTo), (1001L, 3000L))
         assertEquals(report.last, "OK", report)

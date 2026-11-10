@@ -115,7 +115,7 @@ object Processes:
         exited.onCancel(IO.blocking(process.destroy()))
 
   /** The name `--kind` takes for this kind. */
-  def kindName(quarry: Quarry[?]): String = Quarry.byName.collectFirst { case (name, q) if q eq quarry => name }.get
+  def kindName(quarry: Quarry[?]): String = Quarry.nameOf(quarry)
 
   /** The hunt to `upTo` on `n` processes, each shard run by `run`, which gives an exit code. */
   def hunt[A](

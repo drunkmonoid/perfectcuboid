@@ -63,7 +63,9 @@ A hunt kind is a `Quarry` (`cli/src/Quarry.scala`): a name, what the search coun
 to sum finds up, and how to check a find independently, for `verify`. The line format is best
 derived: `final case class MyLine(...) derives LineFormat` in `core/src/LineFormat.scala`. Give
 the kind its `maxKey`, the largest key its search handles, and add it to `Quarry.byName`, so
-that `hunt`, `verify` and `merge` all take `--kind` with its name. Test that a hunt of it
+that `hunt`, `verify` and `merge` all take `--kind` with its name. That name is also what a new
+file's first line records (`# perfectcuboid results, format 2, kind primitive`), and the three
+commands refuse a file whose first line names another kind. Test that a hunt of it
 writes what its search finds, and that it resumes to the same file.
 
 ## Adding a chart
