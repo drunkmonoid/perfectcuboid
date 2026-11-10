@@ -289,3 +289,100 @@ one found; `verify` checks the whole file at the end either way.
 - [ ] **99. Tour, part three.** Worksheets for what 3.0 adds: the Mill build, the Vector API,
   the notebook.
 - [ ] **100. Version 3.0.** A final pass over every document, the changelog, and a `v3.0` tag.
+
+## Towards 4.0
+
+Thirty more, about the mathematics rather than the speed. Phase 86 found that the perfect
+cuboid equations have exactly p³ + 9p² − 9p solutions mod every prime p ≡ 7 (mod 8): taken
+projectively, p² + 10p + 1 points, the shape the Weil conjectures give a surface. The equations
+define a surface of general type (four quadrics in P⁶), and the Euler brick's alone a K3 surface
+(three quadrics in P⁵): objects with a literature, and with structure that counting can see.
+Same rules as before: every claim with the command that checks it, and what is fitted rather
+than proved said to be so.
+
+### What is known
+
+- [ ] **101. The literature.** What is known about the perfect cuboid surface and the Euler
+  brick surface (van Luijk, Beukers and van Geemen, Stoll and Testa, and others), collected in
+  `docs/literature.md`, and every claim that can be checked by computing, checked.
+- [ ] **102. Points on the surfaces.** From the counts of solutions to the points of the projective
+  surfaces, p² + 10p + 1 and the rest, and what the excess over p² + p + 1 says: the trace of
+  Frobenius on the middle cohomology.
+
+### The surfaces mod p
+
+- [ ] **103. The other cuboids, counted.** Solutions mod p of the Euler brick equations, and of the
+  face and edge cuboids', for every prime up to 1000.
+- [ ] **104. Their formulas.** Fitted by p mod 8 and by how p is written with i and √−2, checked
+  for every prime the counts reach, and the fitted ones marked as such.
+- [ ] **105. Extension fields.** Arithmetic in F_q for q = p², p³, the counts over them, and so the
+  zeta functions of the surfaces for small p, with the Weil conjectures checked on them.
+- [ ] **106. Modular forms with complex multiplication.** Weight-3 forms built from Hecke
+  characters of Q(i) and Q(√−2), their coefficients computed here, and matched with the terms
+  of the formulas.
+- [ ] **107. A proof for p ≡ 7 (mod 8).** The count p³ + 9p² − 9p derived by character sums,
+  written out, with every step checked numerically.
+
+### Curves on the surfaces
+
+- [ ] **108. Lines and conics.** The curves of low degree on the perfect cuboid surface, over F_p
+  and over Q: the degenerate boxes (a length 0, a² + b² = 0, ...), and how they account for the
+  10 in p² + 10p + 1.
+- [ ] **109. Degenerate boxes over Q.** The rational points with a zero length, family by family,
+  each with its parametrisation.
+- [ ] **110. Points of small height.** Every rational point of the perfect cuboid surface up to a
+  height, projectively, and which family each belongs to.
+
+### Local conditions, further
+
+- [ ] **111. More primes.** The rules of `local` past 37, to 200, and the primes with no
+  solution free of zeros, from the counts, to 10⁴.
+- [ ] **112. Higher powers.** Rules mod p³ and p⁴ for the small primes, and whether they force
+  more than mod p².
+- [ ] **113. The solutions with no zero.** A formula for them, if one fits, and so exactly why
+  3, 5, 7, 11, 13, 17, 19, 29 and 37 are the primes that force a length divisible by p.
+- [ ] **114. Every condition at once.** All the forced divisibilities combined: what they say
+  about the smallest a perfect cuboid could be.
+- [ ] **115. A local filter for the bricks.** Each brick found tested against every local
+  condition a perfect cuboid must meet: how many pass, by size, against the chance heuristic's
+  remainder factor.
+
+### The bricks' elliptic curves
+
+- [ ] **116. PARI as a second opinion.** PARI/GP through `cypari2`, in a virtual environment, for
+  ranks and heights this project does not compute; cross-checked against it wherever both can.
+- [ ] **117. Ranks.** The ranks of the three curves of each primitive brick up to 10⁶, and how
+  often a curve has rank 2 or more.
+- [ ] **118. Heights.** The canonical heights of the bricks' points, and how they grow with size.
+- [ ] **119. Families from generators.** On a curve of rank 2 or more, the bricks from every
+  small combination of generators, and whether the hunt found them where they are in range.
+- [ ] **120. A perfect cuboid on a curve.** For a fixed ratio a : b the perfect condition is one
+  more square, a curve of higher genus: its genus, and its points for small ratios.
+
+### Heuristics, better
+
+- [ ] **121. How many bricks.** A heuristic count of primitive Euler bricks with smallest edge up
+  to N, from the K3 surface's points, against the counts to 3·10⁹.
+- [ ] **122. Densities from the counts.** The local densities of phase 56 as an Euler product
+  over every prime, from the formulas, against the bricks found.
+- [ ] **123. The chance, with every condition.** Phase 53's chance of a perfect cuboid again, with
+  all the local conditions of phase 115 instead of one modulus.
+- [ ] **124. The forecasts, met.** Phase 71's forecasts against the hunt to 10¹⁰, as far as the
+  nights have taken it, and the models corrected by what they missed.
+
+### Other rings
+
+- [ ] **125. Eisenstein integers.** Perfect cuboids over Z[ω], ω a cube root of 1, searched as
+  phase 85 searched the Gaussian integers.
+- [ ] **126. Quadratic rings.** Z[√−2] and small real quadratic rings: which have perfect boxes
+  with all seven lengths nonzero, and the smallest found.
+
+### Sharing it
+
+- [ ] **127. The surfaces mod p, written up.** Everything found about the counts and the curves,
+  proved or fitted, with references, as a note in `docs/`.
+- [ ] **128. A page for the counts.** On the site: choose a prime, see the counts, the formula
+  and its terms, worked out in the browser.
+- [ ] **129. Tour, part four.** Number theory in Scala: finite fields, characters, Gaussian
+  integers, modular forms.
+- [ ] **130. Version 4.0.** A final pass over every document, the changelog, and a `v4.0` tag.
