@@ -1083,3 +1083,31 @@ done; wait
 
 Four native processes searched the 300,000 edges near 10⁹ in 5.9 s, where one took 15 s. The
 merged file passed `verify`, and held every primitive brick the 10⁹ hunt had found there.
+
+**The same, in one command.** Since phase 82, `hunt` does the splitting, the launching and the
+merging itself:
+
+```sh
+GC_MAXIMUM_HEAP_SIZE=512m ./perfectcuboid hunt hunt.txt 2e7 --kind primitive --processes 4
+java -Xmx1g -jar perfectcuboid.jar hunt hunt.txt 2e7 --kind primitive --processes 3 --threads 6
+```
+
+It cuts what is left of the range into shards, starts this same program again for each (its
+own command line up to the word `hunt`, read from Linux's `/proc`), with `--threads` shared out
+between them, and when all have finished merges FILE and the shards into FILE. The same command
+run again plans the same shards, and each process resumes its own; a shard left from a
+different split is refused. Four native processes to 2·10⁷ found the 2,215 primitive bricks the
+long hunt holds there, and the file passed `verify`; so did three JVM processes, interrupted
+after 12 seconds and run again.
+
+**Stopping.** On the JVM, each shard's process watches the process that started it, and stops
+cleanly when it goes: a signal to the parent alone, or its crash, leaves nothing running that a
+second run would write over. Interrupted, parent and shards had all stopped within 2 seconds.
+Native shards cannot watch: watching takes a second thread, and beside the search's it made
+the native garbage collector crash (signal 11) or wait for a safepoint that never came, the
+failures of phase 46 again. And a native hunt deep in its range does not stop cleanly on a
+signal either: from 10⁷, SIGINT or SIGTERM left it waiting a minute for that safepoint, until
+the runtime gave up. It started from 1, it stopped in 2 seconds. So stop native hunts with
+`kill -9` (no checkpoint is ever lost: a half-written block is searched again), and stop a native
+`--processes` hunt with a signal to its whole process group, `kill -9 -- -PGID`, so that the
+shards go too.

@@ -87,7 +87,8 @@ java -jar perfectcuboid.jar verify all.txt --kind primitive
 ```
 
 `perfectcuboid.jar` is built by `./mill cli.jvm.assembly`, in `out/cli/jvm/assembly.dest/out.jar`.
-Ctrl+C stops a shard and the same command resumes it. `merge` refuses shards with gaps or
+On one machine, `hunt FILE UPTO --processes N` does all of this itself. Ctrl+C stops a shard
+and the same command resumes it. `merge` refuses shards with gaps or
 overlaps between them, and never overwrites a file. On the native build, give each process one
 thread (it refuses more) and run several processes instead.
 

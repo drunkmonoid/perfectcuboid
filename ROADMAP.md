@@ -237,7 +237,7 @@ one found; `verify` checks the whole file at the end either way.
   (`jdk.incubator.vector`), measured with JMH; kept if they pay.
 - [ ] **81. A GPU experiment.** The pair test on the laptop's integrated GPU through OpenCL,
   measured against the CPU. Kept in `experiments/` with its numbers, whatever they say.
-- [ ] **82. Processes on one machine.** `hunt --processes N` runs N shards side by side and
+- [x] **82. Processes on one machine.** `hunt --processes N` runs N shards side by side and
   merges them, so the native build uses every core too.
 
 ### Searching further

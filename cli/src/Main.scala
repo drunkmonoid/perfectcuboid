@@ -45,8 +45,13 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
 
   /** The program for one command, as an `IO` that does nothing until it is run. */
   def execute(command: Command): IO[Unit] = command match
-    case Command.Hunt(file, upTo, quarry, threads, blockSize, from) =>
-      Hunt.run(quarry, Path(file), upTo, blockSize, threads, from)
+    case Command.Hunt(file, upTo, quarry, threads, blockSize, from, processes) =>
+      if processes == 1 then Processes.stoppedWithParent(Hunt.run(quarry, Path(file), upTo, blockSize, threads, from))
+      else
+        val each = math.max(1, threads / processes)
+        Processes
+          .huntOnProcesses(quarry, Path(file), upTo, processes, each, blockSize, from)
+          .flatMap(_.traverse_(IO.println))
     case Command.Analyse(file, primitiveOnly, charts) =>
       val quarry = if primitiveOnly then Quarry.primitiveBricks else Quarry.eulerBricks
       Analysis.ofFile(quarry, Path(file), primitiveOnly, charts.map(Path(_))).flatMap(_.traverse_(IO.println))

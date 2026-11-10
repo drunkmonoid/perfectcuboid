@@ -53,6 +53,7 @@ perfectcuboid hunt hunt-primitive.txt 3e9 --kind primitive   # long search to a 
 perfectcuboid hunt hunt-face.txt 1e6 --kind face             # ... of face cuboids (or bricks, or edge)
 perfectcuboid hunt hunt-odd.txt 1e7 --kind odd               # ... of primitive bricks by their odd edge
 perfectcuboid hunt part2.txt 2e9 --from 1000000001           # one range of a longer search, a shard
+perfectcuboid hunt hunt.txt 2e7 --processes 4                # ... split between processes, and merged
 perfectcuboid merge all.txt part1.txt part2.txt              # join shards that follow on from each other
 perfectcuboid verify hunt-primitive.txt --kind primitive     # check a hunt's file without trusting the search
 perfectcuboid analyse hunt-primitive.txt --kind primitive    # counts, rules, origins and closest calls of its bricks
@@ -150,6 +151,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Quarry.scala` | the kinds of cuboid a hunt can look for: how to search, write and read each |
 | `core/src/LineFormat.scala` | a type class for lines of results files, derived for any case class with `derives` |
 | `cli/src/Verify.scala` | checking a results file without trusting the code that wrote it |
+| `cli/src/Processes.scala` | a hunt split between processes on one machine, and merged |
 | `cli/src/Merge.scala` | joining the files of hunts over ranges that follow on from each other |
 | `cli/src/Analysis.scala` | the reports that need only a list of bricks, for a fresh search or a hunt's file |
 | `cli/src/Chance.scala` | how many perfect cuboids chance alone would put among the bricks found |

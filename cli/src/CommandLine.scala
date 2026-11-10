@@ -37,7 +37,8 @@ enum Command:
       quarry: Quarry[?],
       threads: Int,
       blockSize: Long = perfectcuboid.Hunt.DefaultBlockSize,
-      from: Option[Long] = None
+      from: Option[Long] = None,
+      processes: Int = 1
   )
   case Merge(out: String, files: List[String], quarry: Quarry[?])
   case Analyse(file: String, primitiveOnly: Boolean, charts: Option[String])
@@ -221,8 +222,15 @@ object CommandLine:
           .validate(s"--from must be from 1 to ${FastSearch.MaxSmallestEdge}")(n =>
             n >= 1 && n <= FastSearch.MaxSmallestEdge
           )
-          .orNone
-      ).mapN(Command.Hunt(_, _, _, _, _, _))
+          .orNone,
+        Opts
+          .option[Int](
+            "processes",
+            "Split the rest of the range between this many processes, sharing --threads, and merge (default 1)."
+          )
+          .withDefault(1)
+          .validate("--processes must be from 1 to 64")(n => n >= 1 && n <= 64)
+      ).mapN(Command.Hunt(_, _, _, _, _, _, _))
     )
 
   private val analyse: Opts[Command] =
