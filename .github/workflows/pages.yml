@@ -25,10 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6
-      - uses: VirtusLab/scala-cli-setup@v1
-        with:
-          scala-cli-version: 1.18.0
-          jvm: temurin:17
       - name: Put the site together
         run: |
           mkdir -p _site/charts
@@ -36,7 +32,8 @@ jobs:
           cp -r docs/check _site/check
           cp -r docs/catalogue _site/catalogue
           cp docs/*.svg _site/charts/
-          scala-cli doc . -o _site/api --server=false -O -project:perfectcuboid
+          ./mill api.docJar
+          cp -r out/api/docJar.dest/docs _site/api
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

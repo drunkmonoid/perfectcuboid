@@ -2,12 +2,12 @@
 // Run it with:  scala-cli run docs/tour/tour7_files.sc
 //> using scala 3.9.0
 //> using dep co.fs2::fs2-io::3.14.0
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
-//> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
-//> using file ../../src/Search.scala ../../src/Sieve.scala ../../src/FastSearch.scala ../../src/Platform.scala
-//> using file ../../src/Hunt.scala ../../src/Quarry.scala ../../src/Summary.scala ../../src/Eta.scala
-//> using file ../../src/Verify.scala ../../src/Merge.scala ../../src/LineFormat.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
+//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
+//> using file ../../core/src/Search.scala ../../core/src/Sieve.scala ../../core/src/FastSearch.scala ../../core/src/Platform.scala
+//> using file ../../cli/src/Hunt.scala ../../cli/src/Quarry.scala ../../cli/src/Summary.scala ../../cli/src/Eta.scala
+//> using file ../../cli/src/Verify.scala ../../cli/src/Merge.scala ../../core/src/LineFormat.scala
 
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
@@ -17,7 +17,7 @@ import perfectcuboid.*
 
 // A results file is plain text: each brick on a line, and after every block of edges a
 // checkpoint saying how far the search has got. The line format is derived from a case class
-// (src/LineFormat.scala): `EdgesLine(a, b, c) derives LineFormat` writes and reads "a b c".
+// (core/src/LineFormat.scala): `EdgesLine(a, b, c) derives LineFormat` writes and reads "a b c".
 println(LineFormat.write(EdgesLine(44, 117, 240)))
 println(LineFormat.parse[EdgesLine]("85 132 720"))
 

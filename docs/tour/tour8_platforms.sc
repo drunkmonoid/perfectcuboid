@@ -3,10 +3,10 @@
 //         or:   scala-cli run docs/tour/tour8_platforms.sc --js       (needs Node)
 //         or:   scala-cli run docs/tour/tour8_platforms.sc --native   (needs clang)
 //> using scala 3.9.0
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/NearMisses.scala
-//> using file ../../src/PollardRho.scala ../../src/Pythagorean.scala ../../src/Search.scala
-//> using file ../../src/Sieve.scala ../../src/FastSearch.scala ../../src/Platform.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/NearMisses.scala
+//> using file ../../core/src/PollardRho.scala ../../core/src/Pythagorean.scala ../../core/src/Search.scala
+//> using file ../../core/src/Sieve.scala ../../core/src/FastSearch.scala ../../core/src/Platform.scala
 
 import perfectcuboid.*
 

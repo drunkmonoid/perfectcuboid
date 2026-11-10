@@ -1,10 +1,10 @@
 // A guided tour, part 3: searching.
 // Run it with:  scala-cli run docs/tour/tour3_searching.sc
 //> using scala 3.9.0
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
-//> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
-//> using file ../../src/Search.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
+//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
+//> using file ../../core/src/Search.scala
 
 import perfectcuboid.*
 

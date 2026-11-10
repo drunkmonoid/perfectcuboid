@@ -2,10 +2,10 @@
 // Run it with:  scala-cli run docs/tour/tour4_monoids.sc
 //> using scala 3.9.0
 //> using dep org.typelevel::cats-core::2.13.0
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
-//> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
-//> using file ../../src/Search.scala ../../src/Summary.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
+//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
+//> using file ../../core/src/Search.scala ../../cli/src/Summary.scala
 
 import cats.syntax.all.*
 import perfectcuboid.*

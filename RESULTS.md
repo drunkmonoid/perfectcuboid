@@ -1,7 +1,9 @@
 # Results
 
 What the searches in this repository have found so far. Every number here can be reproduced
-with the command shown next to it. Timings are on a mid-range laptop (Core i5,
+with the command shown next to it. `perfectcuboid.jar` is the jar of a
+[release](https://github.com/drunkmonoid/perfectcuboid/releases), or one built with
+`./mill cli.jvm.assembly` (README.md); the figures were measured with the build of their time. Timings are on a mid-range laptop (Core i5,
 12 threads, 24 GB), on the JVM unless stated.
 
 ## No perfect cuboid, as far as we looked
@@ -13,9 +15,9 @@ edge up to 3,000,000,000**, however long the other edges. It found 15,101 of the
 perfect cuboid.
 
 ```sh
-scala-cli run . -J -Xmx1g -- hunt hunt-primitive.txt 1e9 --kind primitive   # 4 h 15 min on 10 threads
-scala-cli run . -J -Xmx1g -- hunt hunt-primitive.txt 3e9 --kind primitive   # 6 h 55 min more, on 8
-scala-cli run . -J -Xmx1g -- verify hunt-primitive.txt --kind primitive     # 0 problems, in 3 s
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-primitive.txt 1e9 --kind primitive   # 4 h 15 min on 10 threads
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-primitive.txt 3e9 --kind primitive   # 6 h 55 min more, on 8
+java -Xmx1g -jar perfectcuboid.jar verify hunt-primitive.txt --kind primitive     # 0 problems, in 3 s
 ```
 
 It ran in two parts: first to 10⁹, then, after the search was made three times as fast, the
@@ -44,7 +46,7 @@ The earlier hunt of all Euler bricks, not only primitive ones, searched every sm
 up to 30,500,000. It found 2,826,042 Euler bricks, 2,651 of them primitive, and no perfect cuboid.
 
 ```sh
-scala-cli run . -J -Xmx2g -- hunt hunt-bricks.txt 30500000   # about two and a half minutes
+java -Xmx2g -jar perfectcuboid.jar hunt hunt-bricks.txt 30500000   # about two and a half minutes
 ```
 
 Stopping is safe at any moment: a property test (`StopAnywhereTest`) stops a hunt after
@@ -95,7 +97,7 @@ read, checked by tests, and safe to stop and resume.
 ## How many Euler bricks there are
 
 ```sh
-scala-cli run . -J -Xmx2g -- stats 7   # about 50 seconds
+java -Xmx2g -jar perfectcuboid.jar stats 7   # about 50 seconds
 ```
 
 | N | every edge ≤ N | primitive | smallest edge ≤ N | primitive |
@@ -145,7 +147,7 @@ section).
 ## Reading the long hunt's file
 
 ```sh
-scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive --charts charts   # 40 seconds
+java -Xmx2g -jar perfectcuboid.jar analyse hunt-primitive.txt --kind primitive --charts charts   # 40 seconds
 ```
 
 `analyse` runs the reports that need only a list of bricks, growth, rules, derived pairs,
@@ -158,7 +160,7 @@ would take half a day. The figures for 10⁹ and 3·10⁹ in the tables of this 
 ## Derived bricks come in pairs
 
 ```sh
-scala-cli run . -- derived 1e7
+java -jar perfectcuboid.jar derived 1e7
 ```
 
 If a × b × c is an Euler brick, so is ab × ac × bc, its derived brick, and deriving twice
@@ -180,7 +182,7 @@ partner, which would need b² = ac.
 ## New bricks from elliptic curves
 
 ```sh
-scala-cli run . -- curve 44 117 240
+java -jar perfectcuboid.jar curve 44 117 240
 ```
 
 Fix two edges a and b. A third edge c works when c² + a² and c² + b² are both squares, and then
@@ -202,7 +204,7 @@ are within reach of the search, which finds them too: two independent methods ag
 ## Where the primitive bricks come from
 
 ```sh
-scala-cli run . -J -Xmx2g -- origins 1e7   # about a minute
+java -Xmx2g -jar perfectcuboid.jar origins 1e7   # about a minute
 ```
 
 How many of the primitive bricks found by searching would a formula or a map have given,
@@ -226,7 +228,7 @@ they are only found by searching.
 ### Families built forwards
 
 ```sh
-scala-cli run . -J -Xmx2g -- families hunt-primitive.txt   # 40 seconds
+java -Xmx2g -jar perfectcuboid.jar families hunt-primitive.txt   # 40 seconds
 ```
 
 The usual references give formulas for one family only: Wikipedia and MathWorld both give
@@ -256,7 +258,7 @@ incomplete, unless it counted something else.
 ## The Pythagorean graph
 
 ```sh
-scala-cli run . -J -Xmx3g -- graph 1e6   # about 20 seconds
+java -Xmx3g -jar perfectcuboid.jar graph 1e6   # about 20 seconds
 ```
 
 Join two numbers when the sum of their squares is a square. An Euler brick is then a triangle:
@@ -281,7 +283,7 @@ their own.
 ## Four dimensions
 
 ```sh
-scala-cli run . -J -Xmx3g -- fourd 1e6   # about 35 seconds
+java -Xmx3g -jar perfectcuboid.jar fourd 1e6   # about 35 seconds
 ```
 
 A four-dimensional Euler brick would have four edges with all six pairs making whole face
@@ -296,7 +298,7 @@ is a brick, and 351 makes whole diagonals with 132 and 720, but not with 85.
 ## Closest calls
 
 ```sh
-scala-cli run . -J -Xmx2g -- closest 1e7   # about 50 seconds
+java -Xmx2g -jar perfectcuboid.jar closest 1e7   # about 50 seconds
 ```
 
 The primitive bricks whose space diagonal comes nearest to a whole number. Only primitive
@@ -332,7 +334,7 @@ They miss about as chance would have them miss.
 ## Records
 
 ```sh
-scala-cli run . -J -Xmx2g -- records hunt-primitive.txt   # 45 seconds
+java -Xmx2g -jar perfectcuboid.jar records hunt-primitive.txt   # 45 seconds
 ```
 
 Among the 15,101 primitive bricks with smallest edge up to 3·10⁹:
@@ -369,7 +371,7 @@ legs above it and 25 bricks on it.
 ## How unlucky are we?
 
 ```sh
-scala-cli run . -J -Xmx2g -- analyse hunt-primitive.txt --kind primitive   # its last table
+java -Xmx2g -jar perfectcuboid.jar analyse hunt-primitive.txt --kind primitive   # its last table
 ```
 
 Suppose chance alone decided whether a brick's space diagonal is whole. How many perfect
@@ -417,7 +419,7 @@ would be just the kind of thing this reckoning cannot see.
 ## Forecasts for the hunt to 10¹⁰
 
 ```sh
-scala-cli run . -J -Xmx2g -- forecast hunt-primitive.txt 1e10   # 9 seconds
+java -Xmx2g -jar perfectcuboid.jar forecast hunt-primitive.txt 1e10   # 9 seconds
 ```
 
 Written down on 10 November 2026, before the hunt from 3·10⁹ to 10¹⁰ (phase 72) began, so
@@ -499,7 +501,7 @@ Records are left out: nothing here predicts them better than a guess.
 ## Perfect parallelepipeds
 
 ```sh
-scala-cli run . -J -Xmx2g -- parallelepiped 700   # about a minute
+java -Xmx2g -jar perfectcuboid.jar parallelepiped 700   # about a minute
 ```
 
 Let the box lean. A parallelepiped is spanned by three edge vectors u, v, w, with
@@ -534,8 +536,8 @@ right angles.
 ## Rules proved by computer
 
 ```sh
-scala-cli run . -- local      # primes up to 37, about 20 seconds
-scala-cli run . -- local 43   # up to 43, about a minute
+java -jar perfectcuboid.jar local      # primes up to 37, about 20 seconds
+java -jar perfectcuboid.jar local 43   # up to 43, about a minute
 ```
 
 Reduce a primitive brick's edges mod a prime power pᵏ. They are not all divisible by p, and
@@ -563,7 +565,7 @@ Euler brick, not only for perfect ones. Lower powers are not enough: mod 2⁷ sh
 ### How often, not only whether
 
 ```sh
-scala-cli run . -J -Xmx2g -- densities hunt-primitive.txt   # 15 seconds
+java -Xmx2g -jar perfectcuboid.jar densities hunt-primitive.txt   # 15 seconds
 ```
 
 The rules say which patterns of divisibility a primitive brick can have. How often should
@@ -615,7 +617,7 @@ patterns written as how often p divides each edge, largest first:
 Each kind has exactly one irrational length out of seven.
 
 ```sh
-scala-cli run . -- nearmisses
+java -jar perfectcuboid.jar nearmisses
 ```
 
 | kind | the first one found | ordered by |
@@ -633,10 +635,10 @@ scala-cli run . -- nearmisses
 ### Near misses, far
 
 ```sh
-scala-cli run . -J -Xmx1g -- hunt hunt-face.txt 1e7 --kind face   # 4 minutes on 4 threads
-scala-cli run . -J -Xmx1g -- hunt hunt-edge.txt 1e9 --kind edge   # 71 minutes on 4 threads
-scala-cli run . -J -Xmx2g -- nearcalls hunt-face.txt --kind face
-scala-cli run . -J -Xmx2g -- nearcalls hunt-edge.txt --kind edge
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-face.txt 1e7 --kind face   # 4 minutes on 4 threads
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-edge.txt 1e9 --kind edge   # 71 minutes on 4 threads
+java -Xmx2g -jar perfectcuboid.jar nearcalls hunt-face.txt --kind face
+java -Xmx2g -jar perfectcuboid.jar nearcalls hunt-edge.txt --kind edge
 ```
 
 Both hunts ran next to the primitive hunt to 3·10⁹, and `verify` found no problem in either.
@@ -673,7 +675,7 @@ exact whole number a perfect cuboid needs.
 ### Face cuboids, found a second way
 
 ```sh
-scala-cli run . -- crosscheck 1e5   # about a minute
+java -jar perfectcuboid.jar crosscheck 1e5   # about a minute
 ```
 
 The face cuboid search starts from the edge where the two whole face diagonals meet and pairs
@@ -695,7 +697,7 @@ the first does not.
 ## Speed
 
 ```sh
-scala-cli run . -J -Xmx2g -- bench 1e6 --runs 3
+java -Xmx2g -jar perfectcuboid.jar bench 1e6 --runs 3
 ```
 
 Each search runs twice untimed to let the JVM compile it, then three times timed. The table
@@ -731,7 +733,7 @@ a checkpoint.
 
 ```sh
 printf '# searched smallest edges up to 999000000\n' > hunt-slice.txt
-scala-cli run . -J -XX:StartFlightRecording=filename=slice.jfr,settings=profile -- \
+java -XX:StartFlightRecording=filename=slice.jfr,settings=profile -jar perfectcuboid.jar \
   hunt hunt-slice.txt 999300000 --kind primitive --threads 1
 jfr view hot-methods slice.jfr
 ```
@@ -769,7 +771,7 @@ exact square roots per edge, almost all of them on 128-bit numbers.
 ### Microbenchmarks
 
 ```sh
-scala-cli --power run bench   # about a minute
+./mill bench.runJmh   # about a minute
 ```
 
 [JMH](https://github.com/openjdk/jmh), the JDK's benchmark harness, times small pieces of code
@@ -875,7 +877,7 @@ in the same ranges, and every Euler brick with smallest edge from 5,000,001 to 5
 ### Threads
 
 ```sh
-scala-cli run . -J -Xmx1g -- scaling --chart docs/threads.svg   # about two minutes
+java -Xmx1g -jar perfectcuboid.jar scaling --chart docs/threads.svg   # about two minutes
 ```
 
 `scaling` searches the same million edges just below 10⁹ on 1 thread, then 2, and so on up to
@@ -923,7 +925,7 @@ The same code builds to a native executable, about 10 MB, with Scala Native 0.5.
 needs clang installed.
 
 ```sh
-scala-cli --power package . --native --native-mode release-fast -o perfectcuboid
+./mill cli.native.nativeLink && cp out/cli/native/nativeLink.dest/out perfectcuboid
 GC_MAXIMUM_HEAP_SIZE=1g ./perfectcuboid legs 240
 GC_MAXIMUM_HEAP_SIZE=1g ./perfectcuboid hunt hunt-bricks.txt 1e6
 ```
@@ -1013,15 +1015,16 @@ uses a third of the memory.
 ### One test suite, three platforms
 
 ```sh
-scala-cli test cross            # the JVM
-scala-cli test cross --js       # JavaScript, on Node
-scala-cli test cross --native   # a native executable
+./mill core.jvm.test      # the JVM
+./mill core.js.test       # JavaScript, on Node
+./mill core.native.test   # a native executable
 ```
 
-`cross/` builds the pure core, from `Arith` and `Wide` to `FastSearch` and `Parallelepiped`,
-with the 16 test suites that need nothing else, for any of the three platforms. All 114 tests
-pass on each, CI runs them on JavaScript and Scala Native at every push, and the root project
-keeps testing everything on the JVM. The core has to be the same code everywhere: a `Long`
+`core` is the pure library, from `Arith` and `Wide` to `FastSearch` and `Parallelepiped`, with
+the 17 test suites that need nothing else, built for any of the three platforms. All 114 tests
+pass on each, and CI runs them on all three at every push; `cli`'s tests cover the rest on
+the JVM. (Until phase 73 this was a separate `cross/` project listing the files it took from
+`src/`.) The core has to be the same code everywhere: a `Long`
 on JavaScript is emulated in software, and on Scala Native it is a machine word, and the
 128-bit arithmetic of `Wide` gives the same answers on both. Native tests are built optimised:
 unoptimised, the search for perfect parallelepipeds up to 300 took longer than munit's 30

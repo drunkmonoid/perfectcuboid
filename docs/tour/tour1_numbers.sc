@@ -4,9 +4,9 @@
 // A worksheet is a Scala file that runs from top to bottom, like a script. This one borrows
 // the project's code with `using file`: the files these examples need, and the ones they use.
 //> using scala 3.9.0
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
-//> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
+//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
 
 import perfectcuboid.*
 

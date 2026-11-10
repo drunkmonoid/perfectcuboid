@@ -2,18 +2,20 @@ package perfectcuboid
 
 import java.nio.file.{Files, Path, Paths}
 
-/** Golden tests: the whole output of each command is saved in `test/golden`, and every run
-  * compares against it. A refactor that changes any line of output fails here, with a diff.
+/** Golden tests: the whole output of each command is saved in `cli/test/resources/golden`, and
+  * every run compares against it. A refactor that changes any line of output fails here, with
+  * a diff.
   *
   * When a change of output is intended, accept the new output with
   *
-  *   UPDATE_GOLDEN=1 scala-cli test .
+  *   UPDATE_GOLDEN=1 ./mill cli.jvm.test
   *
   * and review the changed files in `git diff` before committing them.
   */
 class GoldenTest extends munit.FunSuite:
 
-  val dir: Path = Paths.get("test", "golden")
+  // Mill runs tests in a folder of their own, and says where the resources are.
+  val dir: Path = Paths.get(sys.env.getOrElse("MILL_TEST_RESOURCE_DIR", "cli/test/resources"), "golden")
   val update: Boolean = sys.env.contains("UPDATE_GOLDEN")
 
   /** What the program would print for these arguments: a report, or the help text. */

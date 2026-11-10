@@ -2,10 +2,10 @@
 // Run it with:  scala-cli run docs/tour/tour5_effects.sc
 //> using scala 3.9.0
 //> using dep org.typelevel::cats-effect::3.7.1
-//> using file ../../src/Arith.scala ../../src/Lengths.scala ../../src/Wide.scala ../../src/Cuboid.scala
-//> using file ../../src/Box.scala ../../src/NearMisses.scala ../../src/Pythagorean.scala
-//> using file ../../src/NumberTheory.scala ../../src/Montgomery.scala ../../src/PollardRho.scala
-//> using file ../../src/Search.scala ../../src/Sieve.scala ../../src/FastSearch.scala ../../src/Platform.scala
+//> using file ../../core/src/Arith.scala ../../core/src/Lengths.scala ../../core/src/Wide.scala ../../core/src/Cuboid.scala
+//> using file ../../core/src/Box.scala ../../core/src/NearMisses.scala ../../core/src/Pythagorean.scala
+//> using file ../../core/src/NumberTheory.scala ../../core/src/Montgomery.scala ../../core/src/PollardRho.scala
+//> using file ../../core/src/Search.scala ../../core/src/Sieve.scala ../../core/src/FastSearch.scala ../../core/src/Platform.scala
 
 import cats.effect.{IO, Ref}
 import cats.effect.unsafe.implicits.global // the runtime that runs IO values, for a worksheet
@@ -18,7 +18,7 @@ import perfectcuboid.*
 val hello: IO[Unit] = IO.println("hello from an IO")
 println("the IO is built, and nothing has been printed yet")
 
-// ...until it is run. A real program hands its IO to an IOApp (src/Main.scala); a worksheet
+// ...until it is run. A real program hands its IO to an IOApp (cli/src/Main.scala); a worksheet
 // can run one directly.
 hello.unsafeRunSync()
 hello.unsafeRunSync() // a description can be run as many times as you like
@@ -39,6 +39,6 @@ val program: IO[Unit] =
   yield ()
 program.unsafeRunSync()
 
-// The hunt in src/Hunt.scala is this idea grown up: blocks searched in parallel by fs2
+// The hunt in cli/src/Hunt.scala is this idea grown up: blocks searched in parallel by fs2
 // streams, written to a file with checkpoints, stopped cleanly by Ctrl+C, resumed later.
 // Part 6 looks at numbers too big for a Long, part 7 at the hunt's file, part 8 at platforms.

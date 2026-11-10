@@ -21,12 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6
-      - uses: VirtusLab/scala-cli-setup@v1
-        with:
-          scala-cli-version: 1.18.0
-          jvm: temurin:17
       - name: Build the native executable
-        run: scala-cli --power package . --native --native-mode release-fast -o ${{ matrix.name }} -f --server=false
+        run: |
+          ./mill cli.native.nativeLink
+          cp out/cli/native/nativeLink.dest/out ${{ matrix.name }}
       - name: Check that it runs
         run: ./${{ matrix.name }} check 44 117 240
       - uses: actions/upload-artifact@v4
@@ -39,14 +37,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6
-      - uses: VirtusLab/scala-cli-setup@v1
-        with:
-          scala-cli-version: 1.18.0
-          jvm: temurin:17
       - name: Build the jar
-        run: scala-cli --power package . --assembly -o perfectcuboid.jar -f --server=false
+        run: |
+          ./mill cli.jvm.assembly
+          cp out/cli/jvm/assembly.dest/out.jar perfectcuboid.jar
+      # Mill's own Java 17, the oldest the jar promises to run on.
       - name: Check that it runs
-        run: java -jar perfectcuboid.jar check 44 117 240
+        run: ./mill java -jar perfectcuboid.jar check 44 117 240
       - uses: actions/upload-artifact@v4
         with:
           name: perfectcuboid.jar
