@@ -416,6 +416,42 @@ That fits the general belief that there are none. It is a heuristic, not evidenc
 diagonal is whole is not decided by chance, and a structure that made perfect cuboids exist
 would be just the kind of thing this reckoning cannot see.
 
+### Where the misses fall
+
+```sh
+java -Xmx2g -jar perfectcuboid.jar misses hunt-primitive.txt   # 5 seconds
+```
+
+The reckoning above supposes that each space diagonal lands anywhere between two whole
+numbers, evenly. That can be tested: if it is so, the fractional parts of √N, N the square of
+a brick's space diagonal, are spread evenly over [0, 1). `Misses.scala` works them out exactly
+even for N near 10²⁹, as (N − r²) / (√N + r) with r = ⌊√N⌋, and compares them with an even
+spread by the Kolmogorov–Smirnov test: D is the largest gap between their cumulative share and
+the even one, p the chance of a gap at least that large from numbers spread evenly.
+
+| primitive bricks, file at 3·10⁹ | how many | D | p |
+| --- | ---: | ---: | ---: |
+| all | 15,101 | 0.0085 | 0.22 |
+| smallest edge 1,001 to 10⁴ | 42 | 0.165 | 0.19 |
+| to 10⁵ | 124 | 0.099 | 0.16 |
+| to 10⁶ | 428 | 0.029 | 0.86 |
+| to 10⁷ | 1,039 | 0.022 | 0.67 |
+| to 10⁸ | 2,624 | 0.016 | 0.51 |
+| to 10⁹ | 5,949 | 0.012 | 0.36 |
+| to 3·10⁹ | 4,881 | 0.016 | 0.14 |
+| ruled out by remainder | 4,049 | 0.021 | 0.066 |
+| not ruled out | 11,052 | 0.0073 | 0.59 |
+
+So the diagonals miss as an even spread would: in every decade, and taken together, where a
+gap of 1% between the shares would already have shown. The lowest p, 0.066, is among the bricks
+whose remainders rule them out; of eleven tests, one that low is to be expected by chance, so
+it says nothing yet, and the hunt to 10¹⁰ will tell whether it stays. The nearest miss,
+4.2·10⁻⁵, is near the 3.3·10⁻⁵ that 15,101 evenly spread misses would give.
+
+This is what the heuristic needs, not a proof of it: an even spread is also what one expects
+if perfect cuboids exist but are rare, since the test cannot see a handful of exceptions among
+thousands.
+
 ## Forecasts for the hunt to 10¹⁰
 
 ```sh

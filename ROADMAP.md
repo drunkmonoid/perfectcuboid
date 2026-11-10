@@ -258,7 +258,7 @@ one found; `verify` checks the whole file at the end either way.
   independent checker verifies, sharing no code with the prover.
 - [ ] **88. The brick graph.** Primitive bricks joined by derivation and by curve multiples:
   its components, how far each family reaches, and a chart.
-- [ ] **89. Where the misses fall.** The fractional parts of all the space diagonals, tested for
+- [x] **89. Where the misses fall.** The fractional parts of all the space diagonals, tested for
   uniformity, as a check on the chance heuristic of phase 53.
 
 ### Scala

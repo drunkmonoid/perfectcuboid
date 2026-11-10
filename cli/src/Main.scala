@@ -79,6 +79,11 @@ object Main extends CommandIOApp("perfectcuboid", CommandLine.header):
         _ <- IO.println("")
         _ <- IO.blocking(Records.legsLines(all, legsUpTo)).flatMap(_.traverse_(IO.println))
       yield ()
+    case Command.Misses(file) =>
+      Analysis
+        .read(Quarry.eulerBricks, Path(file))
+        .flatMap((bricks, resume) => IO.blocking(Misses.lines(bricks, resume.searchedUpTo)))
+        .flatMap(_.traverse_(IO.println))
     case Command.Forecast(file, target) =>
       Analysis
         .read(Quarry.eulerBricks, Path(file))
