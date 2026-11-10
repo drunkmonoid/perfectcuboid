@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/drunkmonoid/perfectcuboid/actions/workflows/ci.yml/badge.svg)](https://github.com/drunkmonoid/perfectcuboid/actions/workflows/ci.yml)
 
-Playing around with the [perfect cuboid](https://en.wikipedia.org/wiki/Euler_brick#Perfect_cuboid)
-problem in plain, purely functional Scala 3: is there a box whose edges, face diagonals and
-space diagonal are all whole numbers? Nobody knows.
+Looking for a [perfect cuboid](https://en.wikipedia.org/wiki/Euler_brick#Perfect_cuboid) in purely
+functional Scala 3: is there a box whose edges, face diagonals and space diagonal are all whole
+numbers? Nobody knows.
 
 The biggest search here went through every primitive Euler brick with smallest edge up to 3·10⁹:
 15,101 of them, and no perfect cuboid. New to the problem? Read [the essay](docs/essay.md). See
