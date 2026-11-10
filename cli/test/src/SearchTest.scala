@@ -23,7 +23,7 @@ class SearchTest extends munit.FunSuite:
     assertEquals(Search.perfectCuboids(10_000), Vector.empty)
 
   test("the unbounded search starts with the smallest Euler brick"):
-    assertEquals(Search.allEulerBricks.head, Cuboid.of(44, 117, 240).get)
+    assertEquals(Search.allEulerBricks.head, Cuboid(44, 117, 240))
 
   test("the unbounded search agrees with the bounded one inside its range"):
     val limit = 5000L

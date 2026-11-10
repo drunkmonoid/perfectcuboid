@@ -11,7 +11,7 @@ class MissesTest extends munit.FunSuite:
     assertEqualsDouble(Misses.fraction(r * r + 1), 0.5 / r.toDouble, 1e-30)
 
   test("the space diagonal of 44 × 117 × 240 is √73225 ≈ 270.6"):
-    assertEqualsDouble(Misses.fraction(Cuboid.of(44, 117, 240).get), math.sqrt(73225.0) - 270, 1e-12)
+    assertEqualsDouble(Misses.fraction(Cuboid(44, 117, 240)), math.sqrt(73225.0) - 270, 1e-12)
 
   test("evenly spread numbers are as near even as can be, and pass"):
     val n = 1000

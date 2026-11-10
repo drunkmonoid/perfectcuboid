@@ -7,9 +7,12 @@
 import perfectcuboid.*
 
 // A box has three edges, three face diagonals and a space diagonal: seven lengths. A perfect
-// cuboid would have all seven whole. `Cuboid.of` sorts the edges and checks them; it gives an
-// `Option`, empty when an edge is not positive.
-val brick = Cuboid.of(240, 117, 44).get // `.get` is fine here: we know these edges are good
+// cuboid would have all seven whole. `Cuboid.of` sorts the edges and checks them as the program
+// runs; it gives an `Option`, empty when an edge is not positive.
+println(Cuboid.of(240, 0, 44)) // None
+// Edges written as literals are checked before that, by the compiler: `Cuboid(240, 0, 44)` would
+// not compile at all. (`Cuboid.apply` is an `inline` method, run as the code is compiled.)
+val brick = Cuboid(240, 117, 44)
 println(s"$brick")
 println(s"face diagonals: ${brick.faceDiagonals}")
 println(s"space diagonal: ${brick.spaceDiagonal}") // None: √73225 is not whole

@@ -61,10 +61,17 @@ object Cuboid:
       c <- Edge.fromBigInt(z)
     yield sorted(a, b, c)
 
+  /** A cuboid with three literal edges, in any order, checked when the code compiles, as
+    * `Edge(n)` is: `Cuboid(44, 117, 240)`. With edges known only at run time, use `from`.
+    */
+  // The case class's own apply takes three Edges, which are Longs once compiled: a name of its own.
+  @scala.annotation.targetName("literal")
+  inline def apply(inline x: Long, inline y: Long, inline z: Long): Cuboid = sorted(Edge(x), Edge(y), Edge(z))
+
   /** Like `from`, for when the reason doesn't matter. */
   def of(x: Long, y: Long, z: Long): Option[Cuboid] = from(x, y, z).toOption
 
-  private def sorted(x: Edge, y: Edge, z: Edge): Cuboid =
+  private[perfectcuboid] def sorted(x: Edge, y: Edge, z: Edge): Cuboid =
     val (p, q) = if x <= y then (x, y) else (y, x)
     if z <= p then Cuboid(z, p, q)
     else if z <= q then Cuboid(p, z, q)

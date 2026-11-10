@@ -25,6 +25,20 @@ object Edge:
     */
   val Max: Long = Arith.isqrtBig(BigInt(Long.MaxValue).pow(2) / 3).toLong
 
+  /** `Max` as a constant, which the compiler can compare literals with. A test checks that the
+    * two agree.
+    */
+  inline val MaxLiteral = 5325116328314171699L
+
+  /** An edge written as a literal, checked when the code compiles: `Edge(240)` is an Edge, and
+    * `Edge(0)` does not compile. Nor does `Edge(n)` for an n known only when the program runs:
+    * that has to go through `from`, which says why it might not be an edge.
+    */
+  inline def apply(inline n: Long): Edge =
+    inline if n < 1L then scala.compiletime.error("an edge must be at least 1")
+    else inline if n > MaxLiteral then scala.compiletime.error("an edge must be at most Edge.Max")
+    else n
+
   /** The edge of length n, if n is from 1 to `Max`. */
   def from(n: Long): Either[CuboidError, Edge] =
     if n <= 0 then Left(CuboidError.NonPositiveEdge(n))

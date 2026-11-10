@@ -9,10 +9,10 @@ class ChanceTest extends munit.FunSuite:
     assertEquals(Chance.roots(1), 128)
 
   test("a box whose space diagonal is whole has a chance, and the first Euler bricks have none"):
-    val box = Cuboid.of(1, 2, 2).get // space diagonal 3
+    val box = Cuboid(1, 2, 2) // space diagonal 3
     assertEqualsDouble(Chance.byRemainder(box), Chance.roots(9) / 6.0, 1e-12)
-    assertEquals(Chance.byRemainder(Cuboid.of(44, 117, 240).get), 0.0)
-    assertEquals(Chance.byRemainder(Cuboid.of(85, 132, 720).get), 0.0)
+    assertEquals(Chance.byRemainder(Cuboid(44, 117, 240)), 0.0)
+    assertEquals(Chance.byRemainder(Cuboid(85, 132, 720)), 0.0)
 
   test("the rows count each brick once, in the decade of its smallest edge"):
     val bricks = FastSearch.eulerBricksBetween(1, 20_000).filter(_.isPrimitive)

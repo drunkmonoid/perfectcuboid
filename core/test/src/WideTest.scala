@@ -72,7 +72,7 @@ class WideTest extends ScalaCheckSuite:
 
   test("the search now finds bricks whose largest edge is beyond the old cap"):
     // The first one, by smallest edge: 10 times 74745 × 23085952 × 186227160.
-    val first = Cuboid.of(747_450, 230_859_520, 1_862_271_600).get
+    val first = Cuboid(747_450, 230_859_520, 1_862_271_600)
     assert(first.c > SquaredCuboid.MaxEdge && first.isEuler)
     assert(FastSearch.eulerBricksWithSmallestEdge(747_450).contains(first))
     assertEquals(FastSearch.eulerBricksWithSmallestEdge(747_450), Search.eulerBricksWithSmallestEdge(747_450))

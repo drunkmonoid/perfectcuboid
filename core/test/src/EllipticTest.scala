@@ -50,6 +50,6 @@ class EllipticTest extends ScalaCheckSuite:
 
   test("two bricks built on curves are found by the search as well"):
     // 2P on the curves through 44 × 117 × 240 with edges (44, 117) and (117, 240).
-    assert(FastSearch.eulerBricksWithSmallestEdge(9_555_040).contains(Cuboid.of(9_555_040, 22_855_959, 25_407_720).get))
-    assert(FastSearch.eulerBricksWithSmallestEdge(9_813_375).contains(Cuboid.of(9_813_375, 20_130_000, 24_523_072).get))
+    assert(FastSearch.eulerBricksWithSmallestEdge(9_555_040).contains(Cuboid(9_555_040, 22_855_959, 25_407_720)))
+    assert(FastSearch.eulerBricksWithSmallestEdge(9_813_375).contains(Cuboid(9_813_375, 20_130_000, 24_523_072)))
     assertEquals(curve.brickOf(curve.add(p, p)), BigCuboid.of(9_555_040, 22_855_959, 25_407_720))

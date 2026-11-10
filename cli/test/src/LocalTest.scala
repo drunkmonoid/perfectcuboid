@@ -51,7 +51,7 @@ class LocalTest extends munit.FunSuite:
     assert(!sharper.contains(List(4, 3, 0)) && sharper.contains(List(5, 3, 0)))
 
   test("a brick's pattern counts how often p divides each edge, up to the cap"):
-    val brick = Cuboid.of(44, 117, 240).get // 44 = 2²·11, 117 = 3²·13, 240 = 2⁴·3·5
+    val brick = Cuboid(44, 117, 240) // 44 = 2²·11, 117 = 3²·13, 240 = 2⁴·3·5
     assertEquals(Local.patternOf(brick, 2, 5), List(4, 2, 0))
     assertEquals(Local.patternOf(brick, 3, 1), List(1, 1, 0))
     assertEquals(Local.patternOf(brick, 3, 5), List(2, 1, 0))

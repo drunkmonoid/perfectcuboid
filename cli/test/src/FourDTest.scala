@@ -6,7 +6,7 @@ class FourDTest extends munit.FunSuite:
     edges.combinations(2).count { case List(x, y) => Arith.isPerfectSquareBig(x * x + y * y); case _ => false }
 
   test("85 × 132 × 351 × 720 has five whole pairs: a brick, and 351 pairs with 132 and 720"):
-    val found = FourD.extensions(Cuboid.of(85, 132, 720).get)
+    val found = FourD.extensions(Cuboid(85, 132, 720))
     assert(found.contains(FourD.Quadruple(List(85, 132, 351, 720).map(BigInt(_)), 5)), found)
 
   test("every quadruple found has the number of whole pairs it claims"):

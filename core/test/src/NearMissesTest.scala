@@ -9,8 +9,8 @@ class NearMissesTest extends munit.ScalaCheckSuite:
   def squared(a2: Long, b2: Long, c2: Long): SquaredCuboid = SquaredCuboid.of(a2, b2, c2).get
 
   test("the kind of each almost-perfect example"):
-    assertEquals(Cuboid.of(44, 117, 240).get.kind, Kind.Body)
-    assertEquals(Cuboid.of(104, 153, 672).get.kind, Kind.Face)
+    assertEquals(Cuboid(44, 117, 240).kind, Kind.Body)
+    assertEquals(Cuboid(104, 153, 672).kind, Kind.Face)
     assertEquals(squared(520 * 520, 576 * 576, 618849).kind, Kind.Edge)
     assertEquals(squared(2, 3, 5).kind, Kind.Other)
 
@@ -23,7 +23,7 @@ class NearMissesTest extends munit.ScalaCheckSuite:
       assertEquals(Pythagorean.completions(n), expected, s"n = $n")
 
   test("the first face cuboid is 104 × 153 × 672"):
-    assertEquals(NearMisses.allFaceCuboids.head, Cuboid.of(104, 153, 672).get)
+    assertEquals(NearMisses.allFaceCuboids.head, Cuboid(104, 153, 672))
 
   test("the face cuboid search agrees with a brute-force search"):
     val n = 700L
@@ -54,5 +54,5 @@ class NearMissesTest extends munit.ScalaCheckSuite:
   test("face cuboids found from the space diagonal are those found from the shared edge"):
     val (fromDiagonals, fromSharedEdges) = NearMisses.bothWays(5000)
     assertEquals(fromDiagonals, fromSharedEdges)
-    assert(fromDiagonals.contains(Cuboid.of(104, 153, 672).get))
+    assert(fromDiagonals.contains(Cuboid(104, 153, 672)))
     assert(fromDiagonals.forall(c => c.kind == Kind.Face))

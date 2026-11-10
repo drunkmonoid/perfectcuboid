@@ -11,11 +11,11 @@ class TheoryTest extends munit.ScalaCheckSuite:
     for brick <- bricks do assertEquals(Theory.violations(Theory.rulesFor(brick), brick).map(_.name), Nil, brick)
 
   test("the primitive rules are really about primitive bricks"):
-    val doubled = Cuboid.of(88, 234, 480).get
+    val doubled = Cuboid(88, 234, 480)
     assert(Theory.violations(Theory.primitiveEulerBrickRules, doubled).nonEmpty)
 
   test("the rules are not trivially true"):
-    val box = Cuboid.of(1, 2, 3).get
+    val box = Cuboid(1, 2, 3)
     assertEquals(Theory.violations(Theory.eulerBrickRules, box).size, Theory.eulerBrickRules.size)
 
   property("scaling an Euler brick keeps the general rules"):

@@ -267,7 +267,7 @@ one found; `verify` checks the whole file at the end either way.
 
 - [x] **90. Typed results files.** A header naming the kind and the format version, so `verify`
   and `merge` refuse a mismatch by themselves; older files still read.
-- [ ] **91. Checked literals.** Limits and edges written as literals checked at compile time,
+- [x] **91. Checked literals.** Limits and edges written as literals checked at compile time,
   and checked once at the program's edge otherwise.
 - [ ] **92. Hunt events.** Custom JFR events for blocks and checkpoints, so a profile of a hunt
   reads in the hunt's own terms.
