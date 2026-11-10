@@ -13,7 +13,30 @@ class FastSearchTest extends munit.ScalaCheckSuite:
   property("legs worked out with BigInt agree with legs worked out with Longs, where both can"):
     forAll(Gen.chooseNum(1L, Search.MaxSmallestEdge)): a =>
       val factors = NumberTheory.factorize(a)
-      FastSearch.legsAboveWide(a, factors).toList == FastSearch.legsAboveLong(a, factors).toList
+      val long = FastSearch.legsAboveLong(a, factors).toList
+      FastSearch.legsAboveBig(a, factors).toList == long && FastSearch.legsAboveWide(a, factors).toList == long
+
+  /** Edges past the Long square limit: mostly just past it, where the long hunts go, and up to
+    * `Edge.Max`, and some with many small factors, which have the most legs.
+    */
+  private val pastTheLimit: Gen[Long] =
+    val limit = Search.MaxSmallestEdge
+    Gen.frequency(
+      4 -> Gen.chooseNum(limit + 1, 100_000_000_000L),
+      2 -> Gen.chooseNum(limit + 1, Edge.Max),
+      2 -> Gen.chooseNum(limit / 720_720 + 1, 1_000_000_000L).map(_ * 720_720),
+      1 -> Gen.chooseNum(limit / 27_720 + 1, Edge.Max / 27_720).map(_ * 27_720)
+    )
+
+  property("past the Long square limit, legs in Long arithmetic agree with legs in BigInt"):
+    forAll(pastTheLimit): a =>
+      val factors = NumberTheory.factorize(a)
+      FastSearch.legsAboveWide(a, factors).toList == FastSearch.legsAboveBig(a, factors).toList
+
+  test("and so do the edges at the limit, and the largest edge"):
+    for a <- List(Search.MaxSmallestEdge, Search.MaxSmallestEdge + 1, 3_265_000_000L, 9_999_999_000L, Edge.Max) do
+      val factors = NumberTheory.factorize(a)
+      assertEquals(FastSearch.legsAboveWide(a, factors).toList, FastSearch.legsAboveBig(a, factors).toList, s"a = $a")
 
   test("past the Long square limit, a known brick scaled up is still found"):
     // 44k × 117k × 240k is an Euler brick for any k; this k puts 44k just past 3,037,000,499.

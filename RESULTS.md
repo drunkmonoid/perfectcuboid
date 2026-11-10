@@ -63,10 +63,20 @@ b² + c² with 128-bit arithmetic (`Wide.scala`). Until that was added, edges we
 
 **No limit below `Edge.Max`.** Up to 3,037,000,499 an edge's square fits in a `Long`, and
 every leg that pairs with it stays below `Edge.Max` ≈ 5.3·10¹⁸, the longest edge whose
-diagonals fit in a `Long`. Since phase 49, the block search goes on past that edge: it works
-out a² and its divisor pairs in `BigInt` arithmetic, and keeps the legs up to `Edge.Max`. So
-from there on it finds every brick whose edges all fit, which is every brick a `Cuboid` can
-hold. Past 10¹², where the sieve's primes no longer reach the edges' square roots, each edge is
+diagonals fit in a `Long`. Since phase 49, the block search goes on past that edge, and keeps
+the legs up to `Edge.Max`. So from there on it finds every brick whose edges all fit, which is
+every brick a `Cuboid` can hold. At first it worked out a²'s divisors in `BigInt` arithmetic,
+which halved the speed there. Now each divisor d < a of a² is kept as u·v, with u and v both
+dividing a, so that a²/d = (a/u)·(a/v) is a product of two `Long`s, and it fits in 64 bits
+(read as unsigned) for every leg up to `Edge.Max`. The `BigInt` version stays, as what the
+tests compare it with, on random edges from the limit up to `Edge.Max`.
+
+| 4 million smallest edges from 3,040,000,001, primitive bricks, 12 threads | time | edges a second |
+| --- | ---: | ---: |
+| legs in `BigInt` | 70 s | 55,000 |
+| legs in `Long` | 40 s | 98,000 |
+
+Both wrote the same file, byte for byte. Past 10¹², where the sieve's primes no longer reach the edges' square roots, each edge is
 factorised on its own, by trial division and Pollard's rho.
 
 | 100,000 smallest edges from, primitive bricks, 12 threads | time | `verify` |
@@ -447,6 +457,10 @@ The time is the only figure here not from the file: past 3,037,000,499 an edge's
 longer fits in a `Long` and the search takes its `BigInt` path, and there it measured 55,000
 edges a second on 12 threads, against 104,000 just below. A faster path for those edges would
 shorten the hunt, not change its results.
+
+(Later the same day, before the first night: that faster path now exists, at 98,000 edges a
+second there, so the hunt should take about three nights. See the section on edges past the
+`Long` limit, near the top.)
 
 How the new bricks will divide by pattern, if the shares of the bricks from 10⁹ to 3·10⁹
 hold, within two standard errors for 7,600 bricks:

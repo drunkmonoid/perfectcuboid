@@ -52,11 +52,61 @@ object FastSearch:
   def legsAbove(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
     if a > Search.MaxSmallestEdge then legsAboveWide(a, factors) else legsAboveLong(a, factors)
 
-  /** For a above `Search.MaxSmallestEdge`, where a² overflows a Long: the same, in BigInt
-    * arithmetic, keeping only the legs up to `Edge.Max`. Slow, but these edges are rarely
-    * searched.
+  /** For a above `Search.MaxSmallestEdge`, where a² overflows a Long: the same, keeping only
+    * the legs up to `Edge.Max`, still in Long arithmetic.
+    *
+    * Every leg comes from a divisor d < a of a², as (a²/d − d) / 2. Such a d splits as u·v, u
+    * taking each prime of d up to its power in a and v the rest, so that u and v both divide a,
+    * and a²/d = (a/u)·(a/v): a product of two Longs. For every leg up to `Edge.Max` it is below
+    * 2·`Edge.Max` + a < 2⁶⁴, so it fits in 64 bits read as unsigned; `Math.multiplyHigh` spots
+    * the products that don't, whose legs are too long anyway.
     */
   private[perfectcuboid] def legsAboveWide(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
+    val us = new Array[Long](factors.map(_._2 * 2 + 1).product)
+    val vs = new Array[Long](us.length)
+    us(0) = 1
+    vs(0) = 1
+    var size = 1
+    var rest = factors
+    while rest.nonEmpty do
+      val (p, k) = rest.head
+      val before = size
+      var j = 0
+      while j < before do
+        var u = us(j)
+        var v = vs(j)
+        var i = 1
+        // u·v grows with i, and once it reaches a, so do all the divisors made from it.
+        var below = true
+        while below && i <= 2 * k do
+          if i <= k then u *= p else v *= p
+          below = v <= (a - 1) / u
+          if below then
+            us(size) = u
+            vs(size) = v
+            size += 1
+          i += 1
+        j += 1
+      rest = rest.tail
+    val legs = new Array[Long](size)
+    var count = 0
+    var i = 0
+    while i < size do
+      val (x, z) = (a / us(i), a / vs(i))
+      if Math.multiplyHigh(x, z) == 0 then
+        // a²/d − d, as unsigned 64-bit numbers; halving it with >>> brings it back below 2⁶³.
+        val difference = x * z - us(i) * vs(i)
+        val y = difference >>> 1
+        if (difference & 1) == 0 && y > a && y <= Edge.Max then
+          legs(count) = y
+          count += 1
+      i += 1
+    val result = java.util.Arrays.copyOf(legs, count)
+    java.util.Arrays.sort(result)
+    IArray.unsafeFromArray(result)
+
+  /** The same as `legsAboveWide`, the slow way, in BigInt: what the tests hold it against. */
+  private[perfectcuboid] def legsAboveBig(a: Long, factors: NumberTheory.Factorization): IArray[Long] =
     val n = BigInt(a) * a
     val legs =
       for

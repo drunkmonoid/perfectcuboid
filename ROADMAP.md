@@ -137,7 +137,8 @@ buys, and make the results easier to see and to reuse.
 - [x] **49. Past the `Long`.** Smallest edges above 3,037,000,499, whose squares overflow a
   `Long`, with `Wide` all the way through, so the search has no limit left. (In the end
   `BigInt` for the rare edges past it; the limit left is `Edge.Max`, the longest edge a
-  `Cuboid` holds.)
+  `Cuboid` holds. Before the hunt to 10¹⁰ made those edges common, the `BigInt` became `Long`
+  arithmetic again, nearly as fast as below the limit.)
 - [x] **50. The long hunt.** Every primitive brick with smallest edge up to 3·10⁹, over several
   resumable nights, verified, and recorded in RESULTS.md.
 - [x] **51. Near misses, far.** Long hunts of face and edge cuboids, and a catalogue of the
