@@ -176,11 +176,43 @@ object Page:
         finish(); status.textContent += " Stopped."
     )
 
-  /** The checker: reads the three edges whenever they change, and shows the result. */
+  /** The checker: reads the three edges whenever they change, and shows the result and the box,
+    * which turns as it is dragged.
+    */
   private def checker(): Unit =
     val inputs = List("a", "b", "c").map(id => dom.document.getElementById(id).asInstanceOf[dom.html.Input])
     val output = dom.document.getElementById("result")
-    def update(): Unit = output.innerHTML = render(Check(inputs.map(_.value)))
+    val drawing = Option(dom.document.getElementById("drawing"))
+    var yaw = 0.6
+    var pitch = 0.45
+    def box: Option[BigCuboid] =
+      inputs.map(i => scala.util.Try(BigInt(i.value.trim.replace("_", "").replace(" ", ""))).toOption) match
+        case List(Some(a), Some(b), Some(c)) if List(a, b, c).forall(e => e > 0 && e.bitLength <= 200) =>
+          BigCuboid.of(a, b, c)
+        case _ => None
+    def redraw(): Unit = drawing.foreach(d => d.innerHTML = box.fold("")(Drawing.svg(_, yaw, pitch)))
+    def update(): Unit =
+      output.innerHTML = render(Check(inputs.map(_.value)))
+      redraw()
+    // Dragging turns the box: across for the turn, up and down for the tilt.
+    drawing.foreach: d =>
+      var last: Option[(Double, Double)] = None
+      d.addEventListener(
+        "pointerdown",
+        (e: dom.PointerEvent) =>
+          last = Some((e.clientX, e.clientY))
+          d.setPointerCapture(e.pointerId)
+      )
+      d.addEventListener("pointerup", (_: dom.PointerEvent) => last = None)
+      d.addEventListener(
+        "pointermove",
+        (e: dom.PointerEvent) =>
+          last.foreach: (x, y) =>
+            yaw += (e.clientX - x) * 0.01
+            pitch = math.max(-1.5, math.min(1.5, pitch + (e.clientY - y) * 0.01))
+            last = Some((e.clientX, e.clientY))
+            redraw()
+      )
     inputs.foreach(_.addEventListener("input", (_: dom.Event) => update()))
     // A box given in the address, as in ?box=44,117,240, from the catalogue.
     Option(dom.URLSearchParams(dom.window.location.search).get("box"))

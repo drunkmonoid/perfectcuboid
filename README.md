@@ -21,8 +21,9 @@ New to Scala? Start with the [guided tour](docs/tour/README.md).
 filterable, each one opening in the checker; its data is [`bricks.txt`](docs/catalogue/bricks.txt),
 the hunt's file without its checkpoints (`grep -v '^#' hunt-primitive.txt`).
 
-[`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser: the
-same Scala, compiled to JavaScript by Scala.js, and it can also run the search itself, in a
+[`docs/check/index.html`](docs/check/index.html) is a page that checks any box in the browser, and
+draws it in 3D with its diagonals, turned by dragging: the same Scala, compiled to JavaScript by
+Scala.js, and it can also run the search itself, in a
 background thread of the browser (about 35,000 edges a second). Open it from a clone of the
 repository through a local web server (browsers start no background threads from files), or on the
 project's site, which also has the charts and the API docs. The site is built by the `Pages`
@@ -186,6 +187,7 @@ The native binary suits short commands and single-threaded hunts: see
 | `cli/src/Misses.scala` | where the space diagonals fall between whole numbers, against an even spread |
 | `cli/src/Forecast.scala` | what the bricks found predict for a longer hunt: count, chance, closest call, patterns |
 | `cli/src/Eta.scala` | progress lines for long searches: share done, recent speed, time left |
+| `web/src/Drawing.scala` | the checker's drawing of the box, its diagonals and their lengths, as SVG |
 | `cli/src-jvm/HuntEvents.scala` | Java Flight Recorder events for each block searched and checkpoint written |
 | `cli/src/Hunt.scala` | long searches with Cats Effect and fs2: blocks searched in parallel as a stream of chunks, results file, checkpoints, resume |
 | `cli/src/CommandLine.scala` | the commands, and how the command line is parsed into one |

@@ -278,7 +278,7 @@ one found; `verify` checks the whole file at the end either way.
 
 ### Sharing it
 
-- [ ] **95. A brick in 3D.** The checker draws the box, its diagonals and their lengths, and
+- [x] **95. A brick in 3D.** The checker draws the box, its diagonals and their lengths, and
   turns it with the mouse.
 - [ ] **96. Charts that answer back.** The site's brick chart zooms and filters, and each dot
   opens the brick in the catalogue.

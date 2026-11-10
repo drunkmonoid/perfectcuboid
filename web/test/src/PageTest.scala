@@ -1,5 +1,7 @@
 package perfectcuboid.web
 
+import perfectcuboid.BigCuboid
+
 class PageTest extends munit.FunSuite:
 
   val catalogue: Vector[Catalogue.Row] =
@@ -52,3 +54,21 @@ class PageTest extends munit.FunSuite:
 
   test("each row links to the checker with its box"):
     assert(Catalogue.tableRow(catalogue.head).contains("""href="../check/?box=44,117,240""""))
+
+  test("the drawing has the twelve edges, three face diagonals, the space diagonal and their lengths"):
+    val svg = Drawing.svg(BigCuboid.of(44, 117, 240).get, 0.6, 0.45)
+    assertEquals("<line ".r.findAllIn(svg).size, 16)
+    assertEquals("<text ".r.findAllIn(svg).size, 7)
+    // Halcke's brick: every face diagonal whole, the space diagonal not.
+    assertEquals("""class="space irrational"""".r.findAllIn(svg).size, 1)
+    assertEquals("""class="face whole"""".r.findAllIn(svg).size, 3)
+    assert(svg.contains(">125<") && svg.contains(">244<") && svg.contains(">267<") && svg.contains(">√73225<"), svg)
+
+  test("turning keeps the drawing inside its frame, and a flat brick still shows"):
+    for yaw <- List(0.0, 1.0, 2.5, -3.0); pitch <- List(-1.4, 0.0, 1.4) do
+      val numbers = """[xy][12]="(-?[0-9.]+)"""".r
+        .findAllMatchIn(Drawing.svg(BigCuboid.of(61427951, 12916225080L, 3375128053440L).get, yaw, pitch))
+        .map(_.group(1).nn.toDouble)
+        .toList
+      assert(numbers.forall(v => v >= 0 && v <= Drawing.Width), (yaw, pitch))
+    assertEquals(Drawing.proportions(BigCuboid.of(1, 1000, 1000000).get), Drawing.P3(0.05, 0.05, 1.0))

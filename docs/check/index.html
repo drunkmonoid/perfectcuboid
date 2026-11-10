@@ -54,6 +54,19 @@
   #search-status { color: var(--ink-2); font-variant-numeric: tabular-nums; min-height: 1.5em; }
   #search-bricks { columns: 2 16rem; font-variant-numeric: tabular-nums; font-size: .9rem; }
   footer { margin-top: 2rem; color: var(--ink-2); font-size: .85rem; }
+  #drawing { margin: 1rem 0 0; background: var(--raised); border: 1px solid var(--line); border-radius: 12px;
+    touch-action: none; cursor: grab; user-select: none; }
+  #drawing:active { cursor: grabbing; }
+  #drawing svg { display: block; width: 100%; height: auto; }
+  #drawing .edge { stroke: var(--ink-2); stroke-width: 1.5; }
+  #drawing .face, #drawing .space { stroke-width: 2; }
+  #drawing .whole { stroke: var(--accent); fill: var(--accent); }
+  #drawing .irrational { stroke: var(--problem); fill: var(--problem); stroke-dasharray: 5 4; }
+  #drawing text.length { stroke: var(--raised); stroke-width: 3px; stroke-dasharray: none; paint-order: stroke;
+    font-size: 11px; font-variant-numeric: tabular-nums; }
+  #drawing text.whole { fill: var(--accent); }
+  #drawing text.irrational { fill: var(--problem); }
+  #drawing-help { color: var(--ink-2); font-size: .85rem; margin: .4rem 0 0; }
   a { color: var(--accent); }
 </style>
 </head>
@@ -75,6 +88,8 @@
     <button data-box="1 2 3">ordinary box</button>
   </div>
   <section id="result" aria-live="polite"></section>
+  <figure id="drawing" aria-describedby="drawing-help"></figure>
+  <p id="drawing-help">Drag the box to turn it. Whole lengths in blue, irrational ones dashed in red.</p>
   <h2>Search in your browser</h2>
   <p class="lede">The same search as the command line's, on every smallest edge up to a limit, run in a
     background thread of your browser. It lists the primitive Euler bricks as it finds them.</p>
