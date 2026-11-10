@@ -1,4 +1,4 @@
-Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | nearcalls | pictures | bench | scaling]
+Usage: perfectcuboid [bricks | unbounded | rules | saunderson | legs | face | crosscheck | parallelepiped | edge | check | local | derived | curve | origins | graph | fourd | closest | nearmisses | stats | hunt | merge | verify | analyse | families | densities | records | forecast | nearcalls | pictures | bench | scaling]
 
 Search for perfect cuboids, Euler bricks and their near misses.
 
@@ -59,6 +59,8 @@ Subcommands:
         How often small primes divide the edges of the bricks in a hunt's FILE, against prediction.
     records
         Records among the bricks in a hunt's FILE, and bricks per edge against its legs.
+    forecast
+        What the primitive bricks in a hunt's FILE predict for carrying it on to UPTO.
     nearcalls
         The face or edge cuboids in a hunt's FILE whose irrational length is nearest a whole number.
     pictures

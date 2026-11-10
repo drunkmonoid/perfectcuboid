@@ -44,6 +44,7 @@ enum Command:
   case Families(file: String, maxHypotenuse: Long)
   case Densities(file: String)
   case Records(file: String, legsUpTo: Long)
+  case Forecast(file: String, target: Long)
   case NearCalls(file: String, face: Boolean)
   case Verify(file: String, quarry: Quarry[?], blocks: Int)
   case Pictures(directory: String, maxExponent: Int)
@@ -271,6 +272,11 @@ object CommandLine:
       ).mapN(Command.Records(_, _))
     )
 
+  private val forecast: Opts[Command] =
+    Opts.subcommand("forecast", "What the primitive bricks in a hunt's FILE predict for carrying it on to UPTO.")(
+      (Opts.argument[String]("FILE"), Opts.argument[Long]("UPTO")(using wholeNumber)).mapN(Command.Forecast(_, _))
+    )
+
   private val nearCalls: Opts[Command] =
     Opts.subcommand(
       "nearcalls",
@@ -322,7 +328,7 @@ object CommandLine:
 
   /** With no subcommand at all, list the Euler bricks with edges up to 1000. */
   val opts: Opts[Command] =
-    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ nearCalls :+ pictures :+ bench :+ scaling)
+    (reports :+ hunt :+ merge :+ verify :+ analyse :+ families :+ densities :+ records :+ forecast :+ nearCalls :+ pictures :+ bench :+ scaling)
       .reduce(_ orElse _) orElse Opts(
       Command.Print(Report.Bricks(1000))
     )

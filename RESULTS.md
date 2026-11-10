@@ -404,6 +404,84 @@ That fits the general belief that there are none. It is a heuristic, not evidenc
 diagonal is whole is not decided by chance, and a structure that made perfect cuboids exist
 would be just the kind of thing this reckoning cannot see.
 
+## Forecasts for the hunt to 10¹⁰
+
+```sh
+scala-cli run . -J -Xmx2g -- forecast hunt-primitive.txt 1e10   # 9 seconds
+```
+
+Written down on 10 November 2026, before the hunt from 3·10⁹ to 10¹⁰ (phase 72) began, so
+that the hunt tests these models instead of being explained by them afterwards. The only
+search past 3·10⁹ so far was two speed tests of 75 seconds, whose bricks were thrown away. `Forecast.scala` makes three simple models of the bricks found so far:
+
+- **Count:** the primitive count grows like N^k, and k has been falling: 0.433, 0.414, 0.379
+  and 0.355 between 10⁶, 10⁷, 10⁸, 10⁹ and 3·10⁹. Fitted to the last three, k falls by 0.034
+  a decade. The range runs from k not falling at all to k falling twice as fast.
+- **Chance:** a brick's chance of being perfect, `Chance.byRemainder`, falls like 1 / a, a its
+  smallest edge (the table by decade above shows it: about ten times less per brick each
+  decade). So the new bricks' chance is c / a summed over the count's growth, with c averaged
+  over the bricks of the last decade.
+- **Closest call:** if the space diagonals' misses fall evenly between 0 and ½, each new brick
+  beats the closest call so far, 4.2·10⁻⁵, with a chance of twice that.
+
+**Tested first on the last hunt.** The same command on the file as it stood at 10⁹, asked
+about 3·10⁹, forecast what the hunt then found:
+
+| from the bricks up to 10⁹ | forecast for 10⁹ to 3·10⁹ | found |
+| --- | ---: | ---: |
+| primitive bricks up to 3·10⁹ | 15,162 (14,834 to 15,497) | 15,101 |
+| chance of a perfect cuboid among the new ones | 1.4·10⁻⁵ | 1.35·10⁻⁵ |
+| a new brick closer than 4.2·10⁻⁵ | 34% likely | none was |
+| pattern shares inside their ranges | about 19 of 20 | 18 of 20, the other two just outside |
+
+**The forecast for 3·10⁹ to 10¹⁰:**
+
+| | forecast |
+| --- | ---: |
+| primitive bricks up to 10¹⁰ | **22,699** (22,243 to 23,164), so about 7,600 new |
+| chance of a perfect cuboid among the new ones | 6.7·10⁻⁶, leaving the total at 0.21 |
+| a new brick closer than 4.2·10⁻⁵ | 47% likely |
+| time, with the build of today | about 40 hours: five nights of 8 hours |
+
+The time is the only figure here not from the file: past 3,037,000,499 an edge's square no
+longer fits in a `Long` and the search takes its `BigInt` path, and there it measured 55,000
+edges a second on 12 threads, against 104,000 just below. A faster path for those edges would
+shorten the hunt, not change its results.
+
+How the new bricks will divide by pattern, if the shares of the bricks from 10⁹ to 3·10⁹
+hold, within two standard errors for 7,600 bricks:
+
+| p | pattern | local density | found, 10⁹ to 3·10⁹ | forecast, 3·10⁹ to 10¹⁰ |
+| ---: | --- | ---: | ---: | ---: |
+| 2 | (4, 2, 0) | 25.8% | 31.9% | 30.9–33.0% |
+| 2 | (5+, 3, 0) | 25.8% | 24.2% | 23.2–25.2% |
+| 2 | (5+, 2, 0) | 25.8% | 26.3% | 25.3–27.3% |
+| 2 | (5+, 4, 0) | 12.9% | 10.8% | 10.0–11.5% |
+| 2 | (5+, 5+, 0) | 9.7% | 6.8% | 6.2–7.4% |
+| 3 | (2+, 1, 0) | 68.6% | 75.1% | 74.1–76.1% |
+| 3 | (2+, 2+, 0) | 31.4% | 24.9% | 23.9–25.9% |
+| 5 | (2+, 1, 0) | 41.0% | 34.1% | 33.0–35.2% |
+| 5 | (1, 0, 0) | 20.5% | 28.5% | 27.4–29.5% |
+| 5 | (1, 1, 0) | 20.5% | 23.8% | 22.9–24.8% |
+| 5 | (2+, 2+, 0) | 12.8% | 8.6% | 7.9–9.2% |
+| 5 | (2+, 0, 0) | 5.1% | 5.0% | 4.5–5.5% |
+| 7 | (1+, 1+, 0) | 54.1% | 42.8% | 41.6–43.9% |
+| 7 | (1+, 0, 0) | 27.5% | 31.2% | 30.1–32.2% |
+| 7 | (0, 0, 0) | 18.4% | 26.1% | 25.1–27.1% |
+| 11 | (1+, 1+, 0) | 57.9% | 49.9% | 48.8–51.1% |
+| 11 | (1+, 0, 0) | 42.1% | 50.1% | 48.9–51.2% |
+| 13 | (1+, 1+, 0) | 45.9% | 34.4% | 33.3–35.5% |
+| 13 | (1+, 0, 0) | 35.3% | 38.1% | 37.0–39.2% |
+| 13 | (0, 0, 0) | 18.8% | 27.5% | 26.4–28.5% |
+
+A second, sharper forecast hides in the drift. From the bricks up to 10⁹ to those above it,
+the shares for 7, 11 and 13 all moved towards the local densities: two edges divisible by 7
+went from 41.2% to 42.8%, by 13 from 32.5% to 34.4%. If that goes on, those shares will land
+at the top of their ranges or above them, a sign that local densities describe large bricks
+better than small ones.
+
+Records are left out: nothing here predicts them better than a guess.
+
 ## Perfect parallelepipeds
 
 ```sh

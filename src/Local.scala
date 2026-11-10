@@ -101,12 +101,16 @@ object Local:
     def times(x: Long): Int = if x % p == 0 && cap > 0 then 1 + (times(x / p) min (cap - 1)) else 0
     List(brick.a: Long, brick.b, brick.c).map(times).sorted.reverse
 
+  /** The primes whose patterns `densityLines` counts, each as (p, k, cap): solutions mod pᵏ,
+    * and how often p divides an edge counted up to `cap`.
+    */
+  val densityCases: List[(Int, Int, Int)] = List((2, 13, 5), (3, 7, 2), (5, 5, 2), (7, 4, 1), (11, 3, 1), (13, 3, 1))
+
   /** For each prime, its patterns' predicted and observed shares among these primitive bricks. */
   def densityLines(bricks: Seq[Cuboid]): List[String] =
     val primitive = bricks.filter(_.isPrimitive)
-    val cases = List((2, 13, 5), (3, 7, 2), (5, 5, 2), (7, 4, 1), (11, 3, 1), (13, 3, 1))
     s"How often p divides each edge, among ${primitive.size} primitive bricks, against the local densities:" ::
-      cases.flatMap: (p, k, cap) =>
+      densityCases.flatMap: (p, k, cap) =>
         val predicted = densities(p, k, cap)
         val observed = primitive.groupBy(patternOf(_, p, cap)).view.mapValues(_.size).toMap
         def show(pattern: List[Int]) =
