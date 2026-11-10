@@ -150,6 +150,21 @@ class HuntTest extends munit.CatsEffectSuite:
           assertEquals(HuntFile.parse(Quarry.oddEdge, one), OddSearch.primitiveBricksIterator(1, 30_000).toList)
           assertEquals(report.last, "OK", report)
 
+  test("a hunt by space diagonal finds the face cuboids the other search finds, and verifies"):
+    withTempFile: path =>
+      for
+        _ <- Hunt.run(Quarry.faceByDiagonal, path, 20_000, blockSize = 2000, cores = 4)
+        lines <- Files[IO].readUtf8Lines(path).compile.toList
+        report <- Verify.run(Quarry.faceByDiagonal, path, blocks = 3)
+      yield
+        val (byDiagonal, bySharedEdge) = NearMisses.bothWays(20_000)
+        val found = HuntFile.parse(Quarry.faceByDiagonal, lines)
+        assertEquals(found, (1L to 20_000L).toList.flatMap(NearMisses.faceCuboidsWithSpaceDiagonal))
+        assertEquals(found.toSet, byDiagonal.toSet)
+        assertEquals(found.toSet, bySharedEdge.toSet)
+        assert(found.nonEmpty)
+        assertEquals(report.last, "OK", report)
+
   test("a new file says what it holds on its first line"):
     withTempFile: path =>
       for

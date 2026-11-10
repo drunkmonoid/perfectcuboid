@@ -55,6 +55,7 @@ perfectcuboid unbounded 1e7              # by smallest edge, other edges unbound
 perfectcuboid hunt hunt-primitive.txt 3e9 --kind primitive   # long search to a file: Ctrl+C stops, rerun resumes
 perfectcuboid hunt hunt-face.txt 1e6 --kind face             # ... of face cuboids (or bricks, or edge)
 perfectcuboid hunt hunt-odd.txt 1e7 --kind odd               # ... of primitive bricks by their odd edge
+perfectcuboid hunt hunt-diagonal.txt 1e6 --kind diagonal     # ... of face cuboids by their space diagonal
 perfectcuboid hunt part2.txt 2e9 --from 1000000001           # one range of a longer search, a shard
 perfectcuboid hunt hunt.txt 2e7 --processes 4                # ... split between processes, and merged
 perfectcuboid merge all.txt part1.txt part2.txt              # join shards that follow on from each other

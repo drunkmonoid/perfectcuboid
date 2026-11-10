@@ -97,6 +97,26 @@ object Quarry:
       cuboid => Set(Kind.Face, Kind.Perfect)(BigCuboid.from(cuboid).kind)
     )
 
+  private def spaceDiagonalOf(c: Cuboid): Long = c.spaceDiagonal.fold(0L)(d => d: Long)
+
+  /** Face cuboids, and so any perfect cuboid, by their space diagonal d (phase 83): d² split as
+    * p² + y², then p² as s² + x², as `NearMisses.faceCuboidsWithSpaceDiagonal` does. A perfect
+    * cuboid with space diagonal up to D has smallest edge below D / √3, so the brick hunt to N
+    * already covers every space diagonal up to √3·N; this covers them from the other end.
+    */
+  val faceByDiagonal: Quarry[Cuboid] =
+    Quarry(
+      "face cuboids by space diagonal",
+      "space diagonal",
+      (first, last) => (first to last).iterator.flatMap(NearMisses.faceCuboidsWithSpaceDiagonal),
+      cuboidLine,
+      parseCuboid,
+      Summary.of,
+      spaceDiagonalOf,
+      cuboid => Set(Kind.Face, Kind.Perfect)(BigCuboid.from(cuboid).kind),
+      SquaredCuboid.MaxEdge
+    )
+
   private def squaredLine(c: SquaredCuboid): String =
     LineFormat.write(SquaredLine(Length.of(c.a2), Length.of(c.b2), Length.of(c.c2)))
 
@@ -138,6 +158,7 @@ object Quarry:
       "bricks" -> eulerBricks,
       "primitive" -> primitiveBricks,
       "odd" -> oddEdge,
+      "diagonal" -> faceByDiagonal,
       "face" -> faceCuboids,
       "edge" -> edgeCuboids
     )

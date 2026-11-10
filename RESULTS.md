@@ -881,6 +881,23 @@ Spread evenly between 0 and ½, the closest of 1,326 misses would be about 3.8·
 20 times. Lucky draws rather than a pattern, as far as one table can say, and nowhere near the
 exact whole number a perfect cuboid needs.
 
+### From the space diagonal
+
+```sh
+java -Xmx1g -jar perfectcuboid.jar hunt hunt-diagonal.txt 1e6 --kind diagonal
+java -jar perfectcuboid.jar verify hunt-diagonal.txt --kind diagonal
+```
+
+Since phase 83 the second method below is a hunt of its own, by space diagonal: every face
+cuboid, and so every perfect cuboid, with space diagonal up to the limit, written and checked
+like any other hunt. Up to 20,000 it finds exactly the face cuboids the search by shared edge
+finds. Where it could matter is in what it covers. A perfect cuboid with space diagonal d has
+smallest edge below d / √3, so the brick hunt to 3·10⁹ has already ruled out every perfect
+cuboid with space diagonal up to √3 · 3·10⁹ ≈ 5.2·10⁹. A search by space diagonal adds something
+new only beyond that, and its edges stop at `SquaredCuboid.MaxEdge` ≈ 1.75·10⁹ well before: as it
+stands it can check the brick hunt, not go past it. How many diagonals it gets through per hour
+waits for a quiet machine.
+
 ### Face cuboids, found a second way
 
 ```sh
