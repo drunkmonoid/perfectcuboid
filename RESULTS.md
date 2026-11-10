@@ -908,8 +908,11 @@ finds, which a test checks at every push (and up to 20,000, tried once). Where i
 smallest edge below d / √3, so the brick hunt to 3·10⁹ has already ruled out every perfect
 cuboid with space diagonal up to √3 · 3·10⁹ ≈ 5.2·10⁹. A search by space diagonal adds something
 new only beyond that, and its edges stop at `SquaredCuboid.MaxEdge` ≈ 1.75·10⁹ well before: as it
-stands it can check the brick hunt, not go past it. How many diagonals it gets through per hour
-waits for a quiet machine.
+stands it can check the brick hunt, not go past it. And it is slow: on an idle machine, 12
+threads, 300,000 space diagonals took 589 s from 10⁸ and 2,372 s from 10⁹, about 130 a second
+there, where the brick search does 300,000 smallest edges near 10⁹ in 2.7 s. Every diagonal is
+split twice into sums of two squares, and most of the splittings lead nowhere. It stays what it
+was in phase 52: a second way to the same face cuboids, for checking, at small sizes.
 
 ### Face cuboids, found a second way
 

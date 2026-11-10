@@ -242,7 +242,7 @@ one found; `verify` checks the whole file at the end either way.
 
 ### Searching further
 
-- [ ] **83. From the space diagonal.** A search for perfect cuboids that starts from the space
+- [x] **83. From the space diagonal.** A search for perfect cuboids that starts from the space
   diagonal d and its sums of three squares, skipping Euler bricks altogether; how far it gets
   per hour against the brick search.
 - [ ] **84. Parallelepipeds, further.** The perfect parallelepiped search with its symmetries
